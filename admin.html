@@ -2,129 +2,122 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>إدارة NshmiBike 🇯🇴</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Cairo', sans-serif; background: #f1f5f9; }
-    .nshmi-green { background-color: #00B14F; }
-    .nshmi-text { color: #00B14F; }
+    .jo-green { background-color: #007A3D; }
+    .jo-text { color: #007A3D; }
+    .shmagh-strip {
+      height: 6px;
+      background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #ffffff 8px, #ffffff 16px);
+    }
   </style>
 </head>
-<body class="min-h-screen bg-slate-100">
+<body class="min-h-screen bg-slate-100 pb-10">
 
-  <!-- شاشة قفل الإدارة -->
   <div id="admin-lock" class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-sm bg-white p-6 rounded-3xl shadow-xl text-center space-y-4">
-      <div class="w-16 h-16 nshmi-green rounded-2xl mx-auto flex items-center justify-center text-3xl shadow">🛡️</div>
-      <h1 class="text-xl font-extrabold text-slate-800">لوحة إدارة Nshmi<span class="nshmi-text">Bike</span></h1>
+      <div class="w-16 h-16 jo-green rounded-2xl mx-auto flex items-center justify-center text-3xl shadow border-2 border-[#CE1126]">🛡️</div>
+      <h1 class="text-xl font-extrabold text-slate-800">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
       <p class="text-xs text-slate-500 font-semibold">أدخل رمز المرور السري (الافتراضي: <span dir="ltr" class="font-bold">2026</span>)</p>
-      <input id="admin-pin" type="password" inputmode="numeric" placeholder="****" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-extrabold tracking-widest focus:outline-none focus:border-[#00B14F]">
-      <button onclick="checkAdminPin()" class="w-full nshmi-green text-white font-extrabold py-3 rounded-2xl shadow">دخول للإدارة</button>
+      <input id="admin-pin" type="password" inputmode="numeric" placeholder="****" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-extrabold tracking-widest">
+      <button onclick="checkAdminPin()" class="w-full jo-green text-white font-extrabold py-3 rounded-2xl shadow">دخول للإدارة</button>
       <p id="pin-err" class="text-xs text-red-600 font-bold hidden">الرمز غير صحيح</p>
     </div>
   </div>
 
-  <!-- لوحة الإدارة الرئيسية -->
   <div id="admin-app" class="hidden max-w-2xl mx-auto pb-12">
+    <div class="shmagh-strip"></div>
     <header class="bg-slate-900 text-white p-4 sticky top-0 z-20 shadow flex justify-between items-center">
       <div>
-        <h1 class="font-extrabold text-base">إدارة Nshmi<span class="text-emerald-400">Bike</span> 🇯🇴</h1>
-        <p class="text-[11px] text-slate-400">مراقبة حية للعمليات والأرباح</p>
+        <h1 class="font-extrabold text-base">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
+        <p class="text-[11px] text-slate-400">مراقبة حية • التوزيع الذكي • الخصومات</p>
       </div>
-      <a href="index.html" class="bg-emerald-600 text-xs font-bold px-3 py-1.5 rounded-xl">فتح التطبيق</a>
+      <a href="index.html" class="jo-green text-xs font-bold px-3 py-1.5 rounded-xl">تطبيق العميل</a>
     </header>
 
-    <!-- بطاقات الإحصائيات -->
     <div class="grid grid-cols-2 gap-3 p-4">
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-        <div class="text-[11px] text-slate-500 font-bold">إجمالي المبيعات</div>
-        <div id="stat-gross" class="text-xl font-extrabold text-slate-800 mt-1">0.00 د.أ</div>
+      <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100">
+        <div class="text-[11px] text-slate-500 font-bold">إجمالي قيمة الرحلات</div>
+        <div id="stat-gross" class="text-lg font-extrabold text-slate-800 mt-0.5">0.00 د.أ</div>
       </div>
-      <div class="bg-emerald-50 p-4 rounded-2xl shadow-sm border border-emerald-200">
-        <div class="text-[11px] text-emerald-800 font-bold">صافي عمولتك (<span id="stat-comm-pct">15</span>%)</div>
-        <div id="stat-profit" class="text-xl font-extrabold nshmi-text mt-1">0.00 د.أ</div>
+      <div class="bg-emerald-50 p-3.5 rounded-2xl shadow-sm border border-emerald-200">
+        <div class="text-[11px] text-[#007A3D] font-bold">عمولة الشركة (<span id="stat-comm-pct">15</span>%)</div>
+        <div id="stat-profit" class="text-lg font-extrabold jo-text mt-0.5">0.00 د.أ</div>
       </div>
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-        <div class="text-[11px] text-slate-500 font-bold">الرحلات المكتملة</div>
-        <div id="stat-completed" class="text-xl font-extrabold text-slate-800 mt-1">0</div>
+      <div class="bg-red-50 p-3.5 rounded-2xl shadow-sm border border-red-200">
+        <div class="text-[11px] text-[#CE1126] font-bold">دعم الخصومات (من الشركة)</div>
+        <div id="stat-subsidy" class="text-lg font-extrabold text-[#CE1126] mt-0.5">0.00 د.أ</div>
       </div>
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-        <div class="text-[11px] text-slate-500 font-bold">رحلات نشطة الآن</div>
-        <div id="stat-active" class="text-xl font-extrabold text-amber-600 mt-1">0</div>
+      <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100">
+        <div class="text-[11px] text-slate-500 font-bold">المكتملة / النشطة الآن</div>
+        <div class="text-lg font-extrabold text-slate-800 mt-0.5"><span id="stat-completed">0</span> / <span id="stat-active" class="text-amber-600">0</span></div>
       </div>
     </div>
 
-    <!-- تنبيهات SOS إن وجدت -->
     <div id="sos-banner" class="hidden mx-4 mb-4 bg-red-600 text-white p-4 rounded-2xl shadow-lg space-y-2">
       <div class="font-extrabold text-sm">🚨 تنبيه طوارئ SOS عاجل!</div>
       <div id="sos-list" class="space-y-2 text-xs"></div>
     </div>
 
-    <!-- التبويبات -->
     <div class="flex gap-2 px-4 mb-4 overflow-x-auto">
-      <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn nshmi-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات</button>
-      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">💰 التسعيرة والخصم</button>
+      <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn jo-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات</button>
+      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🎁 الخصومات والتسعيرة</button>
       <button onclick="showTab('users')" id="tab-btn-users" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">👥 الكباتن والركاب</button>
     </div>
 
-    <!-- 1. تبويب الرحلات -->
     <div id="tab-rides" class="px-4 space-y-3">
-      <div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري تحميل الرحلات...</div>
+      <div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
 
-    <!-- 2. تبويب التسعيرة وأكواد الخصم -->
     <div id="tab-pricing" class="hidden px-4 space-y-4">
-      <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
-        <h2 class="font-extrabold text-slate-800 text-sm">ضبط التسعيرة الحية (تتحدث في التطبيق فوراً)</h2>
-        
-        <div class="grid grid-cols-3 gap-2 text-xs">
+      <!-- أكواد الخصم على حساب الشركة -->
+      <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3 border border-emerald-100">
+        <h2 class="font-extrabold text-slate-800 text-sm">🎁 إنشاء كود خصم (على حساب الشركة وليس الكابتن)</h2>
+        <div class="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <label class="font-bold text-slate-600 block mb-1">فتح عداد سكوتر</label>
-            <input id="p-sc-base" type="number" step="0.05" value="0.25" class="w-full border rounded-xl p-2 font-bold">
+            <label class="font-bold text-slate-600 block mb-1">كود الخصم</label>
+            <input id="promo-code" type="text" placeholder="مثال: NSHMI50" class="w-full border rounded-xl p-2 font-bold uppercase">
           </div>
           <div>
-            <label class="font-bold text-slate-600 block mb-1">لكل كم (سكوتر)</label>
-            <input id="p-sc-km" type="number" step="0.01" value="0.15" class="w-full border rounded-xl p-2 font-bold">
+            <label class="font-bold text-slate-600 block mb-1">نسبة الخصم (%)</label>
+            <input id="promo-pct" type="number" placeholder="50" class="w-full border rounded-xl p-2 font-bold">
           </div>
           <div>
-            <label class="font-bold text-slate-600 block mb-1">أقل أجرة سكوتر</label>
-            <input id="p-sc-min" type="number" step="0.05" value="0.60" class="w-full border rounded-xl p-2 font-bold">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2 text-xs">
-          <div>
-            <label class="font-bold text-slate-600 block mb-1">فتح عداد بايك</label>
-            <input id="p-bk-base" type="number" step="0.05" value="0.30" class="w-full border rounded-xl p-2 font-bold">
+            <label class="font-bold text-slate-600 block mb-1">كم رحلة لكل عميل؟</label>
+            <input id="promo-per-user" type="number" value="3" class="w-full border rounded-xl p-2 font-bold">
           </div>
           <div>
-            <label class="font-bold text-slate-600 block mb-1">لكل كم (بايك)</label>
-            <input id="p-bk-km" type="number" step="0.01" value="0.18" class="w-full border rounded-xl p-2 font-bold">
-          </div>
-          <div>
-            <label class="font-bold text-slate-600 block mb-1">عمولتك (%)</label>
-            <input id="p-comm" type="number" step="1" value="15" class="w-full border rounded-xl p-2 font-bold text-emerald-700">
+            <label class="font-bold text-slate-600 block mb-1">الحد الإجمالي للاستخدام</label>
+            <input id="promo-max-total" type="number" value="200" class="w-full border rounded-xl p-2 font-bold">
           </div>
         </div>
-
-        <button onclick="savePricing()" class="w-full nshmi-green text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ ونشر التسعيرة الآن ✓</button>
+        <label class="flex items-center gap-2 text-xs font-bold text-[#007A3D] bg-emerald-50 p-2.5 rounded-xl">
+          <input id="promo-company-pays" type="checkbox" checked class="accent-[#007A3D] w-4 h-4">
+          <span>الشركة تتحمل الخصم (لا ينقص من ربح الكابتن، ويُنزل له الفرق في محفظته)</span>
+        </label>
+        <button onclick="addPromo()" class="w-full jo-green text-white font-extrabold py-2.5 rounded-xl text-xs">إنشاء ونشر كود الخصم ✓</button>
+        <div id="promos-list" class="space-y-2 text-xs pt-2"></div>
       </div>
 
-      <!-- أكواد الخصم -->
+      <!-- التسعيرة -->
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
-        <h2 class="font-extrabold text-slate-800 text-sm">أكواد الخصم الترويجية (Promo Codes)</h2>
-        <div class="flex gap-2">
-          <input id="promo-code" type="text" placeholder="مثال: NSHMI50" class="flex-1 border rounded-xl px-3 py-2 text-xs font-bold uppercase">
-          <input id="promo-pct" type="number" placeholder="الخصم %" class="w-24 border rounded-xl px-3 py-2 text-xs font-bold">
-          <button onclick="addPromo()" class="nshmi-green text-white px-4 rounded-xl text-xs font-bold">إضافة</button>
+        <h2 class="font-extrabold text-slate-800 text-sm">💰 ضبط التسعيرة الحية</h2>
+        <div class="grid grid-cols-3 gap-2 text-xs">
+          <div><label class="font-bold text-slate-600 block mb-1">فتح سكوتر</label><input id="p-sc-base" type="number" step="0.05" value="0.25" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">لكل كم سكوتر</label><input id="p-sc-km" type="number" step="0.01" value="0.15" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">أقل أجرة</label><input id="p-sc-min" type="number" step="0.05" value="0.60" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">فتح بايك</label><input id="p-bk-base" type="number" step="0.05" value="0.30" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">لكل كم بايك</label><input id="p-bk-km" type="number" step="0.01" value="0.18" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">عمولتك (%)</label><input id="p-comm" type="number" step="1" value="15" class="w-full border rounded-xl p-2 font-bold jo-text"></div>
         </div>
-        <div id="promos-list" class="space-y-2 text-xs"></div>
+        <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ التسعيرة ✓</button>
       </div>
     </div>
 
-    <!-- 3. تبويب الكباتن والركاب -->
     <div id="tab-users" class="hidden px-4 space-y-2.5">
       <div id="admin-users-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
@@ -134,7 +127,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
-      getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
+      getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc,
       onSnapshot, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -154,10 +147,8 @@
     let currentCommPct = 15;
 
     window.checkAdminPin = async () => {
-      const pin = document.getElementById('admin-pin').value.trim();
-      if (pin !== '2026') {
-        document.getElementById('pin-err').classList.remove('hidden');
-        return;
+      if (document.getElementById('admin-pin').value.trim() !== '2026') {
+        document.getElementById('pin-err').classList.remove('hidden'); return;
       }
       try { await signInAnonymously(auth); } catch (e) {}
       document.getElementById('admin-lock').classList.add('hidden');
@@ -171,11 +162,10 @@
         document.getElementById('tab-btn-' + t).className = 'tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
       });
       document.getElementById('tab-' + tab).classList.remove('hidden');
-      document.getElementById('tab-btn-' + tab).className = 'tab-btn nshmi-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
+      document.getElementById('tab-btn-' + tab).className = 'tab-btn jo-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
     };
 
     async function startAdminListeners() {
-      // جلب التسعيرة الحالية
       const pSnap = await getDoc(doc(db, 'settings', 'pricing'));
       if (pSnap.exists()) {
         const p = pSnap.data();
@@ -189,9 +179,8 @@
         document.getElementById('stat-comm-pct').innerText = currentCommPct;
       }
 
-      // متابعة الرحلات مباشرة
       onSnapshot(collection(db, 'rides'), (snap) => {
-        let gross = 0, completed = 0, active = 0;
+        let gross = 0, subsidyTotal = 0, completed = 0, active = 0;
         const rides = [];
         snap.forEach(d => rides.push({ id: d.id, ...d.data() }));
         rides.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
@@ -200,92 +189,77 @@
         listEl.innerHTML = rides.length ? '' : '<div class="bg-white p-6 rounded-2xl">لا توجد رحلات بعد</div>';
 
         rides.forEach(r => {
-          const fare = Number(r.fareJod || 0);
-          if (r.status === 'COMPLETED') { completed++; gross += fare; }
+          const origFare = Number(r.originalFareJod || r.fareJod || 0);
+          const paidFare = Number(r.fareJod || 0);
+          const disc = Number(r.discountJod || 0);
+          if (r.status === 'COMPLETED') {
+            completed++;
+            gross += origFare;
+            if (r.companyPaysPromo) subsidyTotal += disc;
+          }
           if (['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP'].includes(r.status)) active++;
 
-          const badgeMap = {
-            SEARCHING: 'bg-amber-100 text-amber-800',
-            ACCEPTED: 'bg-blue-100 text-blue-800',
-            ARRIVED: 'bg-purple-100 text-purple-800',
-            ON_TRIP: 'bg-indigo-100 text-indigo-800',
-            COMPLETED: 'bg-emerald-100 text-emerald-800',
-            CANCELLED: 'bg-red-100 text-red-700'
-          };
-
           const card = document.createElement('div');
-          card.className = 'bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1.5 border border-slate-100';
+          card.className = 'bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1 border border-slate-100';
           card.innerHTML = `
             <div class="flex justify-between items-center">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${badgeMap[r.status] || 'bg-slate-100'}">${r.status} • ${r.tier}</span>
-              <span class="font-extrabold text-sm nshmi-text">${fare.toFixed(2)} د.أ (${r.paymentMethod || 'كاش'})</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100">${r.city || ''} • ${r.status}</span>
+              <span class="font-extrabold text-sm jo-text">${paidFare.toFixed(2)} د.أ ${disc > 0 ? `<span class="text-[10px] text-[#CE1126]">(خصم شركة ${disc.toFixed(2)})</span>` : ''}</span>
             </div>
-            <div class="text-xs font-bold text-slate-800">الراكب: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'قيد البحث'}</div>
-            <div class="text-[11px] text-slate-500">${r.pickupAddress || ''} ⬅️ ${r.dropoffAddress || ''}</div>
-            ${r.rating ? `<div class="text-[11px] text-amber-500 font-bold">التقييم: ${'⭐'.repeat(r.rating)}</div>` : ''}
-          `;
+            <div class="text-xs font-bold text-slate-800">العميل: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'جاري التوجيه الذكي'}</div>
+            <div class="text-[11px] text-slate-500">${r.pickupAddress || ''} ⬅️ ${r.dropoffAddress || ''}</div>`;
           listEl.appendChild(card);
         });
 
         document.getElementById('stat-gross').innerText = gross.toFixed(2) + ' د.أ';
         document.getElementById('stat-profit').innerText = (gross * (currentCommPct / 100)).toFixed(2) + ' د.أ';
+        document.getElementById('stat-subsidy').innerText = subsidyTotal.toFixed(2) + ' د.أ';
         document.getElementById('stat-completed').innerText = completed;
         document.getElementById('stat-active').innerText = active;
       });
 
-      // متابعة تنبيهات SOS
       onSnapshot(collection(db, 'sos_alerts'), (snap) => {
         const unresolved = [];
         snap.forEach(d => { if (!d.data().resolved) unresolved.push({ id: d.id, ...d.data() }); });
-        const banner = document.getElementById('sos-banner');
-        const list = document.getElementById('sos-list');
-        if (unresolved.length === 0) { banner.classList.add('hidden'); return; }
-        banner.classList.remove('hidden');
-        list.innerHTML = '';
+        const banner = document.getElementById('sos-banner'), list = document.getElementById('sos-list');
+        if (!unresolved.length) { banner.classList.add('hidden'); return; }
+        banner.classList.remove('hidden'); list.innerHTML = '';
         unresolved.forEach(s => {
           const row = document.createElement('div');
           row.className = 'bg-red-700/70 p-2.5 rounded-xl flex justify-between items-center';
-          row.innerHTML = `
-            <span>مستخدم: ${s.userId} (رحلة: ${s.rideId || 'عام'})</span>
-            <button onclick="resolveSOS('${s.id}')" class="bg-white text-red-700 font-extrabold px-2.5 py-1 rounded-lg">تمت المعالجة ✓</button>
-          `;
+          row.innerHTML = `<span>مستخدم: ${s.userId}</span><button onclick="resolveSOS('${s.id}')" class="bg-white text-red-700 font-extrabold px-2.5 py-1 rounded-lg">معالجة ✓</button>`;
           list.appendChild(row);
         });
       });
 
-      // متابعة أكواد الخصم
       onSnapshot(collection(db, 'promos'), (snap) => {
-        const box = document.getElementById('promos-list');
-        box.innerHTML = '';
+        const box = document.getElementById('promos-list'); box.innerHTML = '';
         snap.forEach(d => {
           const p = d.data();
           const row = document.createElement('div');
           row.className = 'flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100';
           row.innerHTML = `
-            <span class="font-extrabold text-slate-800">${d.id} <span class="text-emerald-700">(خصم ${p.discountPct}%)</span></span>
-            <button onclick="deletePromo('${d.id}')" class="text-red-600 font-bold">حذف</button>
-          `;
+            <div>
+              <div class="font-extrabold text-slate-800">${d.id} <span class="jo-text">(${p.discountPct}%)</span></div>
+              <div class="text-[10px] text-slate-500">لكل عميل: ${p.maxPerUser || 1} رحلات • المستخدم: ${p.usedCount || 0}/${p.maxTotalUses || 999} • ${p.companyPays ? 'على حساب الشركة' : 'خصم مباشر'}</div>
+            </div>
+            <button onclick="deletePromo('${d.id}')" class="text-[#CE1126] font-bold">حذف</button>`;
           box.appendChild(row);
         });
       });
 
-      // متابعة الكباتن والركاب
       onSnapshot(collection(db, 'users'), (snap) => {
-        const list = document.getElementById('admin-users-list');
-        list.innerHTML = '';
+        const list = document.getElementById('admin-users-list'); list.innerHTML = '';
         snap.forEach(d => {
           const u = d.data();
           const card = document.createElement('div');
           card.className = 'bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right';
           card.innerHTML = `
             <div>
-              <div class="font-extrabold text-slate-800 text-xs">${u.name} <span class="text-[10px] px-2 py-0.5 rounded-full ${u.role === 'CAPTAIN' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">${u.role === 'CAPTAIN' ? 'كابتن 🛵' : 'راكب'}</span></div>
-              <div class="text-[11px] text-slate-500">${u.phone} ${u.role === 'CAPTAIN' ? '• ' + (u.bikeModel || '') + ' (' + (u.plate || '') + ')' : ''}</div>
+              <div class="font-extrabold text-slate-800 text-xs">${u.name} <span class="text-[10px] px-2 py-0.5 rounded-full ${u.role === 'CAPTAIN' ? 'bg-emerald-100 text-[#007A3D]' : 'bg-slate-100'}">${u.role === 'CAPTAIN' ? 'كابتن 🛵' : 'راكب'}</span></div>
+              <div class="text-[11px] text-slate-500">${u.phone} • رصيد: ${Number(u.walletBalance || 0).toFixed(2)} د.أ</div>
             </div>
-            <button onclick="toggleBlockUser('${d.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'bg-emerald-600 text-white' : 'bg-red-50 text-red-600'} px-3 py-1.5 rounded-xl font-bold text-[11px]">
-              ${u.isBlocked ? 'فك الحظر' : 'إيقاف'}
-            </button>
-          `;
+            <button onclick="toggleBlockUser('${d.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'jo-green text-white' : 'bg-red-50 text-[#CE1126]'} px-3 py-1.5 rounded-xl font-bold text-[11px]">${u.isBlocked ? 'فك الحظر' : 'إيقاف'}</button>`;
           list.appendChild(card);
         });
       });
@@ -299,33 +273,30 @@
         scooterMin: Number(document.getElementById('p-sc-min').value),
         bikeBase: Number(document.getElementById('p-bk-base').value),
         bikePerKm: Number(document.getElementById('p-bk-km').value),
-        commissionPct: currentCommPct,
-        updatedAt: serverTimestamp()
+        commissionPct: currentCommPct, updatedAt: serverTimestamp()
       });
       document.getElementById('stat-comm-pct').innerText = currentCommPct;
-      alert('✅ تم حفظ ونشر التسعيرة الجديدة بنجاح!');
+      alert('✅ تم حفظ التسعيرة!');
     };
 
     window.addPromo = async () => {
       const code = document.getElementById('promo-code').value.trim().toUpperCase();
       const pct = Number(document.getElementById('promo-pct').value);
-      if (!code || pct <= 0 || pct > 90) return alert('أدخل كوداً ونسبة خصم صحيحة (1 إلى 90)');
-      await setDoc(doc(db, 'promos', code), { discountPct: pct, active: true });
+      const maxPerUser = Number(document.getElementById('promo-per-user').value || 1);
+      const maxTotalUses = Number(document.getElementById('promo-max-total').value || 100);
+      const companyPays = document.getElementById('promo-company-pays').checked;
+      if (!code || pct <= 0 || pct > 90) return alert('أدخل كوداً ونسبة خصم صحيحة');
+      await setDoc(doc(db, 'promos', code), {
+        discountPct: pct, maxPerUser, maxTotalUses, usedCount: 0, companyPays, active: true
+      });
       document.getElementById('promo-code').value = '';
       document.getElementById('promo-pct').value = '';
+      alert('✅ تم إنشاء كود الخصم بنجاح!');
     };
 
-    window.deletePromo = async (id) => {
-      await deleteDoc(doc(db, 'promos', id));
-    };
-
-    window.resolveSOS = async (id) => {
-      await updateDoc(doc(db, 'sos_alerts', id), { resolved: true });
-    };
-
-    window.toggleBlockUser = async (id, currentlyBlocked) => {
-      await updateDoc(doc(db, 'users', id), { isBlocked: !currentlyBlocked });
-    };
+    window.deletePromo = async (id) => { await deleteDoc(doc(db, 'promos', id)); };
+    window.resolveSOS = async (id) => { await updateDoc(doc(db, 'sos_alerts', id), { resolved: true }); };
+    window.toggleBlockUser = async (id, b) => { await updateDoc(doc(db, 'users', id), { isBlocked: !b }); };
   </script>
 </body>
-  </html>
+</html>
