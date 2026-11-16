@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#00B14F" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.json" />
-  <title>NshmiBike - نشمي بايك الأردن</title>
+  <title>NshmiBike - تطبيق الركاب</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -20,21 +19,23 @@
 </head>
 <body class="min-h-screen flex justify-center bg-slate-900">
 
+  <!-- إشعار منبثق داخل التطبيق -->
+  <div id="toast-banner" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[400px] bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl border-r-4 border-[#00B14F]">
+    <div id="toast-title" class="font-extrabold text-xs text-emerald-400"></div>
+    <div id="toast-body" class="text-xs mt-0.5"></div>
+  </div>
+
   <div class="w-full max-w-[440px] min-h-screen bg-white flex flex-col relative shadow-2xl overflow-hidden">
 
-    <!-- 1. شاشة تسجيل الدخول -->
+    <!-- شاشة دخول العميل -->
     <div id="screen-login" class="flex-1 flex flex-col justify-center p-6 bg-gradient-to-b from-emerald-50 to-white">
-      <div class="text-center mb-6">
+      <div class="text-center mb-7">
         <div class="w-20 h-20 nshmi-green rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-lg mb-3">🛵</div>
         <h1 class="text-3xl font-extrabold text-slate-800">Nshmi<span class="nshmi-text">Bike</span> 🇯🇴</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-1">أسرع وأوفر من السيارة بأكثر من 50% في كل الأردن</p>
+        <p class="text-xs text-slate-500 font-semibold mt-1">تطبيق الركاب • أسرع وأوفر من السيارة بأكثر من 50%</p>
       </div>
 
-      <button id="btn-install-pwa" onclick="installPWA()" class="hidden mb-4 w-full bg-slate-900 text-white font-bold py-2.5 rounded-2xl text-xs shadow">
-        📲 تثبيت تطبيق NshmiBike على هاتفك
-      </button>
-
-      <div class="bg-white p-5 rounded-3xl shadow-md border border-slate-100 space-y-3.5">
+      <div class="bg-white p-5 rounded-3xl shadow-md border border-slate-100 space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">الاسم الكامل</label>
           <input id="login-name" type="text" placeholder="مثال: محمد العبدالله" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#00B14F]">
@@ -44,40 +45,22 @@
           <input id="login-phone" type="tel" placeholder="079xxxxxxx" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-left focus:outline-none focus:border-[#00B14F]" dir="ltr">
         </div>
 
-        <div id="captain-extra" class="hidden space-y-3 pt-2 border-t border-slate-100">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">نوع وموديل الدراجة / السكوتر</label>
-            <input id="cap-bike-model" type="text" placeholder="مثال: سكوتر هوندا أبيض" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">رقم اللوحة</label>
-            <input id="cap-plate" type="text" placeholder="مثال: 15-4821" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">اختر وضع الاستخدام:</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" onclick="selectRole('RIDER')" id="role-rider-btn" class="border-2 border-[#00B14F] bg-emerald-50 text-slate-800 py-2.5 rounded-xl font-extrabold text-xs">🙋‍♂️ أنا راكب</button>
-            <button type="button" onclick="selectRole('CAPTAIN')" id="role-cap-btn" class="border border-slate-200 bg-white text-slate-600 py-2.5 rounded-xl font-extrabold text-xs">🛵 أنا كابتن</button>
-          </div>
-        </div>
-
-        <button onclick="loginUser()" id="btn-login" class="w-full nshmi-green text-white font-extrabold py-3.5 rounded-2xl shadow-lg text-sm">
-          دخول إلى NshmiBike
+        <button onclick="loginRider()" id="btn-login" class="w-full nshmi-green text-white font-extrabold py-3.5 rounded-2xl shadow-lg text-sm">
+          دخول وتفعيل الإشعارات 🔔
         </button>
         <p id="login-error" class="text-xs text-red-600 font-bold text-center hidden"></p>
       </div>
     </div>
 
-    <!-- 2. شاشة الراكب -->
+    <!-- شاشة الراكب الرئيسية -->
     <div id="screen-rider" class="hidden flex-1 flex flex-col h-screen">
       <header class="p-3 bg-white shadow-sm flex justify-between items-center z-20">
         <div class="flex items-center gap-2">
           <span class="font-extrabold text-slate-800 text-sm">Nshmi<span class="nshmi-text">Bike</span></span>
           <span id="rider-greeting" class="text-[11px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full"></span>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-1.5">
+          <button onclick="testAudio()" class="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-1 rounded-full" title="اختبار الصوت">🔔</button>
           <button onclick="triggerSOS()" class="bg-red-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">🆘 SOS</button>
           <button onclick="logout()" class="bg-slate-100 text-slate-600 text-[11px] font-bold px-2.5 py-1 rounded-full">خروج</button>
         </div>
@@ -93,7 +76,7 @@
         </div>
       </div>
 
-      <!-- لوحة حجز الراكب -->
+      <!-- لوحة الحجز -->
       <div id="rider-panel-book" class="bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(0,0,0,0.1)] p-3.5 z-20">
         <div class="bg-slate-50 rounded-2xl p-2 border border-slate-100 space-y-1.5 mb-2">
           <select id="pickup-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
@@ -146,7 +129,7 @@
         </div>
 
         <div id="car-savings-badge" class="bg-emerald-50 text-emerald-800 text-[11px] font-bold text-center py-1 rounded-lg mb-2">
-          💰 توفر أكثر من 50% مقارنة بتطبيقات السيارات!
+          💰 توفر أكثر من 50% مقارنة بالسيارة!
         </div>
 
         <div class="flex gap-1.5 mb-2">
@@ -171,7 +154,7 @@
         </button>
       </div>
 
-      <!-- لوحة انتظار / تتبع الرحلة الحية -->
+      <!-- لوحة الرحلة النشطة -->
       <div id="rider-panel-active" class="hidden bg-white rounded-t-3xl shadow-2xl p-4 z-20 space-y-3">
         <div class="flex justify-between items-center">
           <span id="rider-ride-status" class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full">
@@ -196,7 +179,7 @@
           <div id="rider-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
           <div class="flex gap-1">
             <input id="rider-chat-input" type="text" placeholder="راسل الكابتن..." class="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs">
-            <button onclick="sendChat('RIDER')" class="nshmi-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button>
+            <button onclick="sendChat()" class="nshmi-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button>
           </div>
         </div>
 
@@ -218,80 +201,6 @@
         <button onclick="rateRide(5)" class="w-full nshmi-green text-white font-extrabold py-3 rounded-2xl text-sm">حجز رحلة جديدة</button>
       </div>
     </div>
-
-    <!-- 3. شاشة الكابتن -->
-    <div id="screen-captain" class="hidden flex-1 flex flex-col bg-slate-50 h-screen">
-      <header class="p-3.5 bg-white shadow-sm flex justify-between items-center">
-        <div>
-          <h2 class="font-extrabold text-slate-800 text-sm">لوحة الكابتن 🛵</h2>
-          <p id="cap-header-info" class="text-[11px] text-slate-500 font-semibold"></p>
-        </div>
-        <button onclick="logout()" class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">خروج</button>
-      </header>
-
-      <div class="grid grid-cols-3 gap-2 px-4 pt-3">
-        <div class="bg-white p-2.5 rounded-xl text-center shadow-sm">
-          <div class="text-[10px] text-slate-500 font-bold">التحصيل</div>
-          <div id="cap-gross-badge" class="text-xs font-extrabold text-slate-800">0.00 د.أ</div>
-        </div>
-        <div class="bg-white p-2.5 rounded-xl text-center shadow-sm">
-          <div class="text-[10px] text-slate-500 font-bold">العمولة (<span id="cap-comm-label">15</span>%)</div>
-          <div id="cap-comm-badge" class="text-xs font-extrabold text-red-600">0.00 د.أ</div>
-        </div>
-        <div class="bg-emerald-50 p-2.5 rounded-xl text-center shadow-sm border border-emerald-200">
-          <div class="text-[10px] text-emerald-800 font-bold">صافي ربحك</div>
-          <div id="cap-net-badge" class="text-xs font-extrabold nshmi-text">0.00 د.أ</div>
-        </div>
-      </div>
-
-      <div class="p-4 space-y-4 flex-1 overflow-y-auto">
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-          <label class="flex items-center gap-2.5 cursor-pointer">
-            <input id="cap-helmet-check" type="checkbox" onchange="toggleCaptainOnline()" class="accent-[#00B14F] w-5 h-5">
-            <div>
-              <div class="text-xs font-extrabold text-slate-800">أؤكد جاهزية الخوذة الإضافية المعقمة</div>
-              <div class="text-[11px] text-slate-500">فعّل هذا الخيار لتبدأ استقبال طلبات الركاب فوراً</div>
-            </div>
-          </label>
-        </div>
-
-        <div id="cap-requests-section">
-          <h3 class="font-extrabold text-slate-700 text-xs mb-2">الطلبات المتاحة الآن (تحديث مباشر):</h3>
-          <div id="cap-requests-list" class="space-y-3">
-            <div class="text-center text-xs text-slate-400 py-8 bg-white rounded-2xl border border-dashed border-slate-200">
-              فعّل خيار الخوذة بالأعلى لاستقبال الطلبات...
-            </div>
-          </div>
-        </div>
-
-        <div id="cap-active-ride" class="hidden bg-white p-4 rounded-2xl shadow-md border-2 border-[#00B14F] space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full">رحلة نشطة</span>
-            <span id="cap-active-fare" class="font-extrabold text-base nshmi-text"></span>
-          </div>
-          <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-3 rounded-xl"></div>
-
-          <button onclick="openGoogleMapsNav()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-extrabold">
-            🧭 فتح الاتجاهات في خرائط Google
-          </button>
-
-          <div class="border border-slate-100 rounded-xl p-2 bg-slate-50">
-            <div id="cap-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
-            <div class="flex gap-1">
-              <input id="cap-chat-input" type="text" placeholder="راسل الراكب..." class="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs">
-              <button onclick="sendChat('CAPTAIN')" class="nshmi-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="updateRideStatus('ARRIVED')" class="bg-amber-500 text-white py-2.5 rounded-xl text-xs font-bold">وصلت للراكب</button>
-            <button onclick="updateRideStatus('ON_TRIP')" class="bg-blue-600 text-white py-2.5 rounded-xl text-xs font-bold">بدء الرحلة</button>
-            <button onclick="updateRideStatus('COMPLETED')" class="nshmi-green text-white py-2.5 rounded-xl text-xs font-bold">إنهاء ✓</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script type="module">
@@ -299,27 +208,8 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc,
-      onSnapshot, query, where, runTransaction, serverTimestamp, orderBy
+      onSnapshot, query, serverTimestamp, orderBy
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
-
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById('btn-install-pwa').classList.remove('hidden');
-    });
-
-    window.installPWA = async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      document.getElementById('btn-install-pwa').classList.add('hidden');
-    };
 
     const firebaseConfig = {
       apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU",
@@ -335,30 +225,82 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let pricing = {
-      scooterBase: 0.25, scooterPerKm: 0.15, scooterMin: 0.60,
-      bikeBase: 0.30, bikePerKm: 0.18, bikeMin: 0.75,
-      commissionPct: 15
+    // نظام الصوت والإشعارات
+    let audioCtx = null;
+    function unlockAudio() {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audioCtx) audioCtx = new AC();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(kind) {
+      try {
+        unlockAudio();
+        if (!audioCtx) return;
+        const notes = kind === 'chat' ? [880, 1175] : [587, 784, 988];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.13);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.13 + 0.28);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + i * 0.13);
+          osc.stop(audioCtx.currentTime + i * 0.13 + 0.3);
+        });
+      } catch (e) {}
+    }
+
+    async function requestNotifPermission() {
+      try {
+        const LN = window.Capacitor?.Plugins?.LocalNotifications;
+        if (LN) await LN.requestPermissions();
+        else if ('Notification' in window && Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+      } catch (e) {}
+    }
+
+    async function notifyRider(title, body, kind = 'status') {
+      playTone(kind);
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+      const toast = document.getElementById('toast-banner');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-body').innerText = body;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4500);
+
+      try {
+        const LN = window.Capacitor?.Plugins?.LocalNotifications;
+        if (LN) {
+          await LN.schedule({
+            notifications: [{ title, body, id: Math.floor(Math.random() * 100000) + 1 }]
+          });
+        } else if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(title, { body, icon: 'icon.svg' });
+        }
+      } catch (e) {}
+    }
+
+    window.testAudio = () => {
+      notifyRider('🔔 إشعار تجريبي', 'الصوت والإشعارات تعمل بنجاح!', 'chat');
     };
-    let activeDiscountPct = 0;
-    let currentUser = null;
-    let selectedRole = 'RIDER';
-    let selectedTier = 'SCOOTER';
+
+    let pricing = { scooterBase: 0.25, scooterPerKm: 0.15, scooterMin: 0.60, bikeBase: 0.30, bikePerKm: 0.18, bikeMin: 0.75 };
+    let activeDiscountPct = 0, currentUser = null, selectedTier = 'SCOOTER';
     let map, pickupMarker, dropoffMarker, routeLine, capMarker;
-    let customDropoff = null;
-    let gpsPickup = null;
-    let currentDistKm = 4.2;
+    let customDropoff = null, gpsPickup = null, currentDistKm = 4.2;
     let fares = { SCOOTER: 0.90, BIKE: 1.05, EXPRESS: 0.95 };
-    let activeRideId = null;
-    let activeRideData = null;
-    let lastCompletedRideId = null;
-    let capTotalGross = 0;
-    let unsubRide = null, unsubChat = null, unsubCaptainOffers = null, gpsWatchId = null;
+    let activeRideId = null, lastCompletedRideId = null, lastRideStatus = null;
+    let unsubRide = null, unsubChat = null;
 
     onSnapshot(doc(db, 'settings', 'pricing'), (snap) => {
       if (snap.exists()) {
         pricing = { ...pricing, ...snap.data() };
-        document.getElementById('cap-comm-label').innerText = pricing.commissionPct;
         if (map) updateRoute();
       }
     });
@@ -368,18 +310,10 @@
       className: '', iconSize: [30, 30], iconAnchor: [15, 15]
     });
 
-    window.selectRole = (role) => {
-      selectedRole = role;
-      document.getElementById('captain-extra').classList.toggle('hidden', role !== 'CAPTAIN');
-      document.getElementById('role-rider-btn').className = role === 'RIDER'
-        ? 'border-2 border-[#00B14F] bg-emerald-50 text-slate-800 py-2.5 rounded-xl font-extrabold text-xs'
-        : 'border border-slate-200 bg-white text-slate-600 py-2.5 rounded-xl font-extrabold text-xs';
-      document.getElementById('role-cap-btn').className = role === 'CAPTAIN'
-        ? 'border-2 border-[#00B14F] bg-emerald-50 text-slate-800 py-2.5 rounded-xl font-extrabold text-xs'
-        : 'border border-slate-200 bg-white text-slate-600 py-2.5 rounded-xl font-extrabold text-xs';
-    };
+    window.loginRider = async () => {
+      unlockAudio();
+      await requestNotifPermission();
 
-    window.loginUser = async () => {
       const name = document.getElementById('login-name').value.trim();
       const phone = document.getElementById('login-phone').value.trim();
       const errEl = document.getElementById('login-error');
@@ -392,41 +326,26 @@
       }
 
       const btn = document.getElementById('btn-login');
-      btn.innerText = 'جاري الدخول...';
-      btn.disabled = true;
+      btn.innerText = 'جاري الدخول...'; btn.disabled = true;
 
       try {
         try { await signInAnonymously(auth); } catch (e) {}
-
         const userRef = doc(db, 'users', phone);
         const existing = await getDoc(userRef);
-        if (existing.exists() && existing.data().isBlocked) {
-          throw new Error('تم إيقاف هذا الحساب من الإدارة. تواصل مع الدعم.');
-        }
+        if (existing.exists() && existing.data().isBlocked) throw new Error('تم إيقاف هذا الحساب من الإدارة.');
 
-        currentUser = {
-          id: phone, name, phone, role: selectedRole,
-          bikeModel: document.getElementById('cap-bike-model').value || 'سكوتر نشمي',
-          plate: document.getElementById('cap-plate').value || '15-2026'
-        };
-
+        currentUser = { id: phone, name, phone, role: 'RIDER' };
         await setDoc(userRef, { ...currentUser, updatedAt: serverTimestamp() }, { merge: true });
 
         document.getElementById('screen-login').classList.add('hidden');
-        if (selectedRole === 'RIDER') {
-          document.getElementById('screen-rider').classList.remove('hidden');
-          document.getElementById('rider-greeting').innerText = `أهلاً ${name}`;
-          initMap();
-        } else {
-          document.getElementById('screen-captain').classList.remove('hidden');
-          document.getElementById('cap-header-info').innerText = `${name} • ${currentUser.bikeModel} (${currentUser.plate})`;
-        }
+        document.getElementById('screen-rider').classList.remove('hidden');
+        document.getElementById('rider-greeting').innerText = `أهلاً ${name}`;
+        initMap();
       } catch (err) {
         errEl.innerText = err.message;
         errEl.classList.remove('hidden');
       } finally {
-        btn.innerText = 'دخول إلى NshmiBike';
-        btn.disabled = false;
+        btn.innerText = 'دخول وتفعيل الإشعارات 🔔'; btn.disabled = false;
       }
     };
 
@@ -452,7 +371,7 @@
         gpsPickup = [pos.coords.latitude, pos.coords.longitude];
         document.getElementById('pickup-select').value = 'gps';
         updateRoute();
-      }, () => alert('يرجى السماح بصلاحية الموقع GPS وإغلاق أي أيقونة طافية'));
+      }, () => alert('يرجى السماح بصلاحية الموقع GPS'));
     };
 
     function parseCoords(val) {
@@ -474,8 +393,7 @@
       if (!code) return;
       const snap = await getDoc(doc(db, 'promos', code));
       if (!snap.exists() || !snap.data().active) {
-        activeDiscountPct = 0;
-        updateRoute();
+        activeDiscountPct = 0; updateRoute();
         return alert('كود الخصم غير صحيح أو منتهي');
       }
       activeDiscountPct = Number(snap.data().discountPct || 0);
@@ -499,14 +417,9 @@
 
       currentDistKm = haversine(pCoords, dCoords);
       const mult = 1 - (activeDiscountPct / 100);
-
-      const rawSc = Math.max(pricing.scooterMin, pricing.scooterBase + currentDistKm * pricing.scooterPerKm);
-      const rawBk = Math.max(pricing.bikeMin || 0.75, pricing.bikeBase + currentDistKm * pricing.bikePerKm);
-      const rawEx = Math.max(0.70, pricing.scooterBase + currentDistKm * (pricing.scooterPerKm + 0.01));
-
-      fares.SCOOTER = Math.max(0.40, +(rawSc * mult).toFixed(2));
-      fares.BIKE = Math.max(0.50, +(rawBk * mult).toFixed(2));
-      fares.EXPRESS = Math.max(0.45, +(rawEx * mult).toFixed(2));
+      fares.SCOOTER = Math.max(0.40, +(Math.max(pricing.scooterMin, pricing.scooterBase + currentDistKm * pricing.scooterPerKm) * mult).toFixed(2));
+      fares.BIKE = Math.max(0.50, +(Math.max(pricing.bikeMin || 0.75, pricing.bikeBase + currentDistKm * pricing.bikePerKm) * mult).toFixed(2));
+      fares.EXPRESS = Math.max(0.45, +(Math.max(0.70, pricing.scooterBase + currentDistKm * (pricing.scooterPerKm + 0.01)) * mult).toFixed(2));
 
       document.getElementById('price-SCOOTER').innerText = fares.SCOOTER.toFixed(2) + ' د.أ';
       document.getElementById('price-BIKE').innerText = fares.BIKE.toFixed(2) + ' د.أ';
@@ -514,7 +427,7 @@
 
       const estCarFare = Math.max(1.50, +(0.47 + currentDistKm * 0.34 + 0.30).toFixed(2));
       const saved = Math.max(0.50, +(estCarFare - fares[selectedTier]).toFixed(2));
-      const promoNote = activeDiscountPct > 0 ? ` (شامل خصم ${activeDiscountPct}%)` : '';
+      const promoNote = activeDiscountPct > 0 ? ` (خصم ${activeDiscountPct}%)` : '';
       document.getElementById('car-savings-badge').innerText =
         `المسافة ${currentDistKm.toFixed(1)} كم • توفر ~${saved.toFixed(2)} د.أ عن السيارة${promoNote}`;
     };
@@ -532,6 +445,7 @@
     };
 
     window.requestRide = async () => {
+      unlockAudio();
       const pSel = document.getElementById('pickup-select');
       const dSel = document.getElementById('dropoff-select');
       const pCoords = parseCoords(pSel.value);
@@ -552,6 +466,7 @@
       });
 
       activeRideId = rideDoc.id;
+      lastRideStatus = 'SEARCHING';
       document.getElementById('rider-panel-book').classList.add('hidden');
       document.getElementById('rider-panel-active').classList.remove('hidden');
       document.getElementById('rider-ride-fare').innerText = fares[selectedTier].toFixed(2) + ' د.أ';
@@ -566,28 +481,36 @@
           else capMarker = L.marker([data.captainLat, data.captainLng], { icon: bikeIcon }).addTo(map);
         }
 
-        if (data.status === 'SEARCHING') badge.innerText = 'جاري البحث عن كابتن قريب... 🛵';
-        else if (data.status === 'ACCEPTED') {
-          badge.innerText = 'الكابتن في طريقه إليك!';
-          badge.className = 'bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full';
-          showCaptainInfo(data);
-        } else if (data.status === 'ARRIVED') badge.innerText = 'الكابتن وصل لموقعك 📍';
-        else if (data.status === 'ON_TRIP') badge.innerText = 'الرحلة جارية نحو وجهتك 💨';
-        else if (data.status === 'COMPLETED') {
-          lastCompletedRideId = activeRideId;
-          if (unsubRide) unsubRide();
-          if (unsubChat) unsubChat();
-          if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
-          activeRideId = null;
-          document.getElementById('rider-panel-active').classList.add('hidden');
-          document.getElementById('rider-panel-rating').classList.remove('hidden');
-          document.getElementById('rating-summary').innerText =
-            `الأجرة: ${Number(data.fareJod).toFixed(2)} د.أ (${data.paymentMethod}) • قيّم الكابتن ${data.captainName}`;
-        } else if (data.status === 'CANCELLED') {
-          resetRiderUI();
+        if (data.status !== lastRideStatus) {
+          lastRideStatus = data.status;
+          if (data.status === 'ACCEPTED') {
+            badge.innerText = 'الكابتن في طريقه إليك!';
+            badge.className = 'bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full';
+            showCaptainInfo(data);
+            notifyRider('🛵 تم قبول رحلتك!', `الكابتن ${data.captainName} (${data.bikeModel}) في طريقه إليك`, 'status');
+          } else if (data.status === 'ARRIVED') {
+            badge.innerText = 'الكابتن وصل لموقعك 📍';
+            notifyRider('📍 الكابتن وصل!', `الكابتن ${data.captainName} ينتظرك بالخارج`, 'status');
+          } else if (data.status === 'ON_TRIP') {
+            badge.innerText = 'الرحلة جارية نحو وجهتك 💨';
+            notifyRider('💨 انطلقت الرحلة', 'نتمنى لك رحلة آمنة مع NshmiBike', 'status');
+          } else if (data.status === 'COMPLETED') {
+            notifyRider('🎉 وصلت بالسلامة!', `الأجرة: ${Number(data.fareJod).toFixed(2)} د.أ`, 'status');
+            lastCompletedRideId = activeRideId;
+            if (unsubRide) unsubRide();
+            if (unsubChat) unsubChat();
+            if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
+            activeRideId = null;
+            document.getElementById('rider-panel-active').classList.add('hidden');
+            document.getElementById('rider-panel-rating').classList.remove('hidden');
+            document.getElementById('rating-summary').innerText =
+              `الأجرة: ${Number(data.fareJod).toFixed(2)} د.أ (${data.paymentMethod}) • قيّم الكابتن ${data.captainName}`;
+          } else if (data.status === 'CANCELLED') {
+            resetRiderUI();
+          }
         }
       });
-      listenChat(activeRideId, 'rider-messages');
+      listenChat(activeRideId);
     };
 
     function showCaptainInfo(data) {
@@ -599,18 +522,15 @@
     }
 
     window.rateRide = async (stars) => {
-      if (lastCompletedRideId) {
-        await updateDoc(doc(db, 'rides', lastCompletedRideId), { rating: stars });
-      }
+      if (lastCompletedRideId) await updateDoc(doc(db, 'rides', lastCompletedRideId), { rating: stars });
       lastCompletedRideId = null;
       resetRiderUI();
     };
 
     window.shareRide = async () => {
       const shareText = `أنا الآن في رحلة مع NshmiBike 🛵\nرقم الرحلة: ${activeRideId}`;
-      if (navigator.share) {
-        try { await navigator.share({ title: 'تتبع رحلتي NshmiBike', text: shareText }); } catch (e) {}
-      } else alert(shareText);
+      if (navigator.share) { try { await navigator.share({ title: 'تتبع رحلتي', text: shareText }); } catch (e) {} }
+      else alert(shareText);
     };
 
     window.cancelRideRider = async () => {
@@ -622,7 +542,7 @@
       if (unsubRide) unsubRide();
       if (unsubChat) unsubChat();
       if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
-      activeRideId = null;
+      activeRideId = null; lastRideStatus = null;
       document.getElementById('captain-info-box').classList.add('hidden');
       document.getElementById('rider-chat-box').classList.add('hidden');
       document.getElementById('rider-panel-active').classList.add('hidden');
@@ -637,129 +557,12 @@
       if (confirm('🚨 تم إرسال تنبيه الطوارئ للإدارة.\nهل تريد الاتصال بـ 911 الآن؟')) window.location.href = 'tel:911';
     };
 
-    // منطق الكابتن
-    window.toggleCaptainOnline = () => {
-      const isOnline = document.getElementById('cap-helmet-check').checked;
-      const listEl = document.getElementById('cap-requests-list');
-      if (!isOnline) {
-        if (unsubCaptainOffers) unsubCaptainOffers();
-        listEl.innerHTML = '<div class="text-center text-xs text-slate-400 py-8 bg-white rounded-2xl">فعّل خيار الخوذة بالأعلى لاستقبال الطلبات...</div>';
-        return;
-      }
-
-      const q = query(collection(db, 'rides'), where('status', '==', 'SEARCHING'));
-      unsubCaptainOffers = onSnapshot(q, (snapshot) => {
-        if (snapshot.empty) {
-          listEl.innerHTML = '<div class="text-center text-xs text-slate-500 py-8 bg-white rounded-2xl">بانتظار طلبات الركاب في منطقتك... 🛵</div>';
-          return;
-        }
-        listEl.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const r = docSnap.data();
-          const net = Number(r.fareJod || 0) * (1 - pricing.commissionPct / 100);
-          const card = document.createElement('div');
-          card.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2';
-          card.innerHTML = `
-            <div class="flex justify-between items-center">
-              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">${r.tier} • ${r.distanceKm} كم</span>
-              <div class="text-left">
-                <div class="font-extrabold text-base nshmi-text">${Number(r.fareJod || 0).toFixed(2)} د.أ</div>
-                <div class="text-[10px] text-slate-500">صافي ربحك: ${net.toFixed(2)} د.أ</div>
-              </div>
-            </div>
-            <div class="text-xs text-slate-700 font-semibold">${r.pickupAddress}</div>
-            <div class="text-xs text-slate-700 font-semibold">${r.dropoffAddress}</div>
-            <div class="text-[11px] text-slate-500">الراكب: ${r.riderName} • الدفع: ${r.paymentMethod}</div>
-            <button onclick="acceptRide('${docSnap.id}')" class="w-full nshmi-green text-white font-extrabold py-2.5 rounded-xl text-xs">قبول الرحلة الآن</button>
-          `;
-          listEl.appendChild(card);
-        });
-      });
-    };
-
-    window.acceptRide = async (rideId) => {
-      const rideRef = doc(db, 'rides', rideId);
-      try {
-        await runTransaction(db, async (tx) => {
-          const snap = await tx.get(rideRef);
-          if (!snap.exists() || snap.data().status !== 'SEARCHING') throw new Error('تم أخذ الطلب من كابتن آخر');
-          tx.update(rideRef, {
-            status: 'ACCEPTED',
-            captainId: currentUser.id, captainName: currentUser.name,
-            captainPhone: currentUser.phone, bikeModel: currentUser.bikeModel, plate: currentUser.plate,
-            captainLat: snap.data().pickupLat, captainLng: snap.data().pickupLng
-          });
-        });
-
-        activeRideId = rideId;
-        document.getElementById('cap-requests-section').classList.add('hidden');
-        document.getElementById('cap-active-ride').classList.remove('hidden');
-
-        if (navigator.geolocation) {
-          gpsWatchId = navigator.geolocation.watchPosition((pos) => {
-            if (activeRideId) {
-              updateDoc(doc(db, 'rides', activeRideId), {
-                captainLat: pos.coords.latitude, captainLng: pos.coords.longitude
-              }).catch(() => {});
-            }
-          });
-        }
-
-        unsubRide = onSnapshot(rideRef, (snap) => {
-          const d = snap.data();
-          if (!d) return;
-          activeRideData = d;
-          const fare = Number(d.fareJod || 0);
-          const net = fare * (1 - pricing.commissionPct / 100);
-          document.getElementById('cap-active-fare').innerText = `${fare.toFixed(2)} د.أ (${d.paymentMethod})`;
-          document.getElementById('cap-active-details').innerHTML = `
-            <div><strong>الراكب:</strong> ${d.riderName} (<a href="tel:${d.riderPhone}" class="text-emerald-700 underline">${d.riderPhone}</a>)</div>
-            <div>${d.pickupAddress}</div>
-            <div>${d.dropoffAddress}</div>
-            <div class="text-emerald-700 font-bold">صافي ربحك: ${net.toFixed(2)} د.أ (بعد عمولة ${pricing.commissionPct}%)</div>
-          `;
-          if (d.status === 'COMPLETED' || d.status === 'CANCELLED') {
-            if (d.status === 'COMPLETED') {
-              capTotalGross += fare;
-              const comm = capTotalGross * (pricing.commissionPct / 100);
-              const totalNet = capTotalGross - comm;
-              document.getElementById('cap-gross-badge').innerText = capTotalGross.toFixed(2) + ' د.أ';
-              document.getElementById('cap-comm-badge').innerText = comm.toFixed(2) + ' د.أ';
-              document.getElementById('cap-net-badge').innerText = totalNet.toFixed(2) + ' د.أ';
-              alert(`تم إنهاء الرحلة! 🎉\nالمحصّل: ${fare.toFixed(2)} د.أ\nصافي ربحك: ${net.toFixed(2)} د.أ`);
-            } else alert('تم إلغاء الرحلة');
-            if (unsubRide) unsubRide();
-            if (unsubChat) unsubChat();
-            if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
-            activeRideId = null; activeRideData = null;
-            document.getElementById('cap-active-ride').classList.add('hidden');
-            document.getElementById('cap-requests-section').classList.remove('hidden');
-          }
-        });
-        listenChat(rideId, 'cap-messages');
-      } catch (e) {
-        alert(e.message);
-      }
-    };
-
-    window.openGoogleMapsNav = () => {
-      if (!activeRideData) return;
-      const isGoingToDropoff = activeRideData.status === 'ON_TRIP';
-      const lat = isGoingToDropoff ? activeRideData.dropoffLat : activeRideData.pickupLat;
-      const lng = isGoingToDropoff ? activeRideData.dropoffLng : activeRideData.pickupLng;
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
-    };
-
-    window.updateRideStatus = async (status) => {
-      if (!activeRideId) return;
-      await updateDoc(doc(db, 'rides', activeRideId), { status });
-    };
-
-    function listenChat(rideId, containerId) {
+    function listenChat(rideId) {
       if (unsubChat) unsubChat();
+      let firstLoad = true;
       const q = query(collection(db, 'rides', rideId, 'messages'), orderBy('createdAt', 'asc'));
       unsubChat = onSnapshot(q, (snap) => {
-        const box = document.getElementById(containerId);
+        const box = document.getElementById('rider-messages');
         box.innerHTML = '';
         snap.forEach((m) => {
           const d = m.data();
@@ -770,22 +573,33 @@
           sender.textContent = d.senderName + ': ';
           const txt = document.createElement('span');
           txt.textContent = d.text;
-          div.appendChild(sender);
-          div.appendChild(txt);
+          div.appendChild(sender); div.appendChild(txt);
           box.appendChild(div);
         });
         box.scrollTop = box.scrollHeight;
+
+        if (!firstLoad) {
+          snap.docChanges().forEach((chg) => {
+            if (chg.type === 'added') {
+              const msg = chg.doc.data();
+              if (msg.role !== 'RIDER') {
+                notifyRider(`💬 رسالة من الكابتن ${msg.senderName}`, msg.text, 'chat');
+              }
+            }
+          });
+        }
+        firstLoad = false;
       });
     }
 
-    window.sendChat = async (role) => {
+    window.sendChat = async () => {
       if (!activeRideId) return;
-      const inputId = role === 'RIDER' ? 'rider-chat-input' : 'cap-chat-input';
-      const text = document.getElementById(inputId).value.trim();
+      const input = document.getElementById('rider-chat-input');
+      const text = input.value.trim();
       if (!text) return;
-      document.getElementById(inputId).value = '';
+      input.value = '';
       await addDoc(collection(db, 'rides', activeRideId, 'messages'), {
-        senderName: currentUser.name, role, text, createdAt: serverTimestamp()
+        senderName: currentUser.name, role: 'RIDER', text, createdAt: serverTimestamp()
       });
     };
   </script>
