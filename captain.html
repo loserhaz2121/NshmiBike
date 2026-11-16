@@ -27,7 +27,7 @@
 
   <div class="w-full max-w-[440px] h-screen bg-slate-50 flex flex-col relative shadow-2xl overflow-hidden">
 
-    <!-- 1. شاشة دخول الكابتن بالإيميل + تذكرني -->
+    <!-- 1. شاشة دخول الكابتن -->
     <div id="screen-login" class="flex-1 flex flex-col justify-center p-5 bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950 text-white relative overflow-y-auto safe-bottom">
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
       <div class="flex justify-end mb-2">
@@ -38,7 +38,7 @@
       <div class="text-center mb-4">
         <div class="w-16 h-16 jo-green rounded-3xl mx-auto flex items-center justify-center text-3xl shadow-lg mb-2 border-2 border-[#CE1126]">🏍️</div>
         <h1 class="text-2xl font-extrabold">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</h1>
-        <p data-i18n="capTagline" class="text-[11px] text-slate-300 font-semibold mt-0.5">كابتن النشامى • استقبل الطلبات واربح المسابقات</p>
+        <p data-i18n="capTagline" class="text-[11px] text-slate-300 font-semibold mt-0.5">كابتن النشامى • عمّان • إربد • الزرقاء</p>
       </div>
 
       <div class="bg-white text-slate-800 p-4 rounded-3xl shadow-xl space-y-2.5">
@@ -70,7 +70,6 @@
             <input id="cap-plate" type="text" placeholder="15-4821" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs">
           </div>
         </div>
-
         <div class="flex items-center justify-between text-xs pt-1">
           <label class="flex items-center gap-1.5 font-bold text-slate-700 cursor-pointer">
             <input id="remember-me" type="checkbox" checked class="accent-[#007A3D] w-4 h-4">
@@ -78,7 +77,6 @@
           </label>
           <button type="button" onclick="resetPassword()" class="text-[#CE1126] font-bold underline text-[11px]">نسيت كلمة المرور؟</button>
         </div>
-
         <button onclick="loginCaptain()" id="btn-login" data-i18n="capLoginBtn" class="w-full jo-green text-white font-extrabold py-3 rounded-2xl shadow-lg text-sm">
           دخول / تسجيل كابتن 🔔
         </button>
@@ -104,49 +102,43 @@
         </div>
       </header>
 
-      <!-- شريط إحصائيات الأداء المباشر -->
+      <!-- شريط إحصائيات الأداء -->
       <div class="grid grid-cols-5 gap-1 px-3 pt-2.5 shrink-0 text-center">
-        <div class="bg-white p-1.5 rounded-xl shadow-sm">
-          <div class="text-[9px] text-slate-500 font-bold">القبول</div>
-          <div id="stat-accept" class="text-[11px] font-extrabold jo-text">100%</div>
-        </div>
-        <div class="bg-white p-1.5 rounded-xl shadow-sm">
-          <div class="text-[9px] text-slate-500 font-bold">التقييم</div>
-          <div id="stat-rating" class="text-[11px] font-extrabold text-amber-600">100%</div>
-        </div>
-        <div class="bg-white p-1.5 rounded-xl shadow-sm">
-          <div class="text-[9px] text-slate-500 font-bold">المتاح</div>
-          <div id="stat-online" class="text-[11px] font-extrabold text-slate-800">0د</div>
-        </div>
-        <div class="bg-white p-1.5 rounded-xl shadow-sm">
-          <div class="text-[9px] text-slate-500 font-bold">الرحلات</div>
-          <div id="stat-trips" class="text-[11px] font-extrabold text-slate-800">0</div>
-        </div>
-        <div class="bg-white p-1.5 rounded-xl shadow-sm">
-          <div class="text-[9px] text-slate-500 font-bold">الإلغاء</div>
-          <div id="stat-cancels" class="text-[11px] font-extrabold text-[#CE1126]">0</div>
-        </div>
+        <div class="bg-white p-1.5 rounded-xl shadow-sm"><div class="text-[9px] text-slate-500 font-bold">القبول</div><div id="stat-accept" class="text-[11px] font-extrabold jo-text">100%</div></div>
+        <div class="bg-white p-1.5 rounded-xl shadow-sm"><div class="text-[9px] text-slate-500 font-bold">التقييم</div><div id="stat-rating" class="text-[11px] font-extrabold text-amber-600">100%</div></div>
+        <div class="bg-white p-1.5 rounded-xl shadow-sm"><div class="text-[9px] text-slate-500 font-bold">المتاح</div><div id="stat-online" class="text-[11px] font-extrabold text-slate-800">0د</div></div>
+        <div class="bg-white p-1.5 rounded-xl shadow-sm"><div class="text-[9px] text-slate-500 font-bold">الرحلات</div><div id="stat-trips" class="text-[11px] font-extrabold text-slate-800">0</div></div>
+        <div class="bg-white p-1.5 rounded-xl shadow-sm"><div class="text-[9px] text-slate-500 font-bold">الإلغاء</div><div id="stat-cancels" class="text-[11px] font-extrabold text-[#CE1126]">0</div></div>
       </div>
 
       <div class="p-3 space-y-3 flex-1 overflow-y-auto safe-bottom">
-        <!-- تفعيل الخوذة والاتصال -->
-        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-          <label class="flex items-center gap-2.5 cursor-pointer flex-1">
-            <input id="cap-helmet-check" type="checkbox" onchange="toggleCaptainOnline()" class="accent-[#007A3D] w-5 h-5">
-            <div>
-              <div data-i18n="helmetCheckTitle" class="text-xs font-extrabold text-slate-800">جاهزية الخوذة المعقمة + بدء العمل</div>
-              <div id="cap-online-status" class="text-[11px] text-slate-500">غير متاح حالياً</div>
+        <!-- تفعيل الخوذة والمدينة -->
+        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2.5 cursor-pointer flex-1">
+              <input id="cap-helmet-check" type="checkbox" onchange="toggleCaptainOnline()" class="accent-[#007A3D] w-5 h-5">
+              <div>
+                <div data-i18n="helmetCheckTitle" class="text-xs font-extrabold text-slate-800">جاهزية الخوذة المعقمة + بدء العمل</div>
+                <div id="cap-online-status" class="text-[11px] text-slate-500">غير متاح حالياً</div>
+              </div>
+            </label>
+            <div class="text-left">
+              <div class="text-[10px] text-slate-400 font-bold">المحفظة</div>
+              <div id="cap-wallet-top" class="text-xs font-extrabold jo-text">0.00 د.أ</div>
             </div>
-          </label>
-          <div class="text-left">
-            <div class="text-[10px] text-slate-400 font-bold">المحفظة</div>
-            <div id="cap-wallet-top" class="text-xs font-extrabold jo-text">0.00 د.أ</div>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+            <span class="font-bold text-slate-500">🏙️ مدينة العمل الحالية:</span>
+            <select id="cap-city-select" onchange="updateCaptainCity()" class="bg-slate-100 px-3 py-1 rounded-xl font-extrabold text-slate-800">
+              <option value="عمّان">عمّان</option>
+              <option value="إربد">إربد</option>
+              <option value="الزرقاء">الزرقاء</option>
+            </select>
           </div>
         </div>
 
-        <!-- الطلبات المتاحة -->
         <div id="cap-requests-section">
-          <h3 data-i18n="availRides" class="font-extrabold text-slate-700 text-xs mb-2">الطلبات المتاحة الآن (مباشر):</h3>
+          <h3 data-i18n="availRides" class="font-extrabold text-slate-700 text-xs mb-2">الطلبات القريبة الموجهة لك (مباشر):</h3>
           <div id="cap-requests-list" class="space-y-2.5">
             <div class="text-center text-xs text-slate-400 py-8 bg-white rounded-2xl border border-dashed border-slate-200">
               فعّل خيار الخوذة بالأعلى لاستقبال الطلبات...
@@ -165,7 +157,6 @@
             المسافة المقطوعة نحو العميل: 0.00 كم
           </div>
 
-          <!-- عداد الانتظار 5 دقائق + زر التعويض -->
           <div id="cap-wait-box" class="hidden bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-center space-y-2">
             <div id="cap-wait-timer" class="text-xs font-extrabold text-amber-900">⏱️ انتظار العميل: 05:00</div>
             <button id="btn-no-show" onclick="cancelNoShow()" disabled class="w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs">
@@ -194,7 +185,7 @@
         </div>
       </div>
 
-      <!-- القائمة الجانبية للكابتن -->
+      <!-- القائمة الجانبية -->
       <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="hidden fixed inset-0 bg-black/50 z-40"></div>
       <aside id="side-drawer" class="hidden fixed top-0 bottom-0 w-[80%] max-w-[310px] bg-white z-50 flex flex-col shadow-2xl overflow-y-auto safe-bottom">
         <div class="shmagh-strip shrink-0"></div>
@@ -231,7 +222,7 @@
 
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiCaptain Jordan • v2.1.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiCaptain Jordan • v2.4.0 🇯🇴</div>
         </div>
       </aside>
 
@@ -249,9 +240,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, doc, getDoc, getDocs, setDoc, updateDoc,
       onSnapshot, query, where, runTransaction, serverTimestamp, orderBy, increment, arrayUnion
@@ -271,45 +260,45 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const CITY_CENTERS = {
+      'عمّان': [31.9539, 35.9106],
+      'إربد': [32.5568, 35.8469],
+      'الزرقاء': [32.0608, 36.0942]
+    };
+
     let lang = 'ar';
     const dict = {
       ar: {
-        capTagline: 'كابتن النشامى • استقبل الطلبات واربح المسابقات', emailLabel: 'البريد الإلكتروني', passLabel: 'كلمة المرور (6 أحرف فأكثر)',
+        capTagline: 'كابتن النشامى • عمّان • إربد • الزرقاء', emailLabel: 'البريد الإلكتروني', passLabel: 'كلمة المرور (6 أحرف فأكثر)',
         rememberMe: 'تذكرني عند الدخول', capLoginBtn: 'دخول / تسجيل كابتن 🔔', helmetCheckTitle: 'جاهزية الخوذة المعقمة + بدء العمل',
-        availRides: 'الطلبات المتاحة الآن (مباشر):', mContests: 'المسابقات والمكافآت', mStats: 'إحصائيات الأداء والقبول',
+        availRides: 'الطلبات القريبة الموجهة لك (مباشر):', mContests: 'المسابقات والمكافآت', mStats: 'إحصائيات الأداء والقبول',
         mProfile: 'الملف الشخصي', mTrips: 'رحلاتي', mWallet: 'المحفظة والأرباح', mVehicle: 'إضافة / تغيير دراجة',
         mInbox: 'صندوق الرسائل', mInvite: 'دعوة كباتن وأصدقاء', mReferral: 'كود الإحالة', mContact: 'تواصل معنا',
         mSettings: 'الإعدادات واللغة', mTerms: 'الشروط والأحكام', mDiag: 'فحص الاتصال', logout: 'تسجيل الخروج'
       },
       en: {
-        capTagline: 'Jordan Captain • Earn Rides & Contest Bonuses', emailLabel: 'Email Address', passLabel: 'Password (6+ chars)',
+        capTagline: 'Jordan Captain • Amman • Irbid • Zarqa', emailLabel: 'Email', passLabel: 'Password (6+ chars)',
         rememberMe: 'Remember me', capLoginBtn: 'Sign In / Register Captain 🔔', helmetCheckTitle: 'Sanitized Helmet Ready + Go Online',
-        availRides: 'Available Rides (Live):', mContests: 'Contests & Challenges', mStats: 'Performance & Rates',
+        availRides: 'Nearby Rides For You (Live):', mContests: 'Contests & Challenges', mStats: 'Performance & Rates',
         mProfile: 'Profile', mTrips: 'My Trips', mWallet: 'Wallet & Earnings', mVehicle: 'Add / Switch Vehicle',
         mInbox: 'Inbox', mInvite: 'Invite Users', mReferral: 'Referral', mContact: 'Contact Us',
-        mSettings: 'Settings & Language', mTerms: 'Terms & Conditions', mDiag: 'Trip Diagnostics', logout: 'Logout'
+        mSettings: 'Settings & Language', mTerms: 'Terms', mDiag: 'Diagnostics', logout: 'Logout'
       }
     };
 
     window.toggleLanguage = () => {
       lang = lang === 'ar' ? 'en' : 'ar';
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
       document.querySelectorAll('.lang-switch-label').forEach(el => el.innerText = lang === 'ar' ? 'English' : 'عربي');
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const k = el.getAttribute('data-i18n');
-        if (dict[lang][k]) el.innerText = dict[lang][k];
-      });
+      document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (dict[lang][k]) el.innerText = dict[lang][k]; });
       const drawer = document.getElementById('side-drawer');
-      drawer.style.right = lang === 'ar' ? '0' : 'auto';
-      drawer.style.left = lang === 'ar' ? 'auto' : '0';
+      drawer.style.right = lang === 'ar' ? '0' : 'auto'; drawer.style.left = lang === 'ar' ? 'auto' : '0';
     };
 
     let audioCtx = null;
     function unlockAudio() {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      if (!audioCtx) audioCtx = new AC();
+      if (!AC) return; if (!audioCtx) audioCtx = new AC();
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
     function playTone(kind) {
@@ -318,8 +307,7 @@
         const notes = kind === 'ride' ? [659, 880, 1046, 659, 880, 1046] : [987, 1318];
         notes.forEach((f, i) => {
           const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-          o.type = kind === 'ride' ? 'triangle' : 'sine';
-          o.frequency.value = f;
+          o.type = kind === 'ride' ? 'triangle' : 'sine'; o.frequency.value = f;
           g.gain.setValueAtTime(0.32, audioCtx.currentTime + i * 0.14);
           g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.14 + 0.25);
           o.connect(g); g.connect(audioCtx.destination);
@@ -333,23 +321,23 @@
       const toast = document.getElementById('toast-banner');
       document.getElementById('toast-title').innerText = title;
       document.getElementById('toast-body').innerText = body;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 5000);
+      toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000);
       try {
         const LN = window.Capacitor?.Plugins?.LocalNotifications;
         if (LN) await LN.schedule({ notifications: [{ title, body, id: Math.floor(Math.random() * 99999) + 1 }] });
         else if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body });
       } catch (e) {}
     }
-    window.testAudio = () => notifyCaptain('🔔 NshmiCaptain', 'الرنين والإشعارات تعمل!', 'ride');
+    window.testAudio = () => notifyCaptain('🔔 NshmiCaptain', 'الرنين والإشعارات شغالة!', 'ride');
 
     let commissionPct = 15, currentUser = null, activeRideId = null, activeRideData = null;
     let unsubRide = null, unsubChat = null, unsubCaptainOffers = null, gpsWatchId = null;
-    let waitTimerInt = null, onlineTimerInt = null, lastGpsPos = null, totalMovedKm = 0;
+    let waitTimerInt = null, onlineTimerInt = null, locSyncInt = null, lastGpsPos = null, totalMovedKm = 0;
     let knownRideIds = new Set(), declinedRideIds = new Set();
+    let capCity = 'عمّان', capLat = 31.9539, capLng = 35.9106;
     let capMetrics = {
       offersSeen: 0, acceptedCount: 0, completedCount: 0,
-      cancelledByCaptain: 0, onlineSeconds: 0, ratingPct: 100, avgStars: 5.0, claimedContests: []
+      cancelledByCaptain: 0, onlineSeconds: 0, ratingPct: 100, avgStars: 5.0, acceptRate: 100, claimedContests: []
     };
 
     function haversineKm(c1, c2) {
@@ -358,16 +346,24 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
+    function detectCity(lat, lng) {
+      let best = 'عمّان', minD = 9999;
+      for (const [name, c] of Object.entries(CITY_CENTERS)) {
+        const d = haversineKm([lat, lng], c);
+        if (d < minD) { minD = d; best = name; }
+      }
+      return best;
+    }
+
     function formatOnlineTime(sec) {
       const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
       return h > 0 ? `${h}س ${m}د` : `${m}د`;
     }
 
     function renderStatsBar() {
-      const acceptPct = capMetrics.offersSeen > 0
-        ? Math.min(100, Math.round((capMetrics.acceptedCount / capMetrics.offersSeen) * 100))
-        : 100;
-      document.getElementById('stat-accept').innerText = acceptPct + '%';
+      capMetrics.acceptRate = capMetrics.offersSeen > 0
+        ? Math.min(100, Math.round((capMetrics.acceptedCount / capMetrics.offersSeen) * 100)) : 100;
+      document.getElementById('stat-accept').innerText = capMetrics.acceptRate + '%';
       document.getElementById('stat-rating').innerText = capMetrics.ratingPct + '%';
       document.getElementById('stat-online').innerText = formatOnlineTime(capMetrics.onlineSeconds);
       document.getElementById('stat-trips').innerText = capMetrics.completedCount;
@@ -381,7 +377,6 @@
     async function completeCaptainLogin(userObj) {
       currentUser = userObj;
       const userRef = doc(db, 'users', currentUser.id);
-
       onSnapshot(userRef, (s) => {
         if (s.exists()) {
           const d = s.data();
@@ -397,21 +392,27 @@
         }
       });
 
-      // حساب عدد الرحلات ونسبة التقييم مباشرة من جدول الرحلات
       onSnapshot(query(collection(db, 'rides'), where('captainId', '==', currentUser.id)), (snap) => {
         let comp = 0, rateSum = 0, rateCnt = 0;
         snap.forEach((docS) => {
           const r = docS.data();
-          if (r.status === 'COMPLETED') {
-            comp++;
-            if (r.rating) { rateSum += Number(r.rating); rateCnt++; }
-          }
+          if (r.status === 'COMPLETED') { comp++; if (r.rating) { rateSum += Number(r.rating); rateCnt++; } }
         });
         capMetrics.completedCount = comp;
         capMetrics.avgStars = rateCnt > 0 ? +(rateSum / rateCnt).toFixed(2) : 5.0;
         capMetrics.ratingPct = Math.round((capMetrics.avgStars / 5) * 100);
         renderStatsBar();
       });
+
+      // تحديد مدينة الكابتن تلقائياً عبر GPS
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((p) => {
+          capLat = p.coords.latitude; capLng = p.coords.longitude;
+          capCity = detectCity(capLat, capLng);
+          document.getElementById('cap-city-select').value = capCity;
+          updateDoc(userRef, { city: capCity, lat: capLat, lng: capLng }).catch(() => {});
+        }, () => {}, { enableHighAccuracy: true, timeout: 6000 });
+      }
 
       document.getElementById('drawer-avatar').innerText = currentUser.name.charAt(0);
       document.getElementById('drawer-name').innerText = currentUser.name;
@@ -425,6 +426,11 @@
       document.getElementById('screen-captain').classList.remove('hidden');
     }
 
+    window.updateCaptainCity = async () => {
+      capCity = document.getElementById('cap-city-select').value;
+      if (currentUser) await updateDoc(doc(db, 'users', currentUser.id), { city: capCity });
+    };
+
     window.loginCaptain = async () => {
       unlockAudio();
       try {
@@ -437,9 +443,7 @@
       const pass = document.getElementById('login-pass').value;
       const nameInput = document.getElementById('login-name').value.trim();
       const phoneInput = document.getElementById('login-phone').value.trim();
-      const errEl = document.getElementById('login-error');
-      errEl.classList.add('hidden');
-
+      const errEl = document.getElementById('login-error'); errEl.classList.add('hidden');
       if (!email.includes('@') || pass.length < 6) {
         errEl.innerText = 'أدخل بريداً إلكترونياً صحيحاً وكلمة مرور (6 أحرف فأكثر)';
         errEl.classList.remove('hidden'); return;
@@ -448,17 +452,13 @@
       const btn = document.getElementById('btn-login'); btn.disabled = true;
       try {
         let uid = '';
-        try {
-          const cred = await signInWithEmailAndPassword(auth, email, pass);
-          uid = cred.user.uid;
-        } catch (authErr) {
+        try { uid = (await signInWithEmailAndPassword(auth, email, pass)).user.uid; }
+        catch (authErr) {
           if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential') {
             if (!nameInput || phoneInput.length < 9) throw new Error('للتسجيل لأول مرة، أدخل الاسم ورقم الهاتف.');
-            const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            uid = cred.user.uid;
+            uid = (await createUserWithEmailAndPassword(auth, email, pass)).user.uid;
           } else throw authErr;
         }
-
         let userData = null;
         const emailSnap = await getDocs(query(collection(db, 'users'), where('email', '==', email)));
         if (!emailSnap.empty) userData = emailSnap.docs[0].data();
@@ -467,9 +467,7 @@
           if (pSnap.exists()) userData = pSnap.data();
         }
         if (userData?.isBlocked) throw new Error('تم إيقاف هذا الحساب من الإدارة');
-
-        const finalPhone = userData?.phone || phoneInput;
-        const finalName = userData?.name || nameInput;
+        const finalPhone = userData?.phone || phoneInput, finalName = userData?.name || nameInput;
         if (!finalPhone || !finalName) throw new Error('أكمل الاسم ورقم الهاتف لحفظ حسابك');
 
         const profile = {
@@ -480,13 +478,11 @@
           referralCode: userData?.referralCode || ('CAP' + finalPhone.slice(-4))
         };
         await setDoc(doc(db, 'users', finalPhone), { ...profile, updatedAt: serverTimestamp() }, { merge: true });
-
         if (document.getElementById('remember-me').checked) localStorage.setItem('nshmi_captain_session', JSON.stringify(profile));
         else localStorage.removeItem('nshmi_captain_session');
         await completeCaptainLogin(profile);
-      } catch (err) {
-        errEl.innerText = err.message; errEl.classList.remove('hidden');
-      } finally { btn.disabled = false; }
+      } catch (err) { errEl.innerText = err.message; errEl.classList.remove('hidden'); }
+      finally { btn.disabled = false; }
     };
 
     window.resetPassword = async () => {
@@ -495,17 +491,13 @@
       try { await sendPasswordResetEmail(auth, email); alert('✅ تم إرسال رابط استعادة كلمة المرور لبريدك!'); }
       catch (e) { alert('خطأ: ' + e.message); }
     };
-
     window.logout = () => { localStorage.removeItem('nshmi_captain_session'); location.reload(); };
 
-    // التذكر التلقائي عند الدخول
     const savedCap = localStorage.getItem('nshmi_captain_session');
     if (savedCap) {
       try {
         const parsed = JSON.parse(savedCap);
-        getDoc(doc(db, 'users', parsed.id)).then((s) => {
-          if (s.exists() && !s.data().isBlocked) completeCaptainLogin({ ...parsed, ...s.data() });
-        });
+        getDoc(doc(db, 'users', parsed.id)).then((s) => { if (s.exists() && !s.data().isBlocked) completeCaptainLogin({ ...parsed, ...s.data() }); });
       } catch (e) {}
     }
 
@@ -517,7 +509,7 @@
 
     const CONTESTS = [
       { id: 'c_daily_10', title: '🔥 تحدي النشامى اليومي', desc: 'أكمل 10 رحلات واربح 3.00 د.أ مكافأة فورية', target: 10, type: 'trips', reward: 3.00 },
-      { id: 'c_hours_3', title: '⏱️ بطل التواجد والالتزام', desc: 'ابقَ متاحاً لمدة 3 ساعات (180 دقيقة) واربح 2.00 د.أ', target: 180, type: 'mins', reward: 2.00 },
+      { id: 'c_hours_3', title: '⏱️ بطل التواجد والالتزام', desc: 'ابقَ متاحاً 3 ساعات (180 دقيقة) واربح 2.00 د.أ', target: 180, type: 'mins', reward: 2.00 },
       { id: 'c_star_25', title: '⭐ كابتن النخبة الأسبوعي', desc: 'أنجز 25 رحلة بتقييم 90%+ واربح 10.00 د.أ', target: 25, type: 'trips_rated', reward: 10.00 }
     ];
 
@@ -541,16 +533,14 @@
             <div class="flex justify-between items-center text-[11px] font-bold">
               <span>التقدم: ${cur} / ${c.target}</span>
               ${claimed ? '<span class="text-emerald-700">✓ تم استلام الجائزة</span>' :
-                eligible ? `<button onclick="claimContest('${c.id}', ${c.reward})" class="jo-green text-white px-3 py-1 rounded-lg">استلام المكافأة 🎁</button>` :
-                '<span class="text-slate-400">قيد التقدم</span>'}
+                eligible ? `<button onclick="claimContest('${c.id}', ${c.reward})" class="jo-green text-white px-3 py-1 rounded-lg">استلام المكافأة 🎁</button>` : '<span class="text-slate-400">قيد التقدم</span>'}
             </div></div>`;
         }).join('');
       } else if (type === 'stats') {
         titleEl.innerText = '📊 إحصائيات الأداء';
-        const acceptPct = capMetrics.offersSeen > 0 ? Math.min(100, Math.round((capMetrics.acceptedCount / capMetrics.offersSeen) * 100)) : 100;
         const cancelPct = capMetrics.acceptedCount > 0 ? Math.round((capMetrics.cancelledByCaptain / capMetrics.acceptedCount) * 100) : 0;
         bodyEl.innerHTML = `<div class="grid grid-cols-2 gap-2.5 text-center">
-          <div class="bg-emerald-50 p-3 rounded-2xl"><div class="text-slate-500">نسبة القبول</div><div class="text-xl font-extrabold jo-text">${acceptPct}%</div></div>
+          <div class="bg-emerald-50 p-3 rounded-2xl"><div class="text-slate-500">نسبة القبول</div><div class="text-xl font-extrabold jo-text">${capMetrics.acceptRate}%</div></div>
           <div class="bg-amber-50 p-3 rounded-2xl"><div class="text-slate-500">نسبة التقييم</div><div class="text-xl font-extrabold text-amber-600">${capMetrics.ratingPct}% (${capMetrics.avgStars}★)</div></div>
           <div class="bg-slate-50 p-3 rounded-2xl"><div class="text-slate-500">المدة المتاحة</div><div class="text-xl font-extrabold">${formatOnlineTime(capMetrics.onlineSeconds)}</div></div>
           <div class="bg-slate-50 p-3 rounded-2xl"><div class="text-slate-500">عدد الرحلات</div><div class="text-xl font-extrabold">${capMetrics.completedCount}</div></div>
@@ -558,32 +548,22 @@
         </div>`;
       } else if (type === 'profile') {
         titleEl.innerText = '👤 ملف الكابتن';
-        bodyEl.innerHTML = `<div class="bg-slate-50 p-4 rounded-2xl space-y-2">
-          <div><b>الاسم:</b> ${currentUser.name}</div><div><b>الهاتف:</b> ${currentUser.phone}</div>
-          <div><b>الإيميل:</b> ${currentUser.email || '-'}</div><div><b>الدراجة:</b> ${currentUser.bikeModel} (${currentUser.plate})</div></div>`;
+        bodyEl.innerHTML = `<div class="bg-slate-50 p-4 rounded-2xl space-y-2"><div><b>الاسم:</b> ${currentUser.name}</div><div><b>الهاتف:</b> ${currentUser.phone}</div><div><b>الإيميل:</b> ${currentUser.email || '-'}</div><div><b>الدراجة:</b> ${currentUser.bikeModel} (${currentUser.plate})</div></div>`;
       } else if (type === 'trips') {
-        titleEl.innerText = '🕒 سجل رحلاتي';
-        bodyEl.innerHTML = 'جاري التحميل...';
+        titleEl.innerText = '🕒 سجل رحلاتي'; bodyEl.innerHTML = 'جاري التحميل...';
         const snap = await getDocs(query(collection(db, 'rides'), where('captainId', '==', currentUser.id)));
         const list = []; snap.forEach(d => list.push(d.data()));
         list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        bodyEl.innerHTML = list.length ? list.map(r => `
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <div class="flex justify-between font-extrabold"><span>${r.riderName} • ${r.status}</span><span class="jo-text">${Number(r.fareJod).toFixed(2)} د.أ</span></div>
-            <div class="text-[11px] text-slate-500 mt-1">${r.pickupAddress} ⬅️ ${r.dropoffAddress}</div>
-          </div>`).join('') : '<div class="text-center py-6 text-slate-400">لا توجد رحلات بعد</div>';
+        bodyEl.innerHTML = list.length ? list.map(r => `<div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><div class="flex justify-between font-extrabold"><span>${r.riderName} • ${r.status}</span><span class="jo-text">${Number(r.originalFareJod || r.fareJod).toFixed(2)} د.أ</span></div><div class="text-[11px] text-slate-500 mt-1">${r.pickupAddress} ⬅️ ${r.dropoffAddress}</div></div>`).join('') : '<div class="text-center py-6 text-slate-400">لا توجد رحلات بعد</div>';
       } else if (type === 'wallet') {
         titleEl.innerText = '💳 محفظة الكابتن';
-        bodyEl.innerHTML = `<div class="bg-gradient-to-br from-slate-900 to-[#007A3D] text-white p-5 rounded-2xl text-center">
-            <div class="text-xs opacity-80">الرصيد المتاح (شامل التعويضات والمكافآت)</div>
-            <div class="text-3xl font-extrabold mt-1">${currentUser.walletBalance.toFixed(2)} د.أ</div></div>
-          <button onclick="requestPayout()" class="w-full jo-green text-white font-bold py-3 rounded-xl">طلب سحب عبر CliQ / زين كاش</button>`;
+        bodyEl.innerHTML = `<div class="bg-gradient-to-br from-slate-900 to-[#007A3D] text-white p-5 rounded-2xl text-center"><div class="text-xs opacity-80">الرصيد المتاح (شامل تعويض الخصومات والمكافآت)</div><div class="text-3xl font-extrabold mt-1">${currentUser.walletBalance.toFixed(2)} د.أ</div></div><button onclick="requestPayout()" class="w-full jo-green text-white font-bold py-3 rounded-xl">طلب سحب عبر CliQ / زين كاش</button>`;
       } else if (type === 'vehicle') {
         titleEl.innerText = '🏍️ إضافة / تغيير الدراجة';
         bodyEl.innerHTML = `<div class="space-y-3"><input id="edit-bike" type="text" value="${currentUser.bikeModel}" class="w-full border rounded-xl p-2.5"><input id="edit-plate" type="text" value="${currentUser.plate}" class="w-full border rounded-xl p-2.5"><button onclick="saveVehicle()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">حفظ ✓</button></div>`;
       } else if (type === 'inbox') {
         titleEl.innerText = '📬 صندوق الرسائل';
-        bodyEl.innerHTML = `<div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl font-bold">🇯🇴 تذكير: عند وصولك للعميل ضمن 150 متر، يبدأ عداد الانتظار 5 دقائق وبإمكانك الإلغاء بعده بتعويض 0.50 د.أ.</div>`;
+        bodyEl.innerHTML = `<div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl font-bold">🇯🇴 تطمّن: كل أكواد الخصم على حساب الشركة، ولا ينقص من ربحك قرش واحد!</div>`;
       } else if (type === 'invite' || type === 'referral') {
         titleEl.innerText = '🎁 دعوة كباتن وأصدقاء';
         bodyEl.innerHTML = `<div class="bg-emerald-50 p-4 rounded-2xl text-center space-y-2"><div class="font-bold">ادعُ صديقاً بكودك واربح 0.50 د.أ!</div><div class="text-2xl font-extrabold jo-text">${currentUser.referralCode}</div><button onclick="shareInvite()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">مشاركة واتساب 💬</button></div><div class="flex gap-2"><input id="ref-input" type="text" placeholder="كود صديق" class="flex-1 border rounded-xl p-2 uppercase font-bold"><button onclick="claimReferral()" class="bg-slate-900 text-white px-4 rounded-xl font-bold">تفعيل</button></div>`;
@@ -595,7 +575,7 @@
         bodyEl.innerHTML = `<button onclick="toggleLanguage(); closeModal();" class="w-full jo-green text-white font-bold py-3 rounded-xl">🌐 تغيير اللغة إلى: ${lang === 'ar' ? 'English' : 'العربية'}</button><button onclick="testAudio()" class="w-full bg-slate-100 text-slate-800 font-bold py-3 rounded-xl">🔔 اختبار الرنين</button>`;
       } else if (type === 'terms') {
         titleEl.innerText = '❓ الشروط';
-        bodyEl.innerHTML = `<p>1. تأكيد الوصول فقط ضمن 150 متر.<br>2. مهلة انتظار العميل 5 دقائق وبعدها تعويض 0.50 د.أ.<br>3. تعويض 0.50 د.أ عند إلغاء العميل بعد تحرك الكابتن +2 كم.</p>`;
+        bodyEl.innerHTML = `<p>1. تأكيد الوصول ضمن 150 متر.<br>2. مهلة انتظار 5 دقائق وبعدها تعويض 0.50 د.أ.<br>3. تعويض 0.50 د.أ عند إلغاء العميل بعد تحركك +2 كم.</p>`;
       } else if (type === 'diag') {
         titleEl.innerText = '🛠️ فحص الاتصال';
         bodyEl.innerHTML = `<div class="bg-slate-50 p-3 rounded-xl space-y-2 font-bold"><div>🌐 السيرفر: <span class="jo-text">متصل ✓</span></div><div>📍 GPS: <span class="jo-text">${navigator.geolocation ? 'شغال ✓' : 'معطل'}</span></div></div>`;
@@ -603,12 +583,8 @@
     };
 
     window.claimContest = async (id, reward) => {
-      await updateDoc(doc(db, 'users', currentUser.id), {
-        walletBalance: increment(reward),
-        claimedContests: arrayUnion(id)
-      });
-      alert(`🎉 مبروك! تم إضافة ${reward.toFixed(2)} د.أ إلى محفظتك!`);
-      openModal('contests');
+      await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(reward), claimedContests: arrayUnion(id) });
+      alert(`🎉 تم إضافة ${reward.toFixed(2)} د.أ إلى محفظتك!`); openModal('contests');
     };
     window.saveVehicle = async () => {
       const b = document.getElementById('edit-bike').value.trim(), p = document.getElementById('edit-plate').value.trim();
@@ -630,7 +606,7 @@
     };
     window.requestPayout = () => alert('✅ تم إرسال طلب السحب للإدارة.');
 
-    // التوفر + حساب المدة المتاحة + استقبال الطلبات
+    // التوفر + تحديث الموقع للخوارزمية الذكية + استقبال الطلبات المخصصة
     window.toggleCaptainOnline = () => {
       unlockAudio();
       const isOnline = document.getElementById('cap-helmet-check').checked;
@@ -640,30 +616,50 @@
       if (!isOnline) {
         if (unsubCaptainOffers) unsubCaptainOffers();
         if (onlineTimerInt) { clearInterval(onlineTimerInt); onlineTimerInt = null; }
-        updateDoc(doc(db, 'users', currentUser.id), { onlineSeconds: capMetrics.onlineSeconds }).catch(() => {});
+        if (locSyncInt) { clearInterval(locSyncInt); locSyncInt = null; }
+        updateDoc(doc(db, 'users', currentUser.id), { isOnline: false, onlineSeconds: capMetrics.onlineSeconds }).catch(() => {});
         statusLbl.innerText = 'غير متاح حالياً';
         knownRideIds.clear();
         listEl.innerHTML = '<div class="text-center text-xs text-slate-400 py-8 bg-white rounded-2xl">فعّل خيار الخوذة بالأعلى لاستقبال الطلبات...</div>';
         return;
       }
 
-      statusLbl.innerText = 'متاح الآن لاستقبال الطلبات 🟢';
+      statusLbl.innerText = `متاح في ${capCity} 🟢`;
+      const syncStatus = () => {
+        navigator.geolocation?.getCurrentPosition((p) => {
+          capLat = p.coords.latitude; capLng = p.coords.longitude;
+          updateDoc(doc(db, 'users', currentUser.id), {
+            isOnline: true, city: capCity, lat: capLat, lng: capLng,
+            acceptRate: capMetrics.acceptRate, avgStars: capMetrics.avgStars
+          }).catch(() => {});
+        }, () => {
+          updateDoc(doc(db, 'users', currentUser.id), {
+            isOnline: true, city: capCity, acceptRate: capMetrics.acceptRate, avgStars: capMetrics.avgStars
+          }).catch(() => {});
+        });
+      };
+      syncStatus();
+      locSyncInt = setInterval(syncStatus, 25000);
+
       if (!onlineTimerInt) {
         onlineTimerInt = setInterval(() => {
-          capMetrics.onlineSeconds += 1;
-          renderStatsBar();
-          if (capMetrics.onlineSeconds % 30 === 0) {
-            updateDoc(doc(db, 'users', currentUser.id), { onlineSeconds: capMetrics.onlineSeconds }).catch(() => {});
-          }
+          capMetrics.onlineSeconds += 1; renderStatsBar();
+          if (capMetrics.onlineSeconds % 30 === 0) updateDoc(doc(db, 'users', currentUser.id), { onlineSeconds: capMetrics.onlineSeconds }).catch(() => {});
         }, 1000);
       }
 
       const q = query(collection(db, 'rides'), where('status', '==', 'SEARCHING'));
       unsubCaptainOffers = onSnapshot(q, (snapshot) => {
         const docs = [];
-        snapshot.forEach(d => { if (!declinedRideIds.has(d.id)) docs.push({ id: d.id, ...d.data() }); });
+        snapshot.forEach(d => {
+          const r = d.data();
+          const inSameCity = !r.city || r.city === capCity;
+          const isForMe = !r.targetCaptainId || r.targetCaptainId === 'ALL' || r.targetCaptainId === currentUser.id;
+          if (!declinedRideIds.has(d.id) && inSameCity && isForMe) docs.push({ id: d.id, ...r });
+        });
+
         if (docs.length === 0) {
-          listEl.innerHTML = '<div class="text-center text-xs text-slate-500 py-8 bg-white rounded-2xl">بانتظار طلبات الركاب... 🛵</div>';
+          listEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-8 bg-white rounded-2xl">بانتظار أقرب طلب في ${capCity}... 🛵</div>`;
           return;
         }
         listEl.innerHTML = '';
@@ -671,15 +667,22 @@
           if (!knownRideIds.has(r.id) && !activeRideId) {
             knownRideIds.add(r.id);
             updateDoc(doc(db, 'users', currentUser.id), { offersSeen: increment(1) }).catch(() => {});
-            notifyCaptain('🛵 طلب رحلة جديد!', `${r.pickupAddress} ⬅️ ${r.dropoffAddress} (${Number(r.fareJod||0).toFixed(2)} د.أ)`, 'ride');
+            notifyCaptain(
+              r.targetCaptainId === currentUser.id ? '⚡ طلب مخصص لك (الأقرب)!' : '🛵 طلب متاح قريب!',
+              `${r.pickupAddress} ⬅️ ${r.dropoffAddress}`, 'ride'
+            );
           }
-          const net = Number(r.fareJod || 0) * (1 - commissionPct / 100);
+          const origFare = Number(r.originalFareJod || r.fareJod || 0);
+          const capNet = origFare * (1 - commissionPct / 100);
           const card = document.createElement('div');
           card.className = 'bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 space-y-2';
           card.innerHTML = `
             <div class="flex justify-between items-center">
               <span class="bg-emerald-100 text-[#007A3D] text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">${r.tier} • ${r.distanceKm} كم</span>
-              <div class="text-left"><div class="font-extrabold text-base jo-text">${Number(r.fareJod||0).toFixed(2)} د.أ</div><div class="text-[10px] text-slate-500">صافي: ${net.toFixed(2)} د.أ</div></div>
+              <div class="text-left">
+                <div class="font-extrabold text-base jo-text">تحصيل: ${Number(r.fareJod||0).toFixed(2)} د.أ</div>
+                <div class="text-[10px] text-slate-600 font-bold">صافي ربحك: ${capNet.toFixed(2)} د.أ ${r.companyPaysPromo && r.discountJod > 0 ? '(الخصم على الشركة)' : ''}</div>
+              </div>
             </div>
             <div class="text-xs font-semibold">${r.pickupAddress}</div><div class="text-xs font-semibold">${r.dropoffAddress}</div>
             <div class="text-[11px] text-slate-500">الراكب: ${r.riderName} • ${r.paymentMethod}</div>
@@ -692,34 +695,38 @@
       });
     };
 
-    window.declineRide = (rideId) => {
+    window.declineRide = async (rideId) => {
       declinedRideIds.add(rideId);
+      try {
+        const snap = await getDoc(doc(db, 'rides', rideId));
+        if (snap.exists() && snap.data().targetCaptainId === currentUser.id) {
+          const q = snap.data().dispatchQueue || [];
+          const nextIdx = (snap.data().dispatchIndex || 0) + 1;
+          await updateDoc(doc(db, 'rides', rideId), {
+            dispatchIndex: nextIdx,
+            targetCaptainId: nextIdx < q.length ? q[nextIdx] : 'ALL'
+          });
+        }
+      } catch (e) {}
       document.getElementById('cap-helmet-check').dispatchEvent(new Event('change'));
     };
 
     function startCaptainWaitTimer(arrivedAtMs) {
       if (waitTimerInt) clearInterval(waitTimerInt);
       document.getElementById('cap-wait-box').classList.remove('hidden');
-      const timerEl = document.getElementById('cap-wait-timer');
-      const btnNoShow = document.getElementById('btn-no-show');
-
+      const timerEl = document.getElementById('cap-wait-timer'), btnNoShow = document.getElementById('btn-no-show');
       const tick = () => {
-        const elapsed = Math.floor((Date.now() - arrivedAtMs) / 1000);
-        const left = Math.max(0, 300 - elapsed);
-        const m = String(Math.floor(left / 60)).padStart(2, '0');
-        const s = String(left % 60).padStart(2, '0');
+        const left = Math.max(0, 300 - Math.floor((Date.now() - arrivedAtMs) / 1000));
+        const m = String(Math.floor(left / 60)).padStart(2, '0'), s = String(left % 60).padStart(2, '0');
         if (left > 0) {
           timerEl.innerText = `⏱️ انتظار العميل: ${m}:${s}`;
-          btnNoShow.disabled = true;
-          btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs';
+          btnNoShow.disabled = true; btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs';
         } else {
-          timerEl.innerText = '✅ انتهت 5 دقائق! يمكنك الإلغاء وأخذ تعويض 50 قرشاً';
-          btnNoShow.disabled = false;
-          btnNoShow.className = 'w-full bg-[#CE1126] text-white font-extrabold py-2 rounded-xl text-xs shadow';
+          timerEl.innerText = '✅ انتهت 5 دقائق! يمكنك الإلغاء بتعويض 50 قرشاً';
+          btnNoShow.disabled = false; btnNoShow.className = 'w-full bg-[#CE1126] text-white font-extrabold py-2 rounded-xl text-xs shadow';
         }
       };
-      tick();
-      waitTimerInt = setInterval(tick, 1000);
+      tick(); waitTimerInt = setInterval(tick, 1000);
     }
 
     window.acceptRide = async (rideId) => {
@@ -732,16 +739,14 @@
             startCoords = [p.coords.latitude, p.coords.longitude];
           } catch (e) {}
         }
-
         await runTransaction(db, async (tx) => {
           const snap = await tx.get(rideRef);
           if (!snap.exists() || snap.data().status !== 'SEARCHING') throw new Error('تم أخذ الطلب من كابتن آخر');
-          const pLat = startCoords ? startCoords[0] : snap.data().pickupLat;
-          const pLng = startCoords ? startCoords[1] : snap.data().pickupLng;
           tx.update(rideRef, {
             status: 'ACCEPTED', captainId: currentUser.id, captainName: currentUser.name,
             captainPhone: currentUser.phone, bikeModel: currentUser.bikeModel, plate: currentUser.plate,
-            captainLat: pLat, captainLng: pLng, captainMovedKm: 0
+            captainLat: startCoords ? startCoords[0] : snap.data().pickupLat,
+            captainLng: startCoords ? startCoords[1] : snap.data().pickupLng, captainMovedKm: 0
           });
         });
 
@@ -758,11 +763,7 @@
               const step = haversineKm(lastGpsPos, cur);
               if (step >= 0.015 && step <= 2.0) { totalMovedKm += step; lastGpsPos = cur; }
             } else lastGpsPos = cur;
-
-            updateDoc(doc(db, 'rides', activeRideId), {
-              captainLat: cur[0], captainLng: cur[1],
-              captainMovedKm: Number(totalMovedKm.toFixed(2))
-            }).catch(() => {});
+            updateDoc(doc(db, 'rides', activeRideId), { captainLat: cur[0], captainLng: cur[1], captainMovedKm: Number(totalMovedKm.toFixed(2)) }).catch(() => {});
             document.getElementById('cap-moved-info').innerText = `المسافة المقطوعة نحو العميل: ${totalMovedKm.toFixed(2)} كم`;
           }, () => {}, { enableHighAccuracy: true });
         }
@@ -770,12 +771,14 @@
         unsubRide = onSnapshot(rideRef, async (snap) => {
           const d = snap.data(); if (!d) return;
           activeRideData = d;
-          const fare = Number(d.fareJod || 0), net = fare * (1 - commissionPct / 100);
-          document.getElementById('cap-active-fare').innerText = `${fare.toFixed(2)} د.أ (${d.paymentMethod})`;
+          const origFare = Number(d.originalFareJod || d.fareJod || 0);
+          const paidByRider = Number(d.fareJod || 0);
+          const net = +(origFare * (1 - commissionPct / 100)).toFixed(2);
+          document.getElementById('cap-active-fare').innerText = `تحصيل ${paidByRider.toFixed(2)} د.أ (${d.paymentMethod})`;
           document.getElementById('cap-active-details').innerHTML = `
             <div><strong>الراكب:</strong> ${d.riderName} (<a href="tel:${d.riderPhone}" class="jo-text underline">${d.riderPhone}</a>)</div>
             <div>${d.pickupAddress}</div><div>${d.dropoffAddress}</div>
-            <div class="jo-text font-bold">صافي ربحك: ${net.toFixed(2)} د.أ</div>`;
+            <div class="jo-text font-bold">صافي ربحك: ${net.toFixed(2)} د.أ ${d.companyPaysPromo && d.discountJod > 0 ? '(شامل دعم الشركة)' : ''}</div>`;
 
           if (d.status === 'ARRIVED') {
             document.getElementById('cap-ride-badge').innerText = 'وصلت للعميل 📍';
@@ -786,15 +789,20 @@
             document.getElementById('cap-wait-box').classList.add('hidden');
           } else if (['COMPLETED', 'CANCELLED', 'CANCELLED_NO_SHOW'].includes(d.status)) {
             if (d.status === 'COMPLETED') {
-              if (d.paymentMethod === 'محفظة نشمي') await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(net) });
-              alert(`تم إنهاء الرحلة! 🎉\nصافي ربحك: ${net.toFixed(2)} د.أ`);
+              if (d.paymentMethod === 'محفظة نشمي') {
+                await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(net) });
+                alert(`تم إنهاء الرحلة! 🎉\nنزل في محفظتك: +${net.toFixed(2)} د.أ`);
+              } else if (d.companyPaysPromo && net > paidByRider) {
+                const subsidy = +(net - paidByRider).toFixed(2);
+                await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(subsidy) });
+                alert(`تم إنهاء الرحلة! 🎉\nالمحصّل من العميل: ${paidByRider.toFixed(2)} د.أ\nدعم الخصم من الشركة (نزل بمحفظتك): +${subsidy.toFixed(2)} د.أ\nصافي ربحك الكامل: ${net.toFixed(2)} د.أ`);
+              } else {
+                alert(`تم إنهاء الرحلة! 🎉\nالمحصّل: ${paidByRider.toFixed(2)} د.أ\nصافي ربحك: ${net.toFixed(2)} د.أ`);
+              }
             } else if (d.status === 'CANCELLED' && d.cancelledBy === 'RIDER') {
               const fee = Number(d.cancelFeeJod || 0);
-              notifyCaptain(
-                fee > 0 ? `💰 إلغاء بتعويض ${fee.toFixed(2)} د.أ!` : '❌ ألغى الراكب الطلب',
-                fee > 0 ? 'تم إضافة 0.50 د.أ تعويضاً لمحفظتك لتجاوزك 2 كم!' : 'تم إلغاء الطلب مجاناً',
-                'ride'
-              );
+              notifyCaptain(fee > 0 ? `💰 تعويض ${fee.toFixed(2)} د.أ!` : '❌ ألغى الراكب الطلب',
+                fee > 0 ? 'نزل 0.50 د.أ بمحفظتك لتجاوزك 2 كم!' : 'تم الإلغاء مجاناً', 'ride');
             }
             cleanupActiveRide();
           }
@@ -813,38 +821,28 @@
       document.getElementById('cap-requests-section').classList.remove('hidden');
     }
 
-    // التحقق أن الكابتن ضمن 150 متر من العميل قبل تأكيد الوصول
     window.markArrived = () => {
       if (!activeRideId || !activeRideData) return;
-      if (!navigator.geolocation) return alert('جهازك لا يدعم GPS لتأكيد الوصول');
-      const btn = document.getElementById('btn-arrived');
-      btn.innerText = 'فحص الموقع...'; btn.disabled = true;
-
+      if (!navigator.geolocation) return alert('جهازك لا يدعم GPS');
+      const btn = document.getElementById('btn-arrived'); btn.innerText = 'فحص...'; btn.disabled = true;
       navigator.geolocation.getCurrentPosition(async (pos) => {
         btn.innerText = 'وصلت (150م)'; btn.disabled = false;
-        const distMeters = haversineKm([pos.coords.latitude, pos.coords.longitude], [activeRideData.pickupLat, activeRideData.pickupLng]) * 1000;
-        if (distMeters > 150) {
-          return alert(`⚠️ لا يمكنك تأكيد الوصول الآن!\nأنت على بُعد ${Math.round(distMeters)} متر من العميل.\nيجب أن تقترب لمحيط 150 متر على الأقل.`);
-        }
+        const distM = haversineKm([pos.coords.latitude, pos.coords.longitude], [activeRideData.pickupLat, activeRideData.pickupLng]) * 1000;
+        if (distM > 150) return alert(`⚠️ لا يمكنك تأكيد الوصول!\nأنت على بُعد ${Math.round(distM)} متر (يجب أن تكون ضمن 150 متر).`);
         await updateDoc(doc(db, 'rides', activeRideId), { status: 'ARRIVED', arrivedAtMs: Date.now() });
-      }, () => {
-        btn.innerText = 'وصلت (150م)'; btn.disabled = false;
-        alert('يرجى تفعيل GPS لتأكيد أنك في محيط العميل');
-      }, { enableHighAccuracy: true, timeout: 8000 });
+      }, () => { btn.innerText = 'وصلت (150م)'; btn.disabled = false; alert('فعّل GPS أولاً'); }, { enableHighAccuracy: true, timeout: 8000 });
     };
 
-    // الإلغاء بعد 5 دقائق بتعويض 50 قرش
     window.cancelNoShow = async () => {
       if (!activeRideId || !activeRideData) return;
       await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED_NO_SHOW', compensationJod: 0.50 });
       await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(0.50) });
       await updateDoc(doc(db, 'users', activeRideData.riderId), { walletBalance: increment(-0.50) });
-      alert('✅ تم إلغاء الرحلة لعدم الحضور ونزل 0.50 د.أ تعويضاً في محفظتك!');
-      cleanupActiveRide();
+      alert('✅ تم إلغاء الرحلة ونزل 0.50 د.أ تعويضاً في محفظتك!'); cleanupActiveRide();
     };
 
     window.cancelRideCaptain = async () => {
-      if (!activeRideId || !confirm('هل أنت متأكد من إلغاء الرحلة؟ سيؤثر على نسبة الإلغاء لديك.')) return;
+      if (!activeRideId || !confirm('هل أنت متأكد من إلغاء الرحلة؟')) return;
       await updateDoc(doc(db, 'users', currentUser.id), { cancelledByCaptain: increment(1) });
       await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelledBy: 'CAPTAIN' });
       cleanupActiveRide();
@@ -872,9 +870,7 @@
         });
         box.scrollTop = box.scrollHeight;
         if (!firstLoad) {
-          snap.docChanges().forEach((c) => {
-            if (c.type === 'added' && c.doc.data().role !== 'CAPTAIN') notifyCaptain('💬 رسالة من الراكب', c.doc.data().text, 'chat');
-          });
+          snap.docChanges().forEach((c) => { if (c.type === 'added' && c.doc.data().role !== 'CAPTAIN') notifyCaptain('💬 رسالة من الراكب', c.doc.data().text, 'chat'); });
         }
         firstLoad = false;
       });
@@ -883,9 +879,7 @@
       if (!activeRideId) return;
       const inp = document.getElementById('cap-chat-input'), text = inp.value.trim();
       if (!text) return; inp.value = '';
-      await addDoc(collection(db, 'rides', activeRideId, 'messages'), {
-        senderName: currentUser.name, role: 'CAPTAIN', text, createdAt: serverTimestamp()
-      });
+      await addDoc(collection(db, 'rides', activeRideId, 'messages'), { senderName: currentUser.name, role: 'CAPTAIN', text, createdAt: serverTimestamp() });
     };
   </script>
 </body>
