@@ -1,1 +1,709 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NshmiBike - نشمي بايك الأردن</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; background: #0f172a; }
+    #map { height: 100%; width: 100%; z-index: 1; }
+    .nshmi-green { background-color: #00B14F; }
+    .nshmi-text { color: #00B14F; }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center bg-slate-900">
 
+  <div class="w-full max-w-[440px] min-h-screen bg-white flex flex-col relative shadow-2xl overflow-hidden">
+
+    <!-- 1. شاشة تسجيل الدخول -->
+    <div id="screen-login" class="flex-1 flex flex-col justify-center p-6 bg-gradient-to-b from-emerald-50 to-white">
+      <div class="text-center mb-7">
+        <div class="w-20 h-20 nshmi-green rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-lg mb-3">🛵</div>
+        <h1 class="text-3xl font-extrabold text-slate-800">Nshmi<span class="nshmi-text">Bike</span> 🇯🇴</h1>
+        <p class="text-xs text-slate-500 font-semibold mt-1">توصيل أسرع وأوفر من السيارة بأكثر من 50%</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-3xl shadow-md border border-slate-100 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">الاسم الكامل</label>
+          <input id="login-name" type="text" placeholder="مثال: محمد العبدالله" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#00B14F]">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف الأردني</label>
+          <input id="login-phone" type="tel" placeholder="079xxxxxxx" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-left focus:outline-none focus:border-[#00B14F]" dir="ltr">
+        </div>
+
+        <div id="captain-extra" class="hidden space-y-3 pt-2 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">نوع وموديل الدراجة / السكوتر</label>
+            <input id="cap-bike-model" type="text" placeholder="مثال: سكوتر SYM أبيض" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">رقم اللوحة</label>
+            <input id="cap-plate" type="text" placeholder="مثال: 15-4821" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2">اختر وضع الاستخدام:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="selectRole('RIDER')" id="role-rider-btn" class="border-2 border-[#00B14F] bg-emerald-50 text-slate-800 py-2.5 rounded-xl font-extrabold text-xs">🙋‍♂️ أنا راكب</button>
+            <button type="button" onclick="selectRole('CAPTAIN')" id="role-cap-btn" class="border border-slate-200 bg-white text-slate-600 py-2.5 rounded-xl font-extrabold text-xs">🛵 أنا كابتن</button>
+          </div>
+        </div>
+
+        <button onclick="loginUser()" id="btn-login" class="w-full nshmi-green text-white font-extrabold py-3.5 rounded-2xl shadow-lg text-sm">
+          دخول إلى NshmiBike
+        </button>
+        <p id="login-error" class="text-xs text-red-600 font-bold text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- 2. شاشة الراكب -->
+    <div id="screen-rider" class="hidden flex-1 flex flex-col h-screen">
+      <header class="p-3 bg-white shadow-sm flex justify-between items-center z-20">
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-slate-800 text-sm">Nshmi<span class="nshmi-text">Bike</span></span>
+          <span id="rider-greeting" class="text-[11px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full"></span>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="triggerSOS()" class="bg-red-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">🆘 SOS</button>
+          <button onclick="logout()" class="bg-slate-100 text-slate-600 text-[11px] font-bold px-2.5 py-1 rounded-full">خروج</button>
+        </div>
+      </header>
+
+      <div class="relative flex-1 bg-slate-200">
+        <div id="map"></div>
+        <button onclick="useMyGPS()" class="absolute top-3 right-3 z-10 bg-white px-3 py-1.5 rounded-xl shadow text-xs font-bold text-slate-700">
+          📍 موقعي الحالي
+        </button>
+        <div class="absolute bottom-2 left-2 z-10 bg-white/90 px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-700 shadow">
+          اضغط على الخريطة لتحديد وجهتك بدقة
+        </div>
+      </div>
+
+      <!-- لوحة حجز الراكب -->
+      <div id="rider-panel-book" class="bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(0,0,0,0.1)] p-4 z-20">
+        <div class="bg-slate-50 rounded-2xl p-2.5 border border-slate-100 space-y-2 mb-2.5">
+          <select id="pickup-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+            <option value="31.9648,35.9080">🟢 الانطلاق: العبدلي (البوليفارد)</option>
+            <option value="32.0160,35.8695">🟢 الانطلاق: الجامعة الأردنية</option>
+            <option value="31.9531,35.8594">🟢 الانطلاق: الدوار السابع</option>
+            <option value="31.9516,35.9393">🟢 الانطلاق: وسط البلد</option>
+            <option value="gps" hidden>🟢 موقعي الحالي (GPS)</option>
+          </select>
+          <hr class="border-slate-200">
+          <select id="dropoff-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
+            <option value="31.9531,35.8594">📍 الوجهة: الدوار السابع</option>
+            <option value="31.9566,35.8511">📍 الوجهة: الصويفية / شارع الوكالات</option>
+            <option value="32.0160,35.8695">📍 الوجهة: الجامعة الأردنية</option>
+            <option value="31.9648,35.9080">📍 الوجهة: العبدلي</option>
+            <option value="custom" hidden>📍 الوجهة المحددة على الخريطة</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mb-2">
+          <button onclick="selectTier('SCOOTER')" id="tier-SCOOTER" class="tier-btn border-2 border-[#00B14F] bg-emerald-50 rounded-xl p-2 text-center">
+            <div class="text-lg">🛵</div>
+            <div class="text-[11px] font-extrabold">نشمي سكوتر</div>
+            <div id="price-SCOOTER" class="text-xs font-extrabold nshmi-text">0.60 د.أ</div>
+          </button>
+          <button onclick="selectTier('BIKE')" id="tier-BIKE" class="tier-btn border border-slate-200 bg-white rounded-xl p-2 text-center">
+            <div class="text-lg">🏍️</div>
+            <div class="text-[11px] font-extrabold">نشمي بايك</div>
+            <div id="price-BIKE" class="text-xs font-extrabold text-slate-700">0.75 د.أ</div>
+          </button>
+          <button onclick="selectTier('EXPRESS')" id="tier-EXPRESS" class="tier-btn border border-slate-200 bg-white rounded-xl p-2 text-center">
+            <div class="text-lg">📦</div>
+            <div class="text-[11px] font-extrabold">طرود سريعة</div>
+            <div id="price-EXPRESS" class="text-xs font-extrabold text-slate-700">0.70 د.أ</div>
+          </button>
+        </div>
+
+        <div id="car-savings-badge" class="bg-emerald-50 text-emerald-800 text-[11px] font-bold text-center py-1 rounded-lg mb-2">
+          💰 توفر أكثر من 50% مقارنة بتطبيقات السيارات!
+        </div>
+
+        <div class="flex items-center justify-between text-xs mb-3">
+          <label class="flex items-center gap-1.5 font-bold text-slate-700">
+            <input id="extra-helmet" type="checkbox" checked class="accent-[#00B14F] w-4 h-4">
+            <span>🪖 خوذة معقمة + كاب رأس</span>
+          </label>
+          <select id="payment-method" class="bg-slate-100 px-2 py-1 rounded-lg font-bold text-slate-700">
+            <option value="كاش">💵 كاش</option>
+            <option value="زين كاش">📱 زين كاش</option>
+            <option value="CliQ">🏦 CliQ</option>
+          </select>
+        </div>
+
+        <button onclick="requestRide()" class="w-full nshmi-green text-white font-extrabold py-3 rounded-2xl shadow-lg text-sm">
+          اطلب NshmiBike الآن
+        </button>
+      </div>
+
+      <!-- لوحة انتظار / تتبع الرحلة الحية -->
+      <div id="rider-panel-active" class="hidden bg-white rounded-t-3xl shadow-2xl p-4 z-20 space-y-3">
+        <div class="flex justify-between items-center">
+          <span id="rider-ride-status" class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full">
+            جاري البحث عن كابتن قريب...
+          </span>
+          <span id="rider-ride-fare" class="font-extrabold text-slate-800 text-sm"></span>
+        </div>
+
+        <div id="captain-info-box" class="hidden bg-slate-50 p-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+          <div>
+            <div id="cap-info-name" class="font-extrabold text-sm text-slate-800"></div>
+            <div id="cap-info-bike" class="text-xs text-slate-500"></div>
+            <div class="text-[11px] text-emerald-700 font-bold">✓ الخوذة الإضافية جاهزة</div>
+          </div>
+          <div class="flex gap-1.5">
+            <button onclick="shareRide()" class="bg-white border border-slate-200 px-2.5 py-1.5 rounded-xl text-xs font-bold">🔗 مشاركة</button>
+            <a id="cap-call-link" href="#" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold">📞 اتصال</a>
+          </div>
+        </div>
+
+        <!-- محادثة حية -->
+        <div id="rider-chat-box" class="hidden border border-slate-100 rounded-2xl p-2 bg-slate-50">
+          <div id="rider-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
+          <div class="flex gap-1">
+            <input id="rider-chat-input" type="text" placeholder="راسل الكابتن..." class="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs">
+            <button onclick="sendChat('RIDER')" class="nshmi-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button>
+          </div>
+        </div>
+
+        <button onclick="cancelRideRider()" class="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl text-xs">إلغاء الطلب</button>
+      </div>
+
+      <!-- لوحة التقييم بعد الوصول -->
+      <div id="rider-panel-rating" class="hidden bg-white rounded-t-3xl shadow-2xl p-5 z-20 text-center space-y-3">
+        <div class="text-3xl">🎉</div>
+        <h3 class="font-extrabold text-slate-800 text-base">الحمد لله على السلامة!</h3>
+        <p id="rating-summary" class="text-xs text-slate-500 font-semibold"></p>
+        <div class="flex justify-center gap-2 text-2xl">
+          <button onclick="rateRide(1)">⭐</button>
+          <button onclick="rateRide(2)">⭐</button>
+          <button onclick="rateRide(3)">⭐</button>
+          <button onclick="rateRide(4)">⭐</button>
+          <button onclick="rateRide(5)">⭐</button>
+        </div>
+        <button onclick="rateRide(5)" class="w-full nshmi-green text-white font-extrabold py-3 rounded-2xl text-sm">حجز رحلة جديدة</button>
+      </div>
+    </div>
+
+    <!-- 3. شاشة الكابتن -->
+    <div id="screen-captain" class="hidden flex-1 flex flex-col bg-slate-50 h-screen">
+      <header class="p-4 bg-white shadow-sm flex justify-between items-center">
+        <div>
+          <h2 class="font-extrabold text-slate-800 text-sm">لوحة الكابتن 🛵</h2>
+          <p id="cap-header-info" class="text-[11px] text-slate-500 font-semibold"></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="cap-earnings-badge" class="bg-emerald-50 text-emerald-700 text-xs font-extrabold px-2.5 py-1 rounded-full">0.00 د.أ</span>
+          <button onclick="logout()" class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">خروج</button>
+        </div>
+      </header>
+
+      <div class="p-4 space-y-4 flex-1 overflow-y-auto">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+          <label class="flex items-center gap-2.5 cursor-pointer">
+            <input id="cap-helmet-check" type="checkbox" onchange="toggleCaptainOnline()" class="accent-[#00B14F] w-5 h-5">
+            <div>
+              <div class="text-xs font-extrabold text-slate-800">أؤكد جاهزية الخوذة الإضافية المعقمة</div>
+              <div class="text-[11px] text-slate-500">فعّل هذا الخيار لتبدأ استقبال طلبات الركاب فوراً</div>
+            </div>
+          </label>
+        </div>
+
+        <div id="cap-requests-section">
+          <h3 class="font-extrabold text-slate-700 text-xs mb-2">الطلبات المتاحة الآن (تحديث مباشر):</h3>
+          <div id="cap-requests-list" class="space-y-3">
+            <div class="text-center text-xs text-slate-400 py-8 bg-white rounded-2xl border border-dashed border-slate-200">
+              فعّل خيار الخوذة بالأعلى لاستقبال الطلبات...
+            </div>
+          </div>
+        </div>
+
+        <div id="cap-active-ride" class="hidden bg-white p-4 rounded-2xl shadow-md border-2 border-[#00B14F] space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full">رحلة نشطة</span>
+            <span id="cap-active-fare" class="font-extrabold text-base nshmi-text"></span>
+          </div>
+          <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-3 rounded-xl"></div>
+
+          <div class="border border-slate-100 rounded-xl p-2 bg-slate-50">
+            <div id="cap-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
+            <div class="flex gap-1">
+              <input id="cap-chat-input" type="text" placeholder="راسل الراكب..." class="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs">
+              <button onclick="sendChat('CAPTAIN')" class="nshmi-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="updateRideStatus('ARRIVED')" class="bg-amber-500 text-white py-2.5 rounded-xl text-xs font-bold">وصلت للراكب</button>
+            <button onclick="updateRideStatus('ON_TRIP')" class="bg-blue-600 text-white py-2.5 rounded-xl text-xs font-bold">بدء الرحلة</button>
+            <button onclick="updateRideStatus('COMPLETED')" class="nshmi-green text-white py-2.5 rounded-xl text-xs font-bold">إنهاء ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, doc, setDoc, updateDoc,
+      onSnapshot, query, where, runTransaction, serverTimestamp, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // مفاتيح مشروعك NshmiBike مدمجة وجاهزة
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU",
+      authDomain: "nshmibike.firebaseapp.com",
+      databaseURL: "https://nshmibike-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "nshmibike",
+      storageBucket: "nshmibike.firebasestorage.app",
+      messagingSenderId: "506031565051",
+      appId: "1:506031565051:web:fc915e5a2173e841c7a85e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let selectedRole = 'RIDER';
+    let selectedTier = 'SCOOTER';
+    let map, pickupMarker, dropoffMarker, routeLine, capMarker;
+    let customDropoff = null;
+    let gpsPickup = null;
+    let currentDistKm = 4.2;
+    let fares = { SCOOTER: 0.90, BIKE: 1.05, EXPRESS: 0.95 };
+    let activeRideId = null;
+    let lastCompletedRideId = null;
+    let capTotalEarnings = 0;
+    let unsubRide = null;
+    let unsubChat = null;
+    let unsubCaptainOffers = null;
+    let gpsWatchId = null;
+
+    const bikeIcon = L.divIcon({
+      html: '<div style="font-size:26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">🛵</div>',
+      className: '', iconSize: [30, 30], iconAnchor: [15, 15]
+    });
+
+    window.selectRole = (role) => {
+      selectedRole = role;
+      document.getElementById('captain-extra').classList.toggle('hidden', role !== 'CAPTAIN');
+      document.getElementById('role-rider-btn').className = role === 'RIDER'
+        ? 'border-2 border-[#00B14F] bg-emerald-50 text-slate-800 py-2.5 rounded-xl font-extrabold text-xs'
+        : 'border border-slate-200 bg-white text-slate-600 py-2.5 rounded-xl font-extrabold text-xs';
+      document.getElementById('role-cap-btn').className = role === 'CAPTAIN'
+        ? 'border-2 border-[#00B14F] bg-emerald-50 text-slate-800 py-2.5 rounded-xl font-extrabold text-xs'
+        : 'border border-slate-200 bg-white text-slate-600 py-2.5 rounded-xl font-extrabold text-xs';
+    };
+
+    window.loginUser = async () => {
+      const name = document.getElementById('login-name').value.trim();
+      const phone = document.getElementById('login-phone').value.trim();
+      const errEl = document.getElementById('login-error');
+      errEl.classList.add('hidden');
+
+      if (!name || phone.length < 9) {
+        errEl.innerText = 'يرجى إدخال الاسم ورقم هاتف أردني صحيح';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const btn = document.getElementById('btn-login');
+      btn.innerText = 'جاري الدخول...';
+      btn.disabled = true;
+
+      try {
+        try { await signInAnonymously(auth); } catch (e) { console.warn('Auth skipped:', e.message); }
+
+        currentUser = {
+          id: phone,
+          name,
+          phone,
+          role: selectedRole,
+          bikeModel: document.getElementById('cap-bike-model').value || 'سكوتر نشمي',
+          plate: document.getElementById('cap-plate').value || '15-2026'
+        };
+
+        await setDoc(doc(db, 'users', phone), {
+          ...currentUser,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        document.getElementById('screen-login').classList.add('hidden');
+        if (selectedRole === 'RIDER') {
+          document.getElementById('screen-rider').classList.remove('hidden');
+          document.getElementById('rider-greeting').innerText = `أهلاً ${name}`;
+          initMap();
+        } else {
+          document.getElementById('screen-captain').classList.remove('hidden');
+          document.getElementById('cap-header-info').innerText = `${name} • ${currentUser.bikeModel} (${currentUser.plate})`;
+        }
+      } catch (err) {
+        errEl.innerText = 'خطأ في الاتصال: ' + err.message;
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.innerText = 'دخول إلى NshmiBike';
+        btn.disabled = false;
+      }
+    };
+
+    window.logout = () => location.reload();
+
+    function initMap() {
+      if (map) { map.invalidateSize(); return; }
+      map = L.map('map', { zoomControl: false }).setView([31.9648, 35.9080], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      map.on('click', (e) => {
+        if (!document.getElementById('rider-panel-book').classList.contains('hidden')) {
+          customDropoff = [e.latlng.lat, e.latlng.lng];
+          document.getElementById('dropoff-select').value = 'custom';
+          updateRoute();
+        }
+      });
+      setTimeout(() => { map.invalidateSize(); updateRoute(); }, 300);
+    }
+
+    window.useMyGPS = () => {
+      if (!navigator.geolocation) return alert('جهازك لا يدعم تحديد الموقع');
+      navigator.geolocation.getCurrentPosition((pos) => {
+        gpsPickup = [pos.coords.latitude, pos.coords.longitude];
+        document.getElementById('pickup-select').value = 'gps';
+        updateRoute();
+      }, () => alert('يرجى السماح بصلاحية الموقع GPS في المتصفح'));
+    };
+
+    function parseCoords(val) {
+      if (val === 'gps' && gpsPickup) return gpsPickup;
+      if (val === 'custom' && customDropoff) return customDropoff;
+      return val.split(',').map(Number);
+    }
+
+    function haversine(c1, c2) {
+      const R = 6371;
+      const dLat = (c2[0] - c1[0]) * Math.PI / 180;
+      const dLon = (c2[1] - c1[1]) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(c1[0]*Math.PI/180)*Math.cos(c2[0]*Math.PI/180)*Math.sin(dLon/2)**2;
+      return Math.max(1.0, R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 1.28);
+    }
+
+    window.updateRoute = () => {
+      if (!map) return;
+      const pCoords = parseCoords(document.getElementById('pickup-select').value);
+      const dCoords = parseCoords(document.getElementById('dropoff-select').value);
+
+      if (pickupMarker) map.removeLayer(pickupMarker);
+      if (dropoffMarker) map.removeLayer(dropoffMarker);
+      if (routeLine) map.removeLayer(routeLine);
+
+      pickupMarker = L.circleMarker(pCoords, { radius: 8, color: '#00B14F', fillOpacity: 1 }).addTo(map);
+      dropoffMarker = L.circleMarker(dCoords, { radius: 8, color: '#ef4444', fillOpacity: 1 }).addTo(map);
+      routeLine = L.polyline([pCoords, dCoords], { color: '#00B14F', weight: 4, dashArray: '8, 8' }).addTo(map);
+      map.fitBounds([pCoords, dCoords], { padding: [45, 45] });
+
+      currentDistKm = haversine(pCoords, dCoords);
+      fares.SCOOTER = Math.max(0.60, +(0.25 + currentDistKm * 0.15).toFixed(2));
+      fares.BIKE = Math.max(0.75, +(0.30 + currentDistKm * 0.18).toFixed(2));
+      fares.EXPRESS = Math.max(0.70, +(0.25 + currentDistKm * 0.16).toFixed(2));
+
+      document.getElementById('price-SCOOTER').innerText = fares.SCOOTER.toFixed(2) + ' د.أ';
+      document.getElementById('price-BIKE').innerText = fares.BIKE.toFixed(2) + ' د.أ';
+      document.getElementById('price-EXPRESS').innerText = fares.EXPRESS.toFixed(2) + ' د.أ';
+
+      const estCarFare = Math.max(1.50, +(0.47 + currentDistKm * 0.34 + 0.30).toFixed(2));
+      const saved = Math.max(0.50, +(estCarFare - fares[selectedTier]).toFixed(2));
+      document.getElementById('car-savings-badge').innerText =
+        `المسافة ${currentDistKm.toFixed(1)} كم • توفر ~${saved.toFixed(2)} د.أ مقارنة بالسيارة!`;
+    };
+
+    window.selectTier = (tier) => {
+      selectedTier = tier;
+      document.querySelectorAll('.tier-btn').forEach(b => {
+        b.classList.remove('border-2', 'border-[#00B14F]', 'bg-emerald-50');
+        b.classList.add('border', 'border-slate-200', 'bg-white');
+      });
+      const el = document.getElementById('tier-' + tier);
+      el.classList.remove('border', 'border-slate-200', 'bg-white');
+      el.classList.add('border-2', 'border-[#00B14F]', 'bg-emerald-50');
+      updateRoute();
+    };
+
+    window.requestRide = async () => {
+      const pSel = document.getElementById('pickup-select');
+      const dSel = document.getElementById('dropoff-select');
+      const pCoords = parseCoords(pSel.value);
+      const dCoords = parseCoords(dSel.value);
+
+      const rideDoc = await addDoc(collection(db, 'rides'), {
+        riderId: currentUser.id,
+        riderName: currentUser.name,
+        riderPhone: currentUser.phone,
+        tier: selectedTier,
+        fareJod: fares[selectedTier],
+        distanceKm: Number(currentDistKm.toFixed(1)),
+        pickupAddress: pSel.options[pSel.selectedIndex].text,
+        dropoffAddress: dSel.options[dSel.selectedIndex].text,
+        pickupLat: pCoords[0], pickupLng: pCoords[1],
+        dropoffLat: dCoords[0], dropoffLng: dCoords[1],
+        paymentMethod: document.getElementById('payment-method').value,
+        extraHelmet: document.getElementById('extra-helmet').checked,
+        status: 'SEARCHING',
+        createdAt: serverTimestamp()
+      });
+
+      activeRideId = rideDoc.id;
+      document.getElementById('rider-panel-book').classList.add('hidden');
+      document.getElementById('rider-panel-active').classList.remove('hidden');
+      document.getElementById('rider-ride-fare').innerText = fares[selectedTier].toFixed(2) + ' د.أ';
+
+      unsubRide = onSnapshot(doc(db, 'rides', activeRideId), (snap) => {
+        const data = snap.data();
+        if (!data) return;
+        const badge = document.getElementById('rider-ride-status');
+
+        if (data.captainLat && data.captainLng && map) {
+          if (capMarker) capMarker.setLatLng([data.captainLat, data.captainLng]);
+          else capMarker = L.marker([data.captainLat, data.captainLng], { icon: bikeIcon }).addTo(map);
+        }
+
+        if (data.status === 'SEARCHING') {
+          badge.innerText = 'جاري البحث عن كابتن قريب... 🛵';
+        } else if (data.status === 'ACCEPTED') {
+          badge.innerText = 'الكابتن في طريقه إليك!';
+          badge.className = 'bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full';
+          showCaptainInfo(data);
+        } else if (data.status === 'ARRIVED') {
+          badge.innerText = 'الكابتن وصل لموقعك 📍';
+        } else if (data.status === 'ON_TRIP') {
+          badge.innerText = 'الرحلة جارية نحو وجهتك 💨';
+        } else if (data.status === 'COMPLETED') {
+          lastCompletedRideId = activeRideId;
+          if (unsubRide) unsubRide();
+          if (unsubChat) unsubChat();
+          if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
+          activeRideId = null;
+          document.getElementById('rider-panel-active').classList.add('hidden');
+          document.getElementById('rider-panel-rating').classList.remove('hidden');
+          document.getElementById('rating-summary').innerText =
+            `الأجرة: ${Number(data.fareJod).toFixed(2)} د.أ (${data.paymentMethod}) • قيّم الكابتن ${data.captainName}`;
+        } else if (data.status === 'CANCELLED') {
+          resetRiderUI();
+        }
+      });
+      listenChat(activeRideId, 'rider-messages');
+    };
+
+    function showCaptainInfo(data) {
+      document.getElementById('captain-info-box').classList.remove('hidden');
+      document.getElementById('rider-chat-box').classList.remove('hidden');
+      document.getElementById('cap-info-name').innerText = `الكابتن ${data.captainName}`;
+      document.getElementById('cap-info-bike').innerText = `${data.bikeModel} • لوحة ${data.plate}`;
+      document.getElementById('cap-call-link').href = `tel:${data.captainPhone}`;
+    }
+
+    window.rateRide = async (stars) => {
+      if (lastCompletedRideId) {
+        await updateDoc(doc(db, 'rides', lastCompletedRideId), { rating: stars });
+      }
+      lastCompletedRideId = null;
+      resetRiderUI();
+    };
+
+    window.shareRide = async () => {
+      const shareText = `أنا الآن في رحلة مع NshmiBike 🛵\nرقم الرحلة: ${activeRideId}`;
+      if (navigator.share) {
+        try { await navigator.share({ title: 'تتبع رحلتي NshmiBike', text: shareText }); } catch (e) {}
+      } else {
+        alert(shareText);
+      }
+    };
+
+    window.cancelRideRider = async () => {
+      if (activeRideId) {
+        await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED' });
+      }
+      resetRiderUI();
+    };
+
+    function resetRiderUI() {
+      if (unsubRide) unsubRide();
+      if (unsubChat) unsubChat();
+      if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
+      activeRideId = null;
+      document.getElementById('captain-info-box').classList.add('hidden');
+      document.getElementById('rider-chat-box').classList.add('hidden');
+      document.getElementById('rider-panel-active').classList.add('hidden');
+      document.getElementById('rider-panel-rating').classList.add('hidden');
+      document.getElementById('rider-panel-book').classList.remove('hidden');
+    }
+
+    window.triggerSOS = async () => {
+      await addDoc(collection(db, 'sos_alerts'), {
+        userId: currentUser?.id || 'guest',
+        rideId: activeRideId || null,
+        createdAt: serverTimestamp()
+      });
+      if (confirm('🚨 تم إرسال تنبيه الطوارئ لمركز NshmiBike.\nهل تريد الاتصال بـ 911 الآن؟')) {
+        window.location.href = 'tel:911';
+      }
+    };
+
+    // =====================================================
+    // منطق الكابتن
+    // =====================================================
+    window.toggleCaptainOnline = () => {
+      const isOnline = document.getElementById('cap-helmet-check').checked;
+      const listEl = document.getElementById('cap-requests-list');
+      if (!isOnline) {
+        if (unsubCaptainOffers) unsubCaptainOffers();
+        listEl.innerHTML = '<div class="text-center text-xs text-slate-400 py-8 bg-white rounded-2xl">فعّل خيار الخوذة بالأعلى لاستقبال الطلبات...</div>';
+        return;
+      }
+
+      const q = query(collection(db, 'rides'), where('status', '==', 'SEARCHING'));
+      unsubCaptainOffers = onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          listEl.innerHTML = '<div class="text-center text-xs text-slate-500 py-8 bg-white rounded-2xl">بانتظار طلبات الركاب في منطقتك... 🛵</div>';
+          return;
+        }
+        listEl.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+          const r = docSnap.data();
+          const card = document.createElement('div');
+          card.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2';
+          card.innerHTML = `
+            <div class="flex justify-between items-center">
+              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">${r.tier} • ${r.distanceKm} كم</span>
+              <span class="font-extrabold text-base nshmi-text">${Number(r.fareJod || 0).toFixed(2)} د.أ</span>
+            </div>
+            <div class="text-xs text-slate-700 font-semibold">${r.pickupAddress}</div>
+            <div class="text-xs text-slate-700 font-semibold">${r.dropoffAddress}</div>
+            <div class="text-[11px] text-slate-500">الراكب: ${r.riderName} • الدفع: ${r.paymentMethod}</div>
+            <button onclick="acceptRide('${docSnap.id}')" class="w-full nshmi-green text-white font-extrabold py-2.5 rounded-xl text-xs">قبول الرحلة الآن</button>
+          `;
+          listEl.appendChild(card);
+        });
+      });
+    };
+
+    window.acceptRide = async (rideId) => {
+      const rideRef = doc(db, 'rides', rideId);
+      try {
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(rideRef);
+          if (!snap.exists() || snap.data().status !== 'SEARCHING') {
+            throw new Error('تم أخذ الطلب من كابتن آخر');
+          }
+          tx.update(rideRef, {
+            status: 'ACCEPTED',
+            captainId: currentUser.id,
+            captainName: currentUser.name,
+            captainPhone: currentUser.phone,
+            bikeModel: currentUser.bikeModel,
+            plate: currentUser.plate,
+            captainLat: snap.data().pickupLat,
+            captainLng: snap.data().pickupLng
+          });
+        });
+
+        activeRideId = rideId;
+        document.getElementById('cap-requests-section').classList.add('hidden');
+        document.getElementById('cap-active-ride').classList.remove('hidden');
+
+        if (navigator.geolocation) {
+          gpsWatchId = navigator.geolocation.watchPosition((pos) => {
+            if (activeRideId) {
+              updateDoc(doc(db, 'rides', activeRideId), {
+                captainLat: pos.coords.latitude,
+                captainLng: pos.coords.longitude
+              }).catch(() => {});
+            }
+          });
+        }
+
+        unsubRide = onSnapshot(rideRef, (snap) => {
+          const d = snap.data();
+          if (!d) return;
+          document.getElementById('cap-active-fare').innerText = `${Number(d.fareJod).toFixed(2)} د.أ (${d.paymentMethod})`;
+          document.getElementById('cap-active-details').innerHTML = `
+            <div><strong>الراكب:</strong> ${d.riderName} (<a href="tel:${d.riderPhone}" class="text-emerald-700 underline">${d.riderPhone}</a>)</div>
+            <div>${d.pickupAddress}</div>
+            <div>${d.dropoffAddress}</div>
+          `;
+          if (d.status === 'COMPLETED' || d.status === 'CANCELLED') {
+            if (d.status === 'COMPLETED') {
+              capTotalEarnings += Number(d.fareJod || 0);
+              document.getElementById('cap-earnings-badge').innerText = capTotalEarnings.toFixed(2) + ' د.أ';
+              alert('تم إنهاء الرحلة بنجاح! 🎉');
+            } else {
+              alert('تم إلغاء الرحلة');
+            }
+            if (unsubRide) unsubRide();
+            if (unsubChat) unsubChat();
+            if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
+            activeRideId = null;
+            document.getElementById('cap-active-ride').classList.add('hidden');
+            document.getElementById('cap-requests-section').classList.remove('hidden');
+          }
+        });
+        listenChat(rideId, 'cap-messages');
+      } catch (e) {
+        alert(e.message);
+      }
+    };
+
+    window.updateRideStatus = async (status) => {
+      if (!activeRideId) return;
+      await updateDoc(doc(db, 'rides', activeRideId), { status });
+    };
+
+    function listenChat(rideId, containerId) {
+      if (unsubChat) unsubChat();
+      const q = query(collection(db, 'rides', rideId, 'messages'), orderBy('createdAt', 'asc'));
+      unsubChat = onSnapshot(q, (snap) => {
+        const box = document.getElementById(containerId);
+        box.innerHTML = '';
+        snap.forEach((m) => {
+          const d = m.data();
+          const div = document.createElement('div');
+          div.className = 'bg-white px-2 py-1 rounded-lg border border-slate-100';
+          const sender = document.createElement('span');
+          sender.className = 'font-bold text-emerald-700';
+          sender.textContent = d.senderName + ': ';
+          const txt = document.createElement('span');
+          txt.textContent = d.text;
+          div.appendChild(sender);
+          div.appendChild(txt);
+          box.appendChild(div);
+        });
+        box.scrollTop = box.scrollHeight;
+      });
+    }
+
+    window.sendChat = async (role) => {
+      if (!activeRideId) return;
+      const inputId = role === 'RIDER' ? 'rider-chat-input' : 'cap-chat-input';
+      const text = document.getElementById(inputId).value.trim();
+      if (!text) return;
+      document.getElementById(inputId).value = '';
+      await addDoc(collection(db, 'rides', activeRideId, 'messages'), {
+        senderName: currentUser.name,
+        role,
+        text,
+        createdAt: serverTimestamp()
+      });
+    };
+  </script>
+</body>
+</html>
