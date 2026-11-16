@@ -100,7 +100,7 @@
         </div>
       </header>
 
-      <!-- الخريطة النظيفة -->
+      <!-- الخريطة بنمط Google Maps -->
       <div class="relative flex-1 bg-slate-100">
         <div id="map"></div>
         <div class="absolute top-3 left-3 right-3 z-10 flex justify-between items-center pointer-events-none">
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <!-- الخطوة أ: اختيار الوجهة (بسيطة مثل Google Maps) -->
+      <!-- الخطوة أ: اختيار الوجهة -->
       <div id="rider-panel-dest" class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] px-4 pt-3 safe-bottom z-20 shrink-0 space-y-2.5">
         <div id="debt-notice" class="hidden bg-red-50 text-[#CE1126] text-[10px] font-extrabold text-center py-1 rounded-lg"></div>
         <div class="flex items-center gap-2 text-xs font-bold text-slate-600 bg-blue-50/70 px-3 py-2 rounded-xl">
@@ -128,17 +128,15 @@
           <button onclick="searchPlace()" class="jo-green text-white px-4 rounded-2xl text-xs font-extrabold">بحث</button>
         </div>
 
-        <!-- نتائج البحث إن وجدت -->
         <div id="search-results" class="hidden max-h-32 overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-2xl border border-slate-100"></div>
 
-        <!-- خيارات سريعة من نفس المدينة فقط -->
         <div>
           <div id="quick-city-title" class="text-[11px] font-extrabold text-slate-500 mb-1.5">أو اختر وجهة قريبة في مدينتك:</div>
           <div id="quick-places" class="flex gap-1.5 overflow-x-auto pb-1"></div>
         </div>
       </div>
 
-      <!-- الخطوة ب: تأكيد السعر وطلب الدراجة -->
+      <!-- الخطوة ب: تأكيد السعر والطلب -->
       <div id="rider-panel-book" class="hidden bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-4 pt-3 safe-bottom z-20 shrink-0">
         <div class="flex items-center justify-between mb-2">
           <div class="text-xs font-extrabold text-slate-800 truncate flex-1">📍 إلى: <span id="chosen-dest-label" class="jo-text"></span></div>
@@ -260,7 +258,7 @@
 
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.2.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.3.0 🇯🇴</div>
         </div>
       </aside>
 
@@ -298,7 +296,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // المدن الثلاث المعتمدة فقط وخياراتها السريعة
     const CITIES = {
       amman: {
         nameAr: 'عمّان', nameEn: 'Amman', center: [31.9539, 35.9106],
@@ -613,11 +610,14 @@
       if (map) map.setView(CITIES[cityKey].center, 14);
     };
 
-    // تهيئة الخريطة البسيطة بدون شعار Leaflet وتحديد GPS تلقائياً
+    // خريطة Google Maps النظيفة والواضحة بدون أي شعارات إضافية
     function initMap() {
       if (map) { map.invalidateSize(); return; }
       map = L.map('map', { zoomControl: false, attributionControl: false }).setView(CITIES.amman.center, 15);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+      L.tileLayer('https://{s}.google.com/vt/lyrs=m&hl=ar&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+      }).addTo(map);
 
       map.on('click', (e) => {
         if (!document.getElementById('rider-panel-dest').classList.contains('hidden') ||
