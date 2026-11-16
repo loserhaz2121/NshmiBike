@@ -1,0 +1,59 @@
+name: Build NshmiCaptain APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'captain.html'
+      - '.github/workflows/build-captain-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build-captain-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Prepare Captain App and Plugins
+        run: |
+          mkdir -p www
+          cp -f captain.html www/index.html
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.nshmibike.captain",
+            "appName": "NshmiCaptain",
+            "webDir": "www",
+            "server": {
+              "androidScheme": "https"
+            }
+          }
+          EOF
+          npx cap add android
+          sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />|' android/app/src/main/AndroidManifest.xml
+          npx cap sync android
+
+      - name: Build Captain APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload Captain APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NshmiCaptain-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
