@@ -20,6 +20,10 @@
       height: 6px;
       background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #ffffff 8px, #ffffff 16px);
     }
+    .gps-dot {
+      width: 16px; height: 16px; background: #2563eb; border: 3px solid #fff;
+      border-radius: 50%; box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.25);
+    }
   </style>
 </head>
 <body class="min-h-screen flex justify-center bg-slate-900">
@@ -31,7 +35,7 @@
 
   <div class="w-full max-w-[440px] h-screen bg-white flex flex-col relative shadow-2xl overflow-hidden">
 
-    <!-- 1. شاشة تسجيل الدخول بالإيميل + تذكرني -->
+    <!-- 1. شاشة تسجيل الدخول -->
     <div id="screen-login" class="flex-1 flex flex-col justify-center p-5 bg-gradient-to-b from-emerald-50 via-white to-red-50/40 relative overflow-y-auto safe-bottom">
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
       <div class="flex justify-end mb-2">
@@ -42,7 +46,7 @@
       <div class="text-center mb-4">
         <div class="w-16 h-16 jo-green rounded-3xl mx-auto flex items-center justify-center text-3xl shadow-lg mb-2 border-2 border-[#CE1126]">🛵</div>
         <h1 class="text-2xl font-extrabold text-slate-900">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
-        <p data-i18n="tagline" class="text-[11px] text-slate-600 font-semibold mt-0.5">تطبيق النشامى • أوفر من السيارة بأكثر من 50%</p>
+        <p data-i18n="tagline" class="text-[11px] text-slate-600 font-semibold mt-0.5">عمّان • إربد • الزرقاء | أوفر من السيارة بـ 50%</p>
       </div>
 
       <div class="bg-white p-4 rounded-3xl shadow-lg border border-slate-100 space-y-2.5">
@@ -64,15 +68,13 @@
             <input id="login-phone" type="tel" placeholder="079xxxxxxx" class="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-left" dir="ltr">
           </div>
         </div>
-
         <div class="flex items-center justify-between text-xs pt-1">
           <label class="flex items-center gap-1.5 font-bold text-slate-700 cursor-pointer">
             <input id="remember-me" type="checkbox" checked class="accent-[#007A3D] w-4 h-4">
             <span data-i18n="rememberMe">تذكرني عند الدخول</span>
           </label>
-          <button type="button" onclick="resetPassword()" data-i18n="forgotPass" class="text-[#CE1126] font-bold underline text-[11px]">نسيت كلمة المرور؟</button>
+          <button type="button" onclick="resetPassword()" class="text-[#CE1126] font-bold underline text-[11px]">نسيت كلمة المرور؟</button>
         </div>
-
         <button onclick="loginRider()" id="btn-login" data-i18n="loginBtn" class="w-full jo-green text-white font-extrabold py-3 rounded-2xl shadow-lg text-sm">
           دخول / تسجيل حساب جديد 🔔
         </button>
@@ -84,11 +86,11 @@
     <div id="screen-rider" class="hidden flex-1 flex flex-col h-full relative">
       <div class="shmagh-strip shrink-0"></div>
       <header class="p-3 bg-white shadow-sm flex justify-between items-center z-20 shrink-0">
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2">
           <button onclick="toggleDrawer(true)" class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-lg font-bold text-slate-800">☰</button>
           <div>
             <div class="font-extrabold text-slate-900 text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</div>
-            <div id="rider-greeting" class="text-[10px] jo-text font-bold"></div>
+            <div id="city-badge" class="text-[10px] jo-text font-extrabold">📍 جاري تحديد مدينتك...</div>
           </div>
         </div>
         <div class="flex gap-1.5">
@@ -98,40 +100,52 @@
         </div>
       </header>
 
-      <div class="relative flex-1 bg-slate-200">
+      <!-- الخريطة النظيفة -->
+      <div class="relative flex-1 bg-slate-100">
         <div id="map"></div>
-        <button onclick="useMyGPS()" data-i18n="myLoc" class="absolute top-3 right-3 z-10 bg-white px-3 py-1.5 rounded-xl shadow text-xs font-bold text-slate-700">📍 موقعي</button>
+        <div class="absolute top-3 left-3 right-3 z-10 flex justify-between items-center pointer-events-none">
+          <select id="city-filter" onchange="switchCity(this.value)" class="pointer-events-auto bg-white/95 backdrop-blur px-3 py-1.5 rounded-full shadow-md text-xs font-extrabold text-slate-800 border border-slate-100 focus:outline-none">
+            <option value="amman">🏙️ عمّان</option>
+            <option value="irbid">🏙️ إربد</option>
+            <option value="zarqa">🏙️ الزرقاء</option>
+          </select>
+          <button onclick="useMyGPS()" class="pointer-events-auto bg-white/95 backdrop-blur px-3 py-1.5 rounded-full shadow-md text-xs font-extrabold text-blue-600 border border-slate-100">
+            🎯 موقعي GPS
+          </button>
+        </div>
       </div>
 
-      <!-- لوحة الحجز مرفوعة عن شريط أزرار الهاتف -->
-      <div id="rider-panel-book" class="bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(0,0,0,0.14)] px-3.5 pt-3 safe-bottom z-20 shrink-0">
-        <div id="debt-notice" class="hidden bg-red-50 text-[#CE1126] text-[10px] font-extrabold text-center py-1 rounded-lg mb-1.5"></div>
-        <div class="bg-slate-50 rounded-2xl p-2 border border-slate-100 space-y-1 mb-2">
-          <select id="pickup-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
-            <option value="31.9648,35.9080">🟢 عمّان: العبدلي (البوليفارد)</option>
-            <option value="32.0160,35.8695">🟢 عمّان: الجامعة الأردنية</option>
-            <option value="31.9531,35.8594">🟢 عمّان: الدوار السابع</option>
-            <option value="31.9516,35.9393">🟢 عمّان: وسط البلد</option>
-            <option value="31.9566,35.8511">🟢 عمّان: الصويفية</option>
-            <option value="32.5568,35.8469">🟢 إربد: وسط المدينة</option>
-            <option value="32.0608,36.0942">🟢 الزرقاء: الوسط التجاري</option>
-            <option value="29.5321,35.0063">🟢 العقبة: وسط المدينة</option>
-            <option value="gps" hidden>🟢 GPS</option>
-          </select>
-          <hr class="border-slate-200">
-          <select id="dropoff-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
-            <option value="31.9531,35.8594">📍 عمّان: الدوار السابع</option>
-            <option value="31.9566,35.8511">📍 عمّان: الصويفية</option>
-            <option value="32.0160,35.8695">📍 عمّان: الجامعة الأردنية</option>
-            <option value="31.9648,35.9080">📍 عمّان: العبدلي</option>
-            <option value="31.9516,35.9393">📍 عمّان: وسط البلد</option>
-            <option value="32.5568,35.8469">📍 إربد: وسط المدينة</option>
-            <option value="32.0608,36.0942">📍 الزرقاء: الوسط التجاري</option>
-            <option value="custom" hidden>📍 موقع على الخريطة</option>
-          </select>
+      <!-- الخطوة أ: اختيار الوجهة (بسيطة مثل Google Maps) -->
+      <div id="rider-panel-dest" class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] px-4 pt-3 safe-bottom z-20 shrink-0 space-y-2.5">
+        <div id="debt-notice" class="hidden bg-red-50 text-[#CE1126] text-[10px] font-extrabold text-center py-1 rounded-lg"></div>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-600 bg-blue-50/70 px-3 py-2 rounded-xl">
+          <span class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block shrink-0"></span>
+          <span id="pickup-label" class="truncate">انطلاقك: جاري تحديد موقعك تلقائياً عبر GPS...</span>
         </div>
 
-        <div class="grid grid-cols-3 gap-1.5 mb-1.5">
+        <div class="flex gap-1.5">
+          <input id="dest-search" type="text" placeholder="🔍 إلى أين تريد الذهاب؟ (أو اضغط على الخريطة)" class="flex-1 bg-slate-100 rounded-2xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#007A3D]">
+          <button onclick="searchPlace()" class="jo-green text-white px-4 rounded-2xl text-xs font-extrabold">بحث</button>
+        </div>
+
+        <!-- نتائج البحث إن وجدت -->
+        <div id="search-results" class="hidden max-h-32 overflow-y-auto space-y-1 bg-slate-50 p-2 rounded-2xl border border-slate-100"></div>
+
+        <!-- خيارات سريعة من نفس المدينة فقط -->
+        <div>
+          <div id="quick-city-title" class="text-[11px] font-extrabold text-slate-500 mb-1.5">أو اختر وجهة قريبة في مدينتك:</div>
+          <div id="quick-places" class="flex gap-1.5 overflow-x-auto pb-1"></div>
+        </div>
+      </div>
+
+      <!-- الخطوة ب: تأكيد السعر وطلب الدراجة -->
+      <div id="rider-panel-book" class="hidden bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-4 pt-3 safe-bottom z-20 shrink-0">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs font-extrabold text-slate-800 truncate flex-1">📍 إلى: <span id="chosen-dest-label" class="jo-text"></span></div>
+          <button onclick="backToDestStep()" class="text-[11px] bg-slate-100 px-2.5 py-1 rounded-full font-bold text-slate-600">✏️ تغيير</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-1.5 mb-2">
           <button onclick="selectTier('SCOOTER')" id="tier-SCOOTER" class="tier-btn border-2 border-[#007A3D] bg-emerald-50 rounded-xl p-1.5 text-center">
             <div class="text-base">🛵</div>
             <div data-i18n="tierScooter" class="text-[10px] font-extrabold">نشمي سكوتر</div>
@@ -174,7 +188,7 @@
         </button>
       </div>
 
-      <!-- لوحة الرحلة النشطة مرفوعة عن شريط الهاتف -->
+      <!-- لوحة الرحلة النشطة -->
       <div id="rider-panel-active" class="hidden bg-white rounded-t-3xl shadow-2xl px-4 pt-4 safe-bottom z-20 space-y-2.5 shrink-0">
         <div class="flex justify-between items-center">
           <span id="rider-ride-status" class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full">جاري البحث عن كابتن...</span>
@@ -241,12 +255,12 @@
           <button onclick="openModal('contact')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>🎧</span><span data-i18n="mContact">تواصل معنا</span></button>
           <button onclick="openModal('settings')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>⚙️</span><span data-i18n="mSettings">الإعدادات واللغة</span></button>
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>❓</span><span data-i18n="mTerms">الشروط والأحكام</span></button>
-          <button onclick="openModal('diag')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>🛠️</span><span data-i18n="mDiag">فحص الاتصال والرحلات</span></button>
+          <button onclick="openModal('diag')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>🛠️</span><span data-i18n="mDiag">فحص الاتصال</span></button>
         </nav>
 
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.1.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.2.0 🇯🇴</div>
         </div>
       </aside>
 
@@ -264,9 +278,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, doc, getDoc, getDocs, setDoc, updateDoc,
       onSnapshot, query, where, serverTimestamp, orderBy, increment
@@ -286,50 +298,81 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // المدن الثلاث المعتمدة فقط وخياراتها السريعة
+    const CITIES = {
+      amman: {
+        nameAr: 'عمّان', nameEn: 'Amman', center: [31.9539, 35.9106],
+        places: [
+          { name: 'العبدلي / البوليفارد', coords: [31.9648, 35.9080] },
+          { name: 'الجامعة الأردنية', coords: [32.0160, 35.8695] },
+          { name: 'الدوار السابع', coords: [31.9531, 35.8594] },
+          { name: 'الصويفية', coords: [31.9566, 35.8511] },
+          { name: 'وسط البلد', coords: [31.9516, 35.9393] },
+          { name: 'سيتي مول', coords: [31.9815, 35.8390] },
+          { name: 'مكة مول', coords: [31.9762, 35.8444] }
+        ]
+      },
+      irbid: {
+        nameAr: 'إربد', nameEn: 'Irbid', center: [32.5568, 35.8469],
+        places: [
+          { name: 'جامعة اليرموك', coords: [32.5364, 35.8558] },
+          { name: 'شارع الجامعة', coords: [32.5401, 35.8535] },
+          { name: 'إربد سيتي سنتر', coords: [32.5345, 35.8618] },
+          { name: 'مجمع عمان الجديد', coords: [32.5312, 35.8660] },
+          { name: 'وسط البلد إربد', coords: [32.5568, 35.8469] },
+          { name: 'التكنو (العلوم والتكنولوجيا)', coords: [32.4950, 35.9912] }
+        ]
+      },
+      zarqa: {
+        nameAr: 'الزرقاء', nameEn: 'Zarqa', center: [32.0608, 36.0942],
+        places: [
+          { name: 'الوسط التجاري', coords: [32.0608, 36.0942] },
+          { name: 'الزرقاء الجديدة / شارع 36', coords: [32.0836, 36.0665] },
+          { name: 'الجامعة الهاشمية', coords: [32.1025, 36.1856] },
+          { name: 'مجمع الزرقاء الجديد', coords: [32.0672, 36.0885] },
+          { name: 'الرصيفة', coords: [32.0178, 36.0464] }
+        ]
+      }
+    };
+
     let lang = 'ar';
     const dict = {
       ar: {
-        tagline: 'تطبيق النشامى • أوفر من السيارة بأكثر من 50%', emailLabel: 'البريد الإلكتروني', passLabel: 'كلمة المرور (6 أحرف فأكثر)',
-        fullName: 'الاسم (للتسجيل الجديد)', phoneLabel: 'الهاتف (للتسجيل الجديد)', rememberMe: 'تذكرني عند الدخول', forgotPass: 'نسيت كلمة المرور؟',
-        loginBtn: 'دخول / تسجيل حساب جديد 🔔', myLoc: '📍 موقعي', tierScooter: 'نشمي سكوتر', tierBike: 'نشمي بايك',
+        tagline: 'عمّان • إربد • الزرقاء | أوفر من السيارة بـ 50%', emailLabel: 'البريد الإلكتروني', passLabel: 'كلمة المرور (6 أحرف فأكثر)',
+        fullName: 'الاسم (للتسجيل الجديد)', phoneLabel: 'الهاتف (للتسجيل الجديد)', rememberMe: 'تذكرني عند الدخول',
+        loginBtn: 'دخول / تسجيل حساب جديد 🔔', tierScooter: 'نشمي سكوتر', tierBike: 'نشمي بايك',
         tierExpress: 'طرود سريعة', applyBtn: 'تطبيق', helmetReq: '🪖 خوذة معقمة', orderBtn: 'اطلب NshmiBike الآن 🇯🇴',
         cancelBtn: 'إلغاء الطلب', arrivedSafe: 'الحمد لله على السلامة!', newRideBtn: 'حجز رحلة جديدة',
         mProfile: 'الملف الشخصي', mTrips: 'رحلاتي', mWallet: 'المحفظة', mInbox: 'صندوق الرسائل والعروض',
         mInvite: 'دعوة الأصدقاء', mReferral: 'كود الإحالة والمكافآت', mContact: 'تواصل معنا',
-        mSettings: 'الإعدادات واللغة', mTerms: 'الشروط والأحكام', mDiag: 'فحص الاتصال والرحلات', logout: 'تسجيل الخروج'
+        mSettings: 'الإعدادات واللغة', mTerms: 'الشروط والأحكام', mDiag: 'فحص الاتصال', logout: 'تسجيل الخروج'
       },
       en: {
-        tagline: 'Jordan Ride-Hailing • Save 50%+ vs Cars', emailLabel: 'Email Address', passLabel: 'Password (6+ chars)',
-        fullName: 'Name (new user)', phoneLabel: 'Phone (new user)', rememberMe: 'Remember me', forgotPass: 'Forgot password?',
-        loginBtn: 'Sign In / Register 🔔', myLoc: '📍 My GPS', tierScooter: 'Nshmi Scooter', tierBike: 'Nshmi Bike',
-        tierExpress: 'Express Parcel', applyBtn: 'Apply', helmetReq: '🪖 Sanitized Helmet', orderBtn: 'Request NshmiBike 🇯🇴',
-        cancelBtn: 'Cancel Ride', arrivedSafe: 'You Arrived Safely!', newRideBtn: 'Book Another Ride',
+        tagline: 'Amman • Irbid • Zarqa | Save 50%+ vs Cars', emailLabel: 'Email', passLabel: 'Password (6+ chars)',
+        fullName: 'Name (new)', phoneLabel: 'Phone (new)', rememberMe: 'Remember me',
+        loginBtn: 'Sign In / Register 🔔', tierScooter: 'Scooter', tierBike: 'Bike',
+        tierExpress: 'Express', applyBtn: 'Apply', helmetReq: '🪖 Helmet', orderBtn: 'Request NshmiBike 🇯🇴',
+        cancelBtn: 'Cancel Ride', arrivedSafe: 'Arrived Safely!', newRideBtn: 'New Ride',
         mProfile: 'Profile', mTrips: 'My Trips', mWallet: 'Wallet', mInbox: 'Inbox & Promos',
-        mInvite: 'Invite Users', mReferral: 'Referral Rewards', mContact: 'Contact Us',
-        mSettings: 'Settings & Language', mTerms: 'Terms & Conditions', mDiag: 'Trip Diagnostics', logout: 'Logout'
+        mInvite: 'Invite Users', mReferral: 'Referral', mContact: 'Contact Us',
+        mSettings: 'Settings & Language', mTerms: 'Terms', mDiag: 'Diagnostics', logout: 'Logout'
       }
     };
 
     window.toggleLanguage = () => {
       lang = lang === 'ar' ? 'en' : 'ar';
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
       document.querySelectorAll('.lang-switch-label').forEach(el => el.innerText = lang === 'ar' ? 'English' : 'عربي');
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const k = el.getAttribute('data-i18n');
-        if (dict[lang][k]) el.innerText = dict[lang][k];
-      });
+      document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (dict[lang][k]) el.innerText = dict[lang][k]; });
       const drawer = document.getElementById('side-drawer');
-      drawer.style.right = lang === 'ar' ? '0' : 'auto';
-      drawer.style.left = lang === 'ar' ? 'auto' : '0';
-      if (map) updateRoute();
+      drawer.style.right = lang === 'ar' ? '0' : 'auto'; drawer.style.left = lang === 'ar' ? 'auto' : '0';
+      if (dropoffCoords) updateRoute();
     };
 
     let audioCtx = null;
     function unlockAudio() {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      if (!audioCtx) audioCtx = new AC();
+      if (!AC) return; if (!audioCtx) audioCtx = new AC();
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
     function playTone(kind) {
@@ -352,8 +395,7 @@
       const toast = document.getElementById('toast-banner');
       document.getElementById('toast-title').innerText = title;
       document.getElementById('toast-body').innerText = body;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 4500);
+      toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 4500);
       try {
         const LN = window.Capacitor?.Plugins?.LocalNotifications;
         if (LN) await LN.schedule({ notifications: [{ title, body, id: Math.floor(Math.random() * 99999) + 1 }] });
@@ -363,41 +405,38 @@
     window.testAudio = () => notifyRider('🔔 NshmiBike', 'الصوت والإشعارات شغالة!', 'chat');
 
     let pricing = { scooterBase: 0.25, scooterPerKm: 0.15, scooterMin: 0.60, bikeBase: 0.30, bikePerKm: 0.18, bikeMin: 0.75 };
-    let activeDiscountPct = 0, currentUser = null, selectedTier = 'SCOOTER';
+    let activeDiscountPct = 0, currentUser = null, selectedTier = 'SCOOTER', currentCity = 'amman';
     let map, pickupMarker, dropoffMarker, routeLine, capMarker;
-    let customDropoff = null, gpsPickup = null, currentDistKm = 4.2;
-    let fares = { SCOOTER: 0.90, BIKE: 1.05, EXPRESS: 0.95 };
+    let pickupCoords = CITIES.amman.center, pickupAddress = 'موقعي الحالي (GPS)';
+    let dropoffCoords = null, dropoffAddress = '';
+    let currentDistKm = 3.0, fares = { SCOOTER: 0.70, BIKE: 0.85, EXPRESS: 0.75 };
     let activeRideId = null, activeRideData = null, lastCompletedRideId = null, lastRideStatus = null;
     let unsubRide = null, unsubChat = null, waitInterval = null;
 
     onSnapshot(doc(db, 'settings', 'pricing'), (snap) => {
-      if (snap.exists()) { pricing = { ...pricing, ...snap.data() }; if (map) updateRoute(); }
+      if (snap.exists()) { pricing = { ...pricing, ...snap.data() }; if (dropoffCoords) updateRoute(); }
     });
 
-    const bikeIcon = L.divIcon({
-      html: '<div style="font-size:26px;">🛵</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15]
-    });
+    const bikeIcon = L.divIcon({ html: '<div style="font-size:26px;">🛵</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] });
+    const gpsIcon = L.divIcon({ html: '<div class="gps-dot"></div>', className: '', iconSize: [16, 16], iconAnchor: [8, 8] });
 
     async function completeLogin(userObj) {
       currentUser = userObj;
-      const userRef = doc(db, 'users', currentUser.id);
-      onSnapshot(userRef, (s) => {
+      onSnapshot(doc(db, 'users', currentUser.id), (s) => {
         if (s.exists()) {
           currentUser.walletBalance = Number(s.data().walletBalance || 0);
           document.getElementById('drawer-wallet-val').innerText = currentUser.walletBalance.toFixed(2) + ' د.أ';
           const debtEl = document.getElementById('debt-notice');
           if (currentUser.walletBalance < 0) {
-            debtEl.innerText = `⚠️ رصيد مستحق من إلغاء سابق: ${Math.abs(currentUser.walletBalance).toFixed(2)} د.أ (يُضاف للرحلة القادمة)`;
+            debtEl.innerText = `⚠️ رصيد مستحق من إلغاء سابق: ${Math.abs(currentUser.walletBalance).toFixed(2)} د.أ`;
             debtEl.classList.remove('hidden');
           } else debtEl.classList.add('hidden');
         }
       });
-
       document.getElementById('drawer-avatar').innerText = currentUser.name.charAt(0);
       document.getElementById('drawer-name').innerText = currentUser.name;
       document.getElementById('drawer-phone').innerText = currentUser.phone;
       document.getElementById('drawer-email').innerText = currentUser.email || '';
-      document.getElementById('rider-greeting').innerText = currentUser.name;
       document.getElementById('side-drawer').style.right = lang === 'ar' ? '0' : 'auto';
       document.getElementById('side-drawer').style.left = lang === 'ar' ? 'auto' : '0';
 
@@ -406,7 +445,6 @@
       initMap();
     }
 
-    // تسجيل الدخول بالإيميل أو التذكر التلقائي
     window.loginRider = async () => {
       unlockAudio();
       try {
@@ -419,47 +457,32 @@
       const pass = document.getElementById('login-pass').value;
       const nameInput = document.getElementById('login-name').value.trim();
       const phoneInput = document.getElementById('login-phone').value.trim();
-      const errEl = document.getElementById('login-error');
-      errEl.classList.add('hidden');
+      const errEl = document.getElementById('login-error'); errEl.classList.add('hidden');
 
       if (!email.includes('@') || pass.length < 6) {
-        errEl.innerText = 'أدخل بريداً إلكترونياً صحيحاً وكلمة مرور (6 أحرف على الأقل)';
+        errEl.innerText = 'أدخل بريداً إلكترونياً صحيحاً وكلمة مرور (6 أحرف فأكثر)';
         errEl.classList.remove('hidden'); return;
       }
 
       const btn = document.getElementById('btn-login'); btn.disabled = true;
       try {
         let uid = '';
-        try {
-          const cred = await signInWithEmailAndPassword(auth, email, pass);
-          uid = cred.user.uid;
-        } catch (authErr) {
+        try { uid = (await signInWithEmailAndPassword(auth, email, pass)).user.uid; }
+        catch (authErr) {
           if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential') {
-            // إذا كان حساباً جديداً ننشئه بالاسم والهاتف
-            if (!nameInput || phoneInput.length < 9) {
-              throw new Error('للتسجيل لأول مرة، يرجى كتابة الاسم ورقم الهاتف، أو التأكد من كلمة المرور.');
-            }
-            const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            uid = cred.user.uid;
-          } else if (authErr.code === 'auth/operation-not-allowed') {
-            throw new Error('يرجى تفعيل Email/Password من Firebase Authentication أولاً.');
+            if (!nameInput || phoneInput.length < 9) throw new Error('للتسجيل لأول مرة، اكتب الاسم ورقم الهاتف.');
+            uid = (await createUserWithEmailAndPassword(auth, email, pass)).user.uid;
           } else throw authErr;
         }
-
-        // البحث عن بيانات المستخدم بالإيميل أو برقم الهاتف
         let userData = null;
         const emailSnap = await getDocs(query(collection(db, 'users'), where('email', '==', email)));
-        if (!emailSnap.empty) {
-          userData = emailSnap.docs[0].data();
-        } else if (phoneInput.length >= 9) {
+        if (!emailSnap.empty) userData = emailSnap.docs[0].data();
+        else if (phoneInput.length >= 9) {
           const pSnap = await getDoc(doc(db, 'users', phoneInput));
           if (pSnap.exists()) userData = pSnap.data();
         }
-
         if (userData?.isBlocked) throw new Error('تم إيقاف هذا الحساب من الإدارة');
-
-        const finalPhone = userData?.phone || phoneInput;
-        const finalName = userData?.name || nameInput;
+        const finalPhone = userData?.phone || phoneInput, finalName = userData?.name || nameInput;
         if (!finalPhone || !finalName) throw new Error('أكمل الاسم ورقم الهاتف لحفظ ملفك');
 
         const profile = {
@@ -468,40 +491,26 @@
           referralCode: userData?.referralCode || ('NSHMI' + finalPhone.slice(-4))
         };
         await setDoc(doc(db, 'users', finalPhone), { ...profile, updatedAt: serverTimestamp() }, { merge: true });
-
-        if (document.getElementById('remember-me').checked) {
-          localStorage.setItem('nshmi_rider_session', JSON.stringify(profile));
-        } else {
-          localStorage.removeItem('nshmi_rider_session');
-        }
+        if (document.getElementById('remember-me').checked) localStorage.setItem('nshmi_rider_session', JSON.stringify(profile));
+        else localStorage.removeItem('nshmi_rider_session');
         await completeLogin(profile);
-      } catch (err) {
-        errEl.innerText = err.message; errEl.classList.remove('hidden');
-      } finally { btn.disabled = false; }
+      } catch (err) { errEl.innerText = err.message; errEl.classList.remove('hidden'); }
+      finally { btn.disabled = false; }
     };
 
     window.resetPassword = async () => {
       const email = document.getElementById('login-email').value.trim();
-      if (!email.includes('@')) return alert('اكتب بريدك الإلكتروني أولاً ثم اضغط نسيت كلمة المرور');
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert('✅ تم إرسال رابط تغيير كلمة المرور إلى بريدك الإلكتروني!');
-      } catch (e) { alert('تعذر الإرسال: ' + e.message); }
+      if (!email.includes('@')) return alert('اكتب بريدك الإلكتروني أولاً');
+      try { await sendPasswordResetEmail(auth, email); alert('✅ تم إرسال رابط تغيير كلمة المرور لبريدك!'); }
+      catch (e) { alert('تعذر الإرسال: ' + e.message); }
     };
+    window.logout = () => { localStorage.removeItem('nshmi_rider_session'); location.reload(); };
 
-    window.logout = () => {
-      localStorage.removeItem('nshmi_rider_session');
-      location.reload();
-    };
-
-    // التحقق من "تذكرني" عند فتح التطبيق
     const savedSession = localStorage.getItem('nshmi_rider_session');
     if (savedSession) {
       try {
         const parsed = JSON.parse(savedSession);
-        getDoc(doc(db, 'users', parsed.id)).then((s) => {
-          if (s.exists() && !s.data().isBlocked) completeLogin({ ...parsed, ...s.data() });
-        });
+        getDoc(doc(db, 'users', parsed.id)).then((s) => { if (s.exists() && !s.data().isBlocked) completeLogin({ ...parsed, ...s.data() }); });
       } catch (e) {}
     }
 
@@ -517,48 +526,24 @@
       document.getElementById('app-modal').classList.remove('hidden');
       if (type === 'profile') {
         titleEl.innerText = '👤 الملف الشخصي';
-        bodyEl.innerHTML = `<div class="bg-slate-50 p-4 rounded-2xl space-y-2">
-          <div><b>الاسم:</b> ${currentUser.name}</div><div><b>الهاتف:</b> ${currentUser.phone}</div>
-          <div><b>الإيميل:</b> ${currentUser.email || '-'}</div>
-          <div><b>كود الإحالة:</b> <span class="jo-text font-extrabold">${currentUser.referralCode}</span></div></div>`;
+        bodyEl.innerHTML = `<div class="bg-slate-50 p-4 rounded-2xl space-y-2"><div><b>الاسم:</b> ${currentUser.name}</div><div><b>الهاتف:</b> ${currentUser.phone}</div><div><b>الإيميل:</b> ${currentUser.email || '-'}</div><div><b>كود الإحالة:</b> <span class="jo-text font-extrabold">${currentUser.referralCode}</span></div></div>`;
       } else if (type === 'trips') {
-        titleEl.innerText = '🕒 رحلاتي السابقة';
-        bodyEl.innerHTML = 'جاري التحميل...';
+        titleEl.innerText = '🕒 رحلاتي السابقة'; bodyEl.innerHTML = 'جاري التحميل...';
         const snap = await getDocs(query(collection(db, 'rides'), where('riderId', '==', currentUser.id)));
         const list = []; snap.forEach(d => list.push(d.data()));
         list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        bodyEl.innerHTML = list.length ? list.map(r => `
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <div class="flex justify-between font-extrabold"><span>${r.tier} • ${r.status}</span><span class="jo-text">${Number(r.fareJod).toFixed(2)} د.أ</span></div>
-            <div class="text-[11px] text-slate-500 mt-1">${r.pickupAddress} ⬅️ ${r.dropoffAddress}</div>
-          </div>`).join('') : '<div class="text-center py-6 text-slate-400">لا توجد رحلات بعد</div>';
+        bodyEl.innerHTML = list.length ? list.map(r => `<div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><div class="flex justify-between font-extrabold"><span>${r.tier} • ${r.status}</span><span class="jo-text">${Number(r.fareJod).toFixed(2)} د.أ</span></div><div class="text-[11px] text-slate-500 mt-1">${r.pickupAddress} ⬅️ ${r.dropoffAddress}</div></div>`).join('') : '<div class="text-center py-6 text-slate-400">لا توجد رحلات بعد</div>';
       } else if (type === 'wallet') {
         titleEl.innerText = '💳 محفظة النشامى';
-        bodyEl.innerHTML = `
-          <div class="bg-gradient-to-br from-[#007A3D] to-slate-900 text-white p-5 rounded-2xl text-center">
-            <div class="text-xs opacity-80">الرصيد المتاح</div>
-            <div class="text-3xl font-extrabold mt-1">${currentUser.walletBalance.toFixed(2)} د.أ</div>
-          </div>
-          <div class="bg-slate-50 p-3 rounded-2xl space-y-2">
-            <div class="font-bold">شحن الرصيد (CliQ / زين كاش):</div>
-            <input id="topup-amt" type="number" placeholder="المبلغ بالدينار" class="w-full border rounded-xl p-2">
-            <button onclick="requestTopup()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">شحن المحفظة</button>
-          </div>`;
+        bodyEl.innerHTML = `<div class="bg-gradient-to-br from-[#007A3D] to-slate-900 text-white p-5 rounded-2xl text-center"><div class="text-xs opacity-80">الرصيد المتاح</div><div class="text-3xl font-extrabold mt-1">${currentUser.walletBalance.toFixed(2)} د.أ</div></div><div class="bg-slate-50 p-3 rounded-2xl space-y-2"><div class="font-bold">شحن الرصيد:</div><input id="topup-amt" type="number" placeholder="المبلغ بالدينار" class="w-full border rounded-xl p-2"><button onclick="requestTopup()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">شحن المحفظة</button></div>`;
       } else if (type === 'inbox') {
         titleEl.innerText = '📬 صندوق الرسائل والعروض';
-        const snap = await getDocs(collection(db, 'promos'));
-        let promosHtml = '';
+        const snap = await getDocs(collection(db, 'promos')); let promosHtml = '';
         snap.forEach(d => { if (d.data().active) promosHtml += `<div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl font-bold text-emerald-900">🎁 كود خصم: <u>${d.id}</u> (${d.data().discountPct}%)</div>`; });
-        bodyEl.innerHTML = `<div class="bg-slate-50 p-3 rounded-xl font-semibold">🇯🇴 تنقل بنصف سعر السيارة! ملاحظة: الإلغاء مجاني قبل تحرك الكابتن مسافة 2 كم.</div>` + promosHtml;
+        bodyEl.innerHTML = `<div class="bg-slate-50 p-3 rounded-xl font-semibold">🇯🇴 الخدمة متاحة في عمّان وإربد والزرقاء بنصف سعر السيارة!</div>` + promosHtml;
       } else if (type === 'invite' || type === 'referral') {
         titleEl.innerText = '🎁 دعوة الأصدقاء';
-        bodyEl.innerHTML = `
-          <div class="bg-emerald-50 p-4 rounded-2xl text-center space-y-2">
-            <div class="font-bold">شارك كودك واحصل على 0.50 د.أ!</div>
-            <div class="text-2xl font-extrabold jo-text">${currentUser.referralCode}</div>
-            <button onclick="shareInvite()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">مشاركة واتساب 💬</button>
-          </div>
-          <div class="flex gap-2"><input id="ref-input" type="text" placeholder="كود صديق" class="flex-1 border rounded-xl p-2 uppercase font-bold"><button onclick="claimReferral()" class="bg-slate-900 text-white px-4 rounded-xl font-bold">تفعيل</button></div>`;
+        bodyEl.innerHTML = `<div class="bg-emerald-50 p-4 rounded-2xl text-center space-y-2"><div class="font-bold">شارك كودك واحصل على 0.50 د.أ!</div><div class="text-2xl font-extrabold jo-text">${currentUser.referralCode}</div><button onclick="shareInvite()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">مشاركة واتساب 💬</button></div><div class="flex gap-2"><input id="ref-input" type="text" placeholder="كود صديق" class="flex-1 border rounded-xl p-2 uppercase font-bold"><button onclick="claimReferral()" class="bg-slate-900 text-white px-4 rounded-xl font-bold">تفعيل</button></div>`;
       } else if (type === 'contact') {
         titleEl.innerText = '🎧 تواصل معنا';
         bodyEl.innerHTML = `<a href="tel:911" class="block text-center w-full bg-[#CE1126] text-white font-bold py-2.5 rounded-xl">🚨 طوارئ 911</a><button onclick="alert('واتساب الدعم: 0790000000')" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">💬 مراسلة الدعم</button>`;
@@ -567,15 +552,15 @@
         bodyEl.innerHTML = `<button onclick="toggleLanguage(); closeModal();" class="w-full jo-green text-white font-bold py-3 rounded-xl">🌐 تغيير اللغة إلى: ${lang === 'ar' ? 'English' : 'العربية'}</button><button onclick="testAudio()" class="w-full bg-slate-100 text-slate-800 font-bold py-3 rounded-xl">🔔 اختبار الصوت</button>`;
       } else if (type === 'terms') {
         titleEl.innerText = '❓ الشروط والأحكام';
-        bodyEl.innerHTML = `<p class="leading-relaxed">1. ارتداء الخوذة إلزامي.<br>2. انتظار الكابتن المجاني 5 دقائق، وبعدها يحق له الإلغاء بتعويض 0.50 د.أ.<br>3. إذا تحرك الكابتن أكثر من 2 كم ثم ألغى العميل، يتم خصم 0.50 د.أ تعويضاً للكابتن.</p>`;
+        bodyEl.innerHTML = `<p>1. ارتداء الخوذة إلزامي.<br>2. مهلة انتظار الكابتن 5 دقائق.<br>3. الإلغاء بعد تحرك الكابتن +2 كم يخصم 0.50 د.أ تعويضاً.</p>`;
       } else if (type === 'diag') {
         titleEl.innerText = '🛠️ فحص الاتصال';
-        bodyEl.innerHTML = `<div class="space-y-2 bg-slate-50 p-3 rounded-xl font-bold"><div>🌐 السيرفر: <span class="jo-text">متصل ✓</span></div><div>📍 GPS: <span class="jo-text">${navigator.geolocation ? 'مدعوم ✓' : 'غير مدعوم'}</span></div><div>🔔 التنبيهات: <span class="jo-text">جاهزة ✓</span></div></div>`;
+        bodyEl.innerHTML = `<div class="space-y-2 bg-slate-50 p-3 rounded-xl font-bold"><div>🌐 السيرفر: <span class="jo-text">متصل ✓</span></div><div>📍 GPS: <span class="jo-text">${navigator.geolocation ? 'مدعوم ✓' : 'غير مدعوم'}</span></div></div>`;
       }
     };
 
     window.shareInvite = async () => {
-      const t = `استخدم كودي ${currentUser.referralCode} في تطبيق NshmiBike 🇯🇴: https://loserhaz2121.github.io/NshmiBike/`;
+      const t = `استخدم كودي ${currentUser.referralCode} في NshmiBike 🇯🇴: https://loserhaz2121.github.io/NshmiBike/`;
       if (navigator.share) { try { await navigator.share({ text: t }); } catch (e) {} } else alert(t);
     };
     window.claimReferral = async () => {
@@ -591,36 +576,128 @@
       alert(`✅ تم شحن ${a.toFixed(2)} د.أ!`); closeModal();
     };
 
-    function initMap() {
-      if (map) { map.invalidateSize(); return; }
-      map = L.map('map', { zoomControl: false }).setView([31.9648, 35.9080], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-      map.on('click', (e) => {
-        if (!document.getElementById('rider-panel-book').classList.contains('hidden')) {
-          customDropoff = [e.latlng.lat, e.latlng.lng];
-          document.getElementById('dropoff-select').value = 'custom';
-          updateRoute();
-        }
-      });
-      setTimeout(() => { map.invalidateSize(); updateRoute(); }, 300);
-    }
-    window.useMyGPS = () => {
-      navigator.geolocation?.getCurrentPosition((pos) => {
-        gpsPickup = [pos.coords.latitude, pos.coords.longitude];
-        document.getElementById('pickup-select').value = 'gps';
-        updateRoute();
-      }, () => alert('اسمح بصلاحية الموقع GPS'));
-    };
-    function parseCoords(v) {
-      if (v === 'gps' && gpsPickup) return gpsPickup;
-      if (v === 'custom' && customDropoff) return customDropoff;
-      return v.split(',').map(Number);
-    }
     function haversine(c1, c2) {
       const R = 6371, dLat = (c2[0]-c1[0])*Math.PI/180, dLon = (c2[1]-c1[1])*Math.PI/180;
       const a = Math.sin(dLat/2)**2 + Math.cos(c1[0]*Math.PI/180)*Math.cos(c2[0]*Math.PI/180)*Math.sin(dLon/2)**2;
-      return Math.max(0.1, R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 1.28);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
+
+    function detectClosestCity(coords) {
+      let best = 'amman', bestDist = 9999;
+      for (const [key, c] of Object.entries(CITIES)) {
+        const d = haversine(coords, c.center);
+        if (d < bestDist) { bestDist = d; best = key; }
+      }
+      return best;
+    }
+
+    function renderCityPlaces(cityKey) {
+      currentCity = cityKey;
+      const city = CITIES[cityKey];
+      document.getElementById('city-filter').value = cityKey;
+      document.getElementById('city-badge').innerText = `📍 مدينتك: ${city.nameAr}`;
+      document.getElementById('quick-city-title').innerText = `خيارات سريعة في ${city.nameAr} (أو اضغط على الخريطة):`;
+      const container = document.getElementById('quick-places');
+      container.innerHTML = '';
+      city.places.forEach((p) => {
+        const btn = document.createElement('button');
+        btn.className = 'shrink-0 bg-slate-100 hover:bg-emerald-50 border border-slate-200 text-slate-800 font-bold text-[11px] px-3 py-1.5 rounded-full';
+        btn.innerText = '📍 ' + p.name;
+        btn.onclick = () => pickDestination(p.coords, `${city.nameAr} - ${p.name}`);
+        container.appendChild(btn);
+      });
+    }
+
+    window.switchCity = (cityKey) => {
+      renderCityPlaces(cityKey);
+      if (map) map.setView(CITIES[cityKey].center, 14);
+    };
+
+    // تهيئة الخريطة البسيطة بدون شعار Leaflet وتحديد GPS تلقائياً
+    function initMap() {
+      if (map) { map.invalidateSize(); return; }
+      map = L.map('map', { zoomControl: false, attributionControl: false }).setView(CITIES.amman.center, 15);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+
+      map.on('click', (e) => {
+        if (!document.getElementById('rider-panel-dest').classList.contains('hidden') ||
+            !document.getElementById('rider-panel-book').classList.contains('hidden')) {
+          pickDestination([e.latlng.lat, e.latlng.lng], `موقع محدد في ${CITIES[currentCity].nameAr}`);
+        }
+      });
+
+      setTimeout(() => { map.invalidateSize(); useMyGPS(); }, 300);
+    }
+
+    window.useMyGPS = () => {
+      if (!navigator.geolocation) {
+        renderCityPlaces('amman');
+        document.getElementById('pickup-label').innerText = 'انطلاقك: عمّان (GPS غير مدعوم)';
+        return;
+      }
+      document.getElementById('pickup-label').innerText = 'جاري تحديد موقعك عبر GPS...';
+      navigator.geolocation.getCurrentPosition((pos) => {
+        pickupCoords = [pos.coords.latitude, pos.coords.longitude];
+        const nearest = detectClosestCity(pickupCoords);
+        renderCityPlaces(nearest);
+        pickupAddress = `موقعي الحالي (${CITIES[nearest].nameAr})`;
+        document.getElementById('pickup-label').innerText = `انطلاقك: موقعك الحالي في ${CITIES[nearest].nameAr} (GPS)`;
+
+        if (pickupMarker) map.removeLayer(pickupMarker);
+        pickupMarker = L.marker(pickupCoords, { icon: gpsIcon }).addTo(map);
+        map.setView(pickupCoords, 15);
+        if (dropoffCoords) updateRoute();
+      }, () => {
+        renderCityPlaces('amman');
+        pickupCoords = CITIES.amman.center;
+        if (pickupMarker) map.removeLayer(pickupMarker);
+        pickupMarker = L.marker(pickupCoords, { icon: gpsIcon }).addTo(map);
+        document.getElementById('pickup-label').innerText = 'انطلاقك: وسط عمّان (فعّل GPS لموقعك الدقيق)';
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    };
+
+    window.searchPlace = async () => {
+      const q = document.getElementById('dest-search').value.trim();
+      const box = document.getElementById('search-results');
+      if (!q) return;
+      box.classList.remove('hidden');
+      box.innerHTML = '<div class="text-xs text-slate-500 p-2">جاري البحث في الأردن...</div>';
+      try {
+        const cityAr = CITIES[currentCity].nameAr;
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=jo&accept-language=ar&limit=5&q=${encodeURIComponent(q + ' ' + cityAr)}`);
+        const data = await res.json();
+        if (!data.length) { box.innerHTML = '<div class="text-xs text-red-500 p-2">لم نجد نتائج، جرّب الضغط على الخريطة</div>'; return; }
+        box.innerHTML = '';
+        data.forEach((item) => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full text-right bg-white p-2 rounded-xl border border-slate-100 text-xs font-bold hover:bg-emerald-50';
+          btn.innerText = '📍 ' + item.display_name.split(',').slice(0, 3).join('، ');
+          btn.onclick = () => {
+            box.classList.add('hidden');
+            pickDestination([Number(item.lat), Number(item.lon)], item.display_name.split(',')[0]);
+          };
+          box.appendChild(btn);
+        });
+      } catch (e) { box.innerHTML = '<div class="text-xs text-red-500 p-2">اضغط مباشرة على الخريطة لتحديد الوجهة</div>'; }
+    };
+
+    window.pickDestination = (coords, label) => {
+      dropoffCoords = coords;
+      dropoffAddress = label;
+      document.getElementById('chosen-dest-label').innerText = label;
+      document.getElementById('rider-panel-dest').classList.add('hidden');
+      document.getElementById('rider-panel-book').classList.remove('hidden');
+      updateRoute();
+    };
+
+    window.backToDestStep = () => {
+      document.getElementById('rider-panel-book').classList.add('hidden');
+      document.getElementById('rider-panel-dest').classList.remove('hidden');
+      if (dropoffMarker) { map.removeLayer(dropoffMarker); dropoffMarker = null; }
+      if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+      dropoffCoords = null;
+      if (pickupCoords) map.setView(pickupCoords, 15);
+    };
 
     window.applyPromo = async () => {
       const code = document.getElementById('promo-input').value.trim().toUpperCase();
@@ -632,18 +709,15 @@
     };
 
     window.updateRoute = () => {
-      if (!map) return;
-      const pCoords = parseCoords(document.getElementById('pickup-select').value);
-      const dCoords = parseCoords(document.getElementById('dropoff-select').value);
-      if (pickupMarker) map.removeLayer(pickupMarker);
+      if (!map || !dropoffCoords) return;
       if (dropoffMarker) map.removeLayer(dropoffMarker);
       if (routeLine) map.removeLayer(routeLine);
-      pickupMarker = L.circleMarker(pCoords, { radius: 8, color: '#007A3D', fillOpacity: 1 }).addTo(map);
-      dropoffMarker = L.circleMarker(dCoords, { radius: 8, color: '#CE1126', fillOpacity: 1 }).addTo(map);
-      routeLine = L.polyline([pCoords, dCoords], { color: '#007A3D', weight: 4, dashArray: '8, 8' }).addTo(map);
-      map.fitBounds([pCoords, dCoords], { padding: [45, 45] });
 
-      currentDistKm = Math.max(1.0, haversine(pCoords, dCoords));
+      dropoffMarker = L.circleMarker(dropoffCoords, { radius: 9, color: '#CE1126', fillColor: '#CE1126', fillOpacity: 1 }).addTo(map);
+      routeLine = L.polyline([pickupCoords, dropoffCoords], { color: '#007A3D', weight: 4, dashArray: '8, 8' }).addTo(map);
+      map.fitBounds([pickupCoords, dropoffCoords], { padding: [55, 55] });
+
+      currentDistKm = Math.max(0.8, haversine(pickupCoords, dropoffCoords) * 1.28);
       const mult = 1 - (activeDiscountPct / 100);
       fares.SCOOTER = Math.max(0.40, +(Math.max(pricing.scooterMin, pricing.scooterBase + currentDistKm * pricing.scooterPerKm) * mult).toFixed(2));
       fares.BIKE = Math.max(0.50, +(Math.max(pricing.bikeMin || 0.75, pricing.bikeBase + currentDistKm * pricing.bikePerKm) * mult).toFixed(2));
@@ -667,36 +741,30 @@
 
     function startWaitCountdown(arrivedAtMs) {
       if (waitInterval) clearInterval(waitInterval);
-      const timerEl = document.getElementById('rider-wait-timer');
-      timerEl.classList.remove('hidden');
+      const timerEl = document.getElementById('rider-wait-timer'); timerEl.classList.remove('hidden');
       const update = () => {
         const leftSec = Math.max(0, 300 - Math.floor((Date.now() - arrivedAtMs) / 1000));
-        const m = String(Math.floor(leftSec / 60)).padStart(2, '0');
-        const s = String(leftSec % 60).padStart(2, '0');
-        timerEl.innerText = leftSec > 0
-          ? `⏱️ الكابتن بانتظارك: ${m}:${s} (بعد 5 دقائق يحق للكابتن الإلغاء بتعويض 0.50 د.أ)`
-          : '⚠️ انتهى وقت الانتظار المجاني (5 دقائق)';
+        const m = String(Math.floor(leftSec / 60)).padStart(2, '0'), s = String(leftSec % 60).padStart(2, '0');
+        timerEl.innerText = leftSec > 0 ? `⏱️ الكابتن بانتظارك: ${m}:${s} (بعدها يحق للكابتن الإلغاء بـ 0.50 د.أ)` : '⚠️ انتهى وقت الانتظار المجاني (5 دقائق)';
       };
-      update();
-      waitInterval = setInterval(update, 1000);
+      update(); waitInterval = setInterval(update, 1000);
     }
 
     window.requestRide = async () => {
       unlockAudio();
+      if (!dropoffCoords) return alert('اختر وجهتك أولاً');
       const payMethod = document.getElementById('payment-method').value;
       const debt = currentUser.walletBalance < 0 ? Math.abs(currentUser.walletBalance) : 0;
       const totalFare = +(fares[selectedTier] + debt).toFixed(2);
-      if (payMethod === 'محفظة نشمي' && currentUser.walletBalance < fares[selectedTier]) {
-        return alert('رصيد المحفظة غير كافٍ، اشحن المحفظة أو اختر كاش.');
-      }
-      const pSel = document.getElementById('pickup-select'), dSel = document.getElementById('dropoff-select');
-      const pCoords = parseCoords(pSel.value), dCoords = parseCoords(dSel.value);
+      if (payMethod === 'محفظة نشمي' && currentUser.walletBalance < fares[selectedTier]) return alert('رصيد المحفظة غير كافٍ');
 
       const rideDoc = await addDoc(collection(db, 'rides'), {
         riderId: currentUser.id, riderName: currentUser.name, riderPhone: currentUser.phone,
-        tier: selectedTier, fareJod: totalFare, settledDebtJod: debt, distanceKm: Number(currentDistKm.toFixed(1)),
-        pickupAddress: pSel.options[pSel.selectedIndex].text, dropoffAddress: dSel.options[dSel.selectedIndex].text,
-        pickupLat: pCoords[0], pickupLng: pCoords[1], dropoffLat: dCoords[0], dropoffLng: dCoords[1],
+        city: CITIES[currentCity].nameAr, tier: selectedTier, fareJod: totalFare, settledDebtJod: debt,
+        distanceKm: Number(currentDistKm.toFixed(1)),
+        pickupAddress, dropoffAddress,
+        pickupLat: pickupCoords[0], pickupLng: pickupCoords[1],
+        dropoffLat: dropoffCoords[0], dropoffLng: dropoffCoords[1],
         paymentMethod: payMethod, extraHelmet: document.getElementById('extra-helmet').checked,
         captainMovedKm: 0, status: 'SEARCHING', createdAt: serverTimestamp()
       });
@@ -715,10 +783,9 @@
           else capMarker = L.marker([data.captainLat, data.captainLng], { icon: bikeIcon }).addTo(map);
         }
 
-        // تنبيه إذا تحرك الكابتن أكثر من 2 كم
         const warnEl = document.getElementById('rider-cancel-warning');
         if (Number(data.captainMovedKm || 0) >= 2.0 && ['ACCEPTED', 'ARRIVED'].includes(data.status)) {
-          warnEl.innerText = `⚠️ الكابتن تحرك نحوك (${Number(data.captainMovedKm).toFixed(1)} كم) — الإلغاء الآن يترتب عليه تعويض 0.50 د.أ`;
+          warnEl.innerText = `⚠️ الكابتن تحرك نحوك (${Number(data.captainMovedKm).toFixed(1)} كم) — الإلغاء يخصم 0.50 د.أ`;
           warnEl.classList.remove('hidden');
         } else warnEl.classList.add('hidden');
 
@@ -735,7 +802,7 @@
           } else if (data.status === 'ARRIVED') {
             badge.innerText = 'الكابتن وصل لموقعك 📍';
             startWaitCountdown(data.arrivedAtMs || Date.now());
-            notifyRider('📍 الكابتن وصل!', `${data.captainName} ينتظرك بالخارج (المجاني 5 دقائق)`, 'status');
+            notifyRider('📍 الكابتن وصل!', `${data.captainName} ينتظرك بالخارج`, 'status');
           } else if (data.status === 'ON_TRIP') {
             if (waitInterval) clearInterval(waitInterval);
             document.getElementById('rider-wait-timer').classList.add('hidden');
@@ -745,17 +812,14 @@
             if (debt > 0) await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(debt) });
             if (data.paymentMethod === 'محفظة نشمي') await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(-Number(data.fareJod)) });
             notifyRider('🎉 وصلت بالسلامة!', `الأجرة: ${Number(data.fareJod).toFixed(2)} د.أ`, 'status');
-            lastCompletedRideId = activeRideId;
-            resetRideWatchers();
+            lastCompletedRideId = activeRideId; resetRideWatchers();
             document.getElementById('rider-panel-active').classList.add('hidden');
             document.getElementById('rider-panel-rating').classList.remove('hidden');
             document.getElementById('rating-summary').innerText = `${Number(data.fareJod).toFixed(2)} د.أ (${data.paymentMethod})`;
           } else if (data.status === 'CANCELLED_NO_SHOW') {
-            notifyRider('⚠️ تم إلغاء الرحلة', 'انتهت مهلة الانتظار 5 دقائق وتم خصم 0.50 د.أ تعويضاً للكابتن', 'status');
+            notifyRider('⚠️ تم إلغاء الرحلة', 'انتهت مهلة 5 دقائق وخصم 0.50 د.أ تعويضاً للكابتن', 'status');
             resetRiderUI();
-          } else if (data.status === 'CANCELLED') {
-            resetRiderUI();
-          }
+          } else if (data.status === 'CANCELLED') resetRiderUI();
         }
       });
       listenChat(activeRideId);
@@ -765,17 +829,11 @@
       if (!activeRideId) return;
       const movedKm = Number(activeRideData?.captainMovedKm || 0);
       const hasPenalty = activeRideData && (activeRideData.status === 'ARRIVED' || movedKm >= 2.0);
-
       if (hasPenalty) {
-        const ok = confirm(
-          `⚠️ تنبيه تعويض الكابتن:\nالكابتن تحرك نحوك لمسافة تتجاوز 2 كم (أو وصل لموقعك).\nإذا ألغيت الطلب الآن سيتم خصم 0.50 د.أ (50 قرشاً) من حسابك وتحويلها لرصيد الكابتن.\n\nهل أنت متأكد من الإلغاء؟`
-        );
-        if (!ok) return;
+        if (!confirm('⚠️ الكابتن تحرك أكثر من 2 كم نحوك (أو وصل لموقعك).\nإلغاء الطلب الآن سيخصم 0.50 د.أ (50 قرشاً) تعويضاً للكابتن.\nهل تريد المتابعة؟')) return;
         await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelFeeJod: 0.50, cancelledBy: 'RIDER' });
         await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(-0.50) });
-        if (activeRideData.captainId) {
-          await updateDoc(doc(db, 'users', activeRideData.captainId), { walletBalance: increment(0.50) });
-        }
+        if (activeRideData.captainId) await updateDoc(doc(db, 'users', activeRideData.captainId), { walletBalance: increment(0.50) });
         alert('تم إلغاء الطلب وتحويل 0.50 د.أ تعويضاً للكابتن.');
       } else {
         await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelFeeJod: 0, cancelledBy: 'RIDER' });
@@ -789,9 +847,12 @@
       if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
     }
     function resetRiderUI() {
-      resetRideWatchers(); activeRideId = null; activeRideData = null; lastRideStatus = null;
-      ['captain-info-box', 'rider-chat-box', 'rider-wait-timer', 'rider-cancel-warning', 'rider-panel-active', 'rider-panel-rating'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      document.getElementById('rider-panel-book').classList.remove('hidden');
+      resetRideWatchers(); activeRideId = null; activeRideData = null; lastRideStatus = null; dropoffCoords = null;
+      if (dropoffMarker) { map.removeLayer(dropoffMarker); dropoffMarker = null; }
+      if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+      ['captain-info-box', 'rider-chat-box', 'rider-wait-timer', 'rider-cancel-warning', 'rider-panel-active', 'rider-panel-rating', 'rider-panel-book'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      document.getElementById('rider-panel-dest').classList.remove('hidden');
+      if (pickupCoords) map.setView(pickupCoords, 15);
     }
 
     window.rateRide = async (stars) => {
@@ -822,9 +883,7 @@
         });
         box.scrollTop = box.scrollHeight;
         if (!firstLoad) {
-          snap.docChanges().forEach((c) => {
-            if (c.type === 'added' && c.doc.data().role !== 'RIDER') notifyRider('💬 رسالة من الكابتن', c.doc.data().text, 'chat');
-          });
+          snap.docChanges().forEach((c) => { if (c.type === 'added' && c.doc.data().role !== 'RIDER') notifyRider('💬 رسالة من الكابتن', c.doc.data().text, 'chat'); });
         }
         firstLoad = false;
       });
@@ -833,9 +892,7 @@
       if (!activeRideId) return;
       const inp = document.getElementById('rider-chat-input'), text = inp.value.trim();
       if (!text) return; inp.value = '';
-      await addDoc(collection(db, 'rides', activeRideId, 'messages'), {
-        senderName: currentUser.name, role: 'RIDER', text, createdAt: serverTimestamp()
-      });
+      await addDoc(collection(db, 'rides', activeRideId, 'messages'), { senderName: currentUser.name, role: 'RIDER', text, createdAt: serverTimestamp() });
     };
   </script>
 </body>
