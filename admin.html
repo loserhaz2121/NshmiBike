@@ -16,7 +16,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-100 pb-10">
+<body class="min-h-screen bg-slate-100 pb-12">
 
   <div id="admin-lock" class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-sm bg-white p-6 rounded-3xl shadow-xl text-center space-y-4">
@@ -29,12 +29,12 @@
     </div>
   </div>
 
-  <div id="admin-app" class="hidden max-w-2xl mx-auto pb-12">
+  <div id="admin-app" class="hidden max-w-2xl mx-auto pb-14">
     <div class="shmagh-strip"></div>
     <header class="bg-slate-900 text-white p-4 sticky top-0 z-20 shadow flex justify-between items-center">
       <div>
         <h1 class="font-extrabold text-base">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
-        <p class="text-[11px] text-slate-400">مراقبة حية • التوزيع الذكي • الخصومات</p>
+        <p class="text-[11px] text-slate-400">عمولة 10% • حد إيقاف الكابتن -2.00 د.أ</p>
       </div>
       <a href="index.html" class="jo-green text-xs font-bold px-3 py-1.5 rounded-xl">تطبيق العميل</a>
     </header>
@@ -45,7 +45,7 @@
         <div id="stat-gross" class="text-lg font-extrabold text-slate-800 mt-0.5">0.00 د.أ</div>
       </div>
       <div class="bg-emerald-50 p-3.5 rounded-2xl shadow-sm border border-emerald-200">
-        <div class="text-[11px] text-[#007A3D] font-bold">عمولة الشركة (<span id="stat-comm-pct">15</span>%)</div>
+        <div class="text-[11px] text-[#007A3D] font-bold">عمولة الشركة (<span id="stat-comm-pct">10</span>%)</div>
         <div id="stat-profit" class="text-lg font-extrabold jo-text mt-0.5">0.00 د.أ</div>
       </div>
       <div class="bg-red-50 p-3.5 rounded-2xl shadow-sm border border-red-200">
@@ -65,61 +65,47 @@
 
     <div class="flex gap-2 px-4 mb-4 overflow-x-auto">
       <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn jo-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات</button>
+      <button onclick="showTab('users')" id="tab-btn-users" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">👥 الكباتن وتحصيل -2.00 د.أ</button>
       <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🎁 الخصومات والتسعيرة</button>
-      <button onclick="showTab('users')" id="tab-btn-users" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">👥 الكباتن والركاب</button>
     </div>
 
     <div id="tab-rides" class="px-4 space-y-3">
       <div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
 
+    <div id="tab-users" class="hidden px-4 space-y-2.5">
+      <div id="admin-users-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
+    </div>
+
     <div id="tab-pricing" class="hidden px-4 space-y-4">
-      <!-- أكواد الخصم على حساب الشركة -->
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3 border border-emerald-100">
-        <h2 class="font-extrabold text-slate-800 text-sm">🎁 إنشاء كود خصم (على حساب الشركة وليس الكابتن)</h2>
+        <h2 class="font-extrabold text-slate-800 text-sm">🎁 إنشاء كود خصم (على حساب الشركة)</h2>
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <div>
-            <label class="font-bold text-slate-600 block mb-1">كود الخصم</label>
-            <input id="promo-code" type="text" placeholder="مثال: NSHMI50" class="w-full border rounded-xl p-2 font-bold uppercase">
-          </div>
-          <div>
-            <label class="font-bold text-slate-600 block mb-1">نسبة الخصم (%)</label>
-            <input id="promo-pct" type="number" placeholder="50" class="w-full border rounded-xl p-2 font-bold">
-          </div>
-          <div>
-            <label class="font-bold text-slate-600 block mb-1">كم رحلة لكل عميل؟</label>
-            <input id="promo-per-user" type="number" value="3" class="w-full border rounded-xl p-2 font-bold">
-          </div>
-          <div>
-            <label class="font-bold text-slate-600 block mb-1">الحد الإجمالي للاستخدام</label>
-            <input id="promo-max-total" type="number" value="200" class="w-full border rounded-xl p-2 font-bold">
-          </div>
+          <div><label class="font-bold text-slate-600 block mb-1">كود الخصم</label><input id="promo-code" type="text" placeholder="NSHMI50" class="w-full border rounded-xl p-2 font-bold uppercase"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">نسبة الخصم (%)</label><input id="promo-pct" type="number" placeholder="50" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">كم رحلة لكل عميل؟</label><input id="promo-per-user" type="number" value="3" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">الحد الإجمالي للاستخدام</label><input id="promo-max-total" type="number" value="200" class="w-full border rounded-xl p-2 font-bold"></div>
         </div>
         <label class="flex items-center gap-2 text-xs font-bold text-[#007A3D] bg-emerald-50 p-2.5 rounded-xl">
           <input id="promo-company-pays" type="checkbox" checked class="accent-[#007A3D] w-4 h-4">
-          <span>الشركة تتحمل الخصم (لا ينقص من ربح الكابتن، ويُنزل له الفرق في محفظته)</span>
+          <span>الشركة تتحمل الخصم (لا ينقص من ربح الكابتن)</span>
         </label>
-        <button onclick="addPromo()" class="w-full jo-green text-white font-extrabold py-2.5 rounded-xl text-xs">إنشاء ونشر كود الخصم ✓</button>
+        <button onclick="addPromo()" class="w-full jo-green text-white font-extrabold py-2.5 rounded-xl text-xs">إنشاء كود الخصم ✓</button>
         <div id="promos-list" class="space-y-2 text-xs pt-2"></div>
       </div>
 
-      <!-- التسعيرة -->
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
-        <h2 class="font-extrabold text-slate-800 text-sm">💰 ضبط التسعيرة الحية</h2>
+        <h2 class="font-extrabold text-slate-800 text-sm">💰 ضبط التسعيرة والعمولة</h2>
         <div class="grid grid-cols-3 gap-2 text-xs">
           <div><label class="font-bold text-slate-600 block mb-1">فتح سكوتر</label><input id="p-sc-base" type="number" step="0.05" value="0.25" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">لكل كم سكوتر</label><input id="p-sc-km" type="number" step="0.01" value="0.15" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">أقل أجرة</label><input id="p-sc-min" type="number" step="0.05" value="0.60" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">فتح بايك</label><input id="p-bk-base" type="number" step="0.05" value="0.30" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">لكل كم بايك</label><input id="p-bk-km" type="number" step="0.01" value="0.18" class="w-full border rounded-xl p-2 font-bold"></div>
-          <div><label class="font-bold text-slate-600 block mb-1">عمولتك (%)</label><input id="p-comm" type="number" step="1" value="15" class="w-full border rounded-xl p-2 font-bold jo-text"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">عمولتك (%)</label><input id="p-comm" type="number" step="1" value="10" class="w-full border rounded-xl p-2 font-bold jo-text"></div>
         </div>
         <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ التسعيرة ✓</button>
       </div>
-    </div>
-
-    <div id="tab-users" class="hidden px-4 space-y-2.5">
-      <div id="admin-users-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
   </div>
 
@@ -128,7 +114,7 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc,
-      onSnapshot, serverTimestamp
+      onSnapshot, serverTimestamp, increment
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -144,7 +130,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    let currentCommPct = 15;
+    let currentCommPct = 10;
 
     window.checkAdminPin = async () => {
       if (document.getElementById('admin-pin').value.trim() !== '2026') {
@@ -157,7 +143,7 @@
     };
 
     window.showTab = (tab) => {
-      ['rides', 'pricing', 'users'].forEach(t => {
+      ['rides', 'users', 'pricing'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
         document.getElementById('tab-btn-' + t).className = 'tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
       });
@@ -174,7 +160,7 @@
         document.getElementById('p-sc-min').value = p.scooterMin ?? 0.60;
         document.getElementById('p-bk-base').value = p.bikeBase ?? 0.30;
         document.getElementById('p-bk-km').value = p.bikePerKm ?? 0.18;
-        currentCommPct = Number(p.commissionPct ?? 15);
+        currentCommPct = Number(p.commissionPct ?? 10);
         document.getElementById('p-comm').value = currentCommPct;
         document.getElementById('stat-comm-pct').innerText = currentCommPct;
       }
@@ -192,11 +178,7 @@
           const origFare = Number(r.originalFareJod || r.fareJod || 0);
           const paidFare = Number(r.fareJod || 0);
           const disc = Number(r.discountJod || 0);
-          if (r.status === 'COMPLETED') {
-            completed++;
-            gross += origFare;
-            if (r.companyPaysPromo) subsidyTotal += disc;
-          }
+          if (r.status === 'COMPLETED') { completed++; gross += origFare; if (r.companyPaysPromo) subsidyTotal += disc; }
           if (['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP'].includes(r.status)) active++;
 
           const card = document.createElement('div');
@@ -206,7 +188,7 @@
               <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100">${r.city || ''} • ${r.status}</span>
               <span class="font-extrabold text-sm jo-text">${paidFare.toFixed(2)} د.أ ${disc > 0 ? `<span class="text-[10px] text-[#CE1126]">(خصم شركة ${disc.toFixed(2)})</span>` : ''}</span>
             </div>
-            <div class="text-xs font-bold text-slate-800">العميل: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'جاري التوجيه الذكي'}</div>
+            <div class="text-xs font-bold text-slate-800">العميل: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'جاري التوجيه'}</div>
             <div class="text-[11px] text-slate-500">${r.pickupAddress || ''} ⬅️ ${r.dropoffAddress || ''}</div>`;
           listEl.appendChild(card);
         });
@@ -241,7 +223,7 @@
           row.innerHTML = `
             <div>
               <div class="font-extrabold text-slate-800">${d.id} <span class="jo-text">(${p.discountPct}%)</span></div>
-              <div class="text-[10px] text-slate-500">لكل عميل: ${p.maxPerUser || 1} رحلات • المستخدم: ${p.usedCount || 0}/${p.maxTotalUses || 999} • ${p.companyPays ? 'على حساب الشركة' : 'خصم مباشر'}</div>
+              <div class="text-[10px] text-slate-500">لكل عميل: ${p.maxPerUser || 1} رحلات • المستخدم: ${p.usedCount || 0}/${p.maxTotalUses || 999}</div>
             </div>
             <button onclick="deletePromo('${d.id}')" class="text-[#CE1126] font-bold">حذف</button>`;
           box.appendChild(row);
@@ -250,20 +232,39 @@
 
       onSnapshot(collection(db, 'users'), (snap) => {
         const list = document.getElementById('admin-users-list'); list.innerHTML = '';
-        snap.forEach(d => {
-          const u = d.data();
+        const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+        arr.sort((a, b) => Number(a.walletBalance || 0) - Number(b.walletBalance || 0)); // إظهار من عليهم ذمم أولاً
+
+        arr.forEach(u => {
+          const bal = Number(u.walletBalance || 0);
+          const isStoppedCap = u.role === 'CAPTAIN' && bal <= -2.0;
+          const balColor = isStoppedCap ? 'text-[#CE1126] font-extrabold' : (bal < 0 ? 'text-amber-600 font-extrabold' : 'jo-text font-extrabold');
           const card = document.createElement('div');
-          card.className = 'bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right';
+          card.className = `bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2 ${isStoppedCap ? 'border-2 border-[#CE1126]' : ''}`;
           card.innerHTML = `
-            <div>
+            <div class="flex-1">
               <div class="font-extrabold text-slate-800 text-xs">${u.name} <span class="text-[10px] px-2 py-0.5 rounded-full ${u.role === 'CAPTAIN' ? 'bg-emerald-100 text-[#007A3D]' : 'bg-slate-100'}">${u.role === 'CAPTAIN' ? 'كابتن 🛵' : 'راكب'}</span></div>
-              <div class="text-[11px] text-slate-500">${u.phone} • رصيد: ${Number(u.walletBalance || 0).toFixed(2)} د.أ</div>
+              <div class="text-[11px] text-slate-500">${u.phone} • ${u.city || ''}</div>
+              <div class="text-xs mt-0.5 ${balColor}">الرصيد: ${bal.toFixed(2)} د.أ ${isStoppedCap ? '(⛔ متوقف للحد -2.00)' : ''}</div>
             </div>
-            <button onclick="toggleBlockUser('${d.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'jo-green text-white' : 'bg-red-50 text-[#CE1126]'} px-3 py-1.5 rounded-xl font-bold text-[11px]">${u.isBlocked ? 'فك الحظر' : 'إيقاف'}</button>`;
+            <div class="flex flex-col gap-1.5">
+              <button onclick="settleBalance('${u.id}', '${u.name}', ${bal})" class="jo-green text-white px-2.5 py-1.5 rounded-xl font-bold text-[11px]">💵 استلام / شحن</button>
+              <button onclick="toggleBlockUser('${u.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الحظر' : 'إيقاف يدوي'}</button>
+            </div>`;
           list.appendChild(card);
         });
       });
     }
+
+    window.settleBalance = async (id, name, curBal) => {
+      const def = curBal < 0 ? Math.abs(curBal).toFixed(2) : '5.00';
+      const val = prompt(`استلام كاش / شحن رصيد لـ (${name})\nالرصيد الحالي: ${curBal.toFixed(2)} د.أ\nكم المبلغ المستلم بالدينار؟`, def);
+      if (!val) return;
+      const amt = Number(val);
+      if (isNaN(amt) || amt <= 0) return alert('أدخل مبلغاً صحيحاً');
+      await updateDoc(doc(db, 'users', id), { walletBalance: increment(amt) });
+      alert(`✅ تم إضافة +${amt.toFixed(2)} د.أ إلى حساب ${name} وتفعيله!`);
+    };
 
     window.savePricing = async () => {
       currentCommPct = Number(document.getElementById('p-comm').value);
@@ -276,7 +277,7 @@
         commissionPct: currentCommPct, updatedAt: serverTimestamp()
       });
       document.getElementById('stat-comm-pct').innerText = currentCommPct;
-      alert('✅ تم حفظ التسعيرة!');
+      alert('✅ تم حفظ التسعيرة والعمولة!');
     };
 
     window.addPromo = async () => {
@@ -286,12 +287,9 @@
       const maxTotalUses = Number(document.getElementById('promo-max-total').value || 100);
       const companyPays = document.getElementById('promo-company-pays').checked;
       if (!code || pct <= 0 || pct > 90) return alert('أدخل كوداً ونسبة خصم صحيحة');
-      await setDoc(doc(db, 'promos', code), {
-        discountPct: pct, maxPerUser, maxTotalUses, usedCount: 0, companyPays, active: true
-      });
-      document.getElementById('promo-code').value = '';
-      document.getElementById('promo-pct').value = '';
-      alert('✅ تم إنشاء كود الخصم بنجاح!');
+      await setDoc(doc(db, 'promos', code), { discountPct: pct, maxPerUser, maxTotalUses, usedCount: 0, companyPays, active: true });
+      document.getElementById('promo-code').value = ''; document.getElementById('promo-pct').value = '';
+      alert('✅ تم إنشاء الكود!');
     };
 
     window.deletePromo = async (id) => { await deleteDoc(doc(db, 'promos', id)); };
