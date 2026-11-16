@@ -3,6 +3,9 @@ name: Build NshmiBike APK
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'index.html'
+      - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
 jobs:
@@ -23,13 +26,13 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Prepare Web Files and Capacitor
+      - name: Prepare Rider App and Plugins
         run: |
           mkdir -p www
-          cp -f index.html admin.html www/
+          cp -f index.html www/
           cp -f manifest.json sw.js icon.svg www/ 2>/dev/null || true
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.jordan",
@@ -41,7 +44,7 @@ jobs:
           }
           EOF
           npx cap add android
-          sed -i 's/<uses-permission android:name="android.permission.INTERNET" \/>/<uses-permission android:name="android.permission.INTERNET" \/>\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" \/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" \/>/' android/app/src/main/AndroidManifest.xml
+          sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />|' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
       - name: Build Android APK
@@ -50,7 +53,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload Rider APK
         uses: actions/upload-artifact@v4
         with:
           name: NshmiBike-APK
