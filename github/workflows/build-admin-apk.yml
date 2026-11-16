@@ -1,0 +1,58 @@
+name: Build NshmiAdmin APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'admin.html'
+      - '.github/workflows/build-admin-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build-admin-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Prepare Admin App and Capacitor
+        run: |
+          mkdir -p www
+          cp admin.html www/index.html
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.nshmibike.admin",
+            "appName": "NshmiAdmin",
+            "webDir": "www",
+            "server": {
+              "androidScheme": "https"
+            }
+          }
+          EOF
+          npx cap add android
+          npx cap sync android
+
+      - name: Build Admin APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload Admin APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NshmiAdmin-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
