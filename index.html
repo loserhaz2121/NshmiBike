@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#00B14F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
   <title>NshmiBike - نشمي بايك الأردن</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -21,13 +24,17 @@
 
     <!-- 1. شاشة تسجيل الدخول -->
     <div id="screen-login" class="flex-1 flex flex-col justify-center p-6 bg-gradient-to-b from-emerald-50 to-white">
-      <div class="text-center mb-7">
+      <div class="text-center mb-6">
         <div class="w-20 h-20 nshmi-green rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-lg mb-3">🛵</div>
         <h1 class="text-3xl font-extrabold text-slate-800">Nshmi<span class="nshmi-text">Bike</span> 🇯🇴</h1>
-        <p class="text-xs text-slate-500 font-semibold mt-1">توصيل أسرع وأوفر من السيارة بأكثر من 50%</p>
+        <p class="text-xs text-slate-500 font-semibold mt-1">أسرع وأوفر من السيارة بأكثر من 50% في كل الأردن</p>
       </div>
 
-      <div class="bg-white p-5 rounded-3xl shadow-md border border-slate-100 space-y-4">
+      <button id="btn-install-pwa" onclick="installPWA()" class="hidden mb-4 w-full bg-slate-900 text-white font-bold py-2.5 rounded-2xl text-xs shadow">
+        📲 تثبيت تطبيق NshmiBike على هاتفك
+      </button>
+
+      <div class="bg-white p-5 rounded-3xl shadow-md border border-slate-100 space-y-3.5">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">الاسم الكامل</label>
           <input id="login-name" type="text" placeholder="مثال: محمد العبدالله" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#00B14F]">
@@ -40,7 +47,7 @@
         <div id="captain-extra" class="hidden space-y-3 pt-2 border-t border-slate-100">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">نوع وموديل الدراجة / السكوتر</label>
-            <input id="cap-bike-model" type="text" placeholder="مثال: سكوتر SYM أبيض" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+            <input id="cap-bike-model" type="text" placeholder="مثال: سكوتر هوندا أبيض" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">رقم اللوحة</label>
@@ -87,37 +94,51 @@
       </div>
 
       <!-- لوحة حجز الراكب -->
-      <div id="rider-panel-book" class="bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(0,0,0,0.1)] p-4 z-20">
-        <div class="bg-slate-50 rounded-2xl p-2.5 border border-slate-100 space-y-2 mb-2.5">
+      <div id="rider-panel-book" class="bg-white rounded-t-3xl shadow-[0_-6px_24px_rgba(0,0,0,0.1)] p-3.5 z-20">
+        <div class="bg-slate-50 rounded-2xl p-2 border border-slate-100 space-y-1.5 mb-2">
           <select id="pickup-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
-            <option value="31.9648,35.9080">🟢 الانطلاق: العبدلي (البوليفارد)</option>
-            <option value="32.0160,35.8695">🟢 الانطلاق: الجامعة الأردنية</option>
-            <option value="31.9531,35.8594">🟢 الانطلاق: الدوار السابع</option>
-            <option value="31.9516,35.9393">🟢 الانطلاق: وسط البلد</option>
+            <option value="31.9648,35.9080">🟢 عمّان: العبدلي (البوليفارد)</option>
+            <option value="32.0160,35.8695">🟢 عمّان: الجامعة الأردنية</option>
+            <option value="31.9531,35.8594">🟢 عمّان: الدوار السابع</option>
+            <option value="31.9516,35.9393">🟢 عمّان: وسط البلد</option>
+            <option value="31.9566,35.8511">🟢 عمّان: الصويفية / الوكالات</option>
+            <option value="31.9896,35.8665">🟢 عمّان: شارع المدينة المنورة</option>
+            <option value="32.0352,35.8726">🟢 عمّان: الجبيهة</option>
+            <option value="31.9023,35.8475">🟢 عمّان: مرج الحمام</option>
+            <option value="32.5568,35.8469">🟢 إربد: وسط المدينة / اليرموك</option>
+            <option value="32.0608,36.0942">🟢 الزرقاء: الوسط التجاري</option>
+            <option value="32.0392,35.7272">🟢 السلط: وسط المدينة</option>
+            <option value="31.7197,35.7939">🟢 مادبا: وسط المدينة</option>
+            <option value="29.5321,35.0063">🟢 العقبة: وسط المدينة</option>
             <option value="gps" hidden>🟢 موقعي الحالي (GPS)</option>
           </select>
           <hr class="border-slate-200">
           <select id="dropoff-select" onchange="updateRoute()" class="w-full bg-transparent text-xs font-bold text-slate-700 focus:outline-none">
-            <option value="31.9531,35.8594">📍 الوجهة: الدوار السابع</option>
-            <option value="31.9566,35.8511">📍 الوجهة: الصويفية / شارع الوكالات</option>
-            <option value="32.0160,35.8695">📍 الوجهة: الجامعة الأردنية</option>
-            <option value="31.9648,35.9080">📍 الوجهة: العبدلي</option>
+            <option value="31.9531,35.8594">📍 عمّان: الدوار السابع</option>
+            <option value="31.9566,35.8511">📍 عمّان: الصويفية / الوكالات</option>
+            <option value="32.0160,35.8695">📍 عمّان: الجامعة الأردنية</option>
+            <option value="31.9648,35.9080">📍 عمّان: العبدلي</option>
+            <option value="31.9516,35.9393">📍 عمّان: وسط البلد</option>
+            <option value="31.9896,35.8665">📍 عمّان: شارع المدينة المنورة</option>
+            <option value="32.5568,35.8469">📍 إربد: وسط المدينة / اليرموك</option>
+            <option value="32.0608,36.0942">📍 الزرقاء: الوسط التجاري</option>
+            <option value="29.5321,35.0063">📍 العقبة: وسط المدينة</option>
             <option value="custom" hidden>📍 الوجهة المحددة على الخريطة</option>
           </select>
         </div>
 
         <div class="grid grid-cols-3 gap-2 mb-2">
-          <button onclick="selectTier('SCOOTER')" id="tier-SCOOTER" class="tier-btn border-2 border-[#00B14F] bg-emerald-50 rounded-xl p-2 text-center">
+          <button onclick="selectTier('SCOOTER')" id="tier-SCOOTER" class="tier-btn border-2 border-[#00B14F] bg-emerald-50 rounded-xl p-1.5 text-center">
             <div class="text-lg">🛵</div>
             <div class="text-[11px] font-extrabold">نشمي سكوتر</div>
             <div id="price-SCOOTER" class="text-xs font-extrabold nshmi-text">0.60 د.أ</div>
           </button>
-          <button onclick="selectTier('BIKE')" id="tier-BIKE" class="tier-btn border border-slate-200 bg-white rounded-xl p-2 text-center">
+          <button onclick="selectTier('BIKE')" id="tier-BIKE" class="tier-btn border border-slate-200 bg-white rounded-xl p-1.5 text-center">
             <div class="text-lg">🏍️</div>
             <div class="text-[11px] font-extrabold">نشمي بايك</div>
             <div id="price-BIKE" class="text-xs font-extrabold text-slate-700">0.75 د.أ</div>
           </button>
-          <button onclick="selectTier('EXPRESS')" id="tier-EXPRESS" class="tier-btn border border-slate-200 bg-white rounded-xl p-2 text-center">
+          <button onclick="selectTier('EXPRESS')" id="tier-EXPRESS" class="tier-btn border border-slate-200 bg-white rounded-xl p-1.5 text-center">
             <div class="text-lg">📦</div>
             <div class="text-[11px] font-extrabold">طرود سريعة</div>
             <div id="price-EXPRESS" class="text-xs font-extrabold text-slate-700">0.70 د.أ</div>
@@ -128,7 +149,12 @@
           💰 توفر أكثر من 50% مقارنة بتطبيقات السيارات!
         </div>
 
-        <div class="flex items-center justify-between text-xs mb-3">
+        <div class="flex gap-1.5 mb-2">
+          <input id="promo-input" type="text" placeholder="كود الخصم (اختياري)" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs uppercase font-bold">
+          <button onclick="applyPromo()" class="bg-slate-800 text-white px-3 rounded-xl text-xs font-bold">تطبيق</button>
+        </div>
+
+        <div class="flex items-center justify-between text-xs mb-2.5">
           <label class="flex items-center gap-1.5 font-bold text-slate-700">
             <input id="extra-helmet" type="checkbox" checked class="accent-[#00B14F] w-4 h-4">
             <span>🪖 خوذة معقمة + كاب رأس</span>
@@ -166,7 +192,6 @@
           </div>
         </div>
 
-        <!-- محادثة حية -->
         <div id="rider-chat-box" class="hidden border border-slate-100 rounded-2xl p-2 bg-slate-50">
           <div id="rider-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
           <div class="flex gap-1">
@@ -178,7 +203,7 @@
         <button onclick="cancelRideRider()" class="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl text-xs">إلغاء الطلب</button>
       </div>
 
-      <!-- لوحة التقييم بعد الوصول -->
+      <!-- لوحة التقييم -->
       <div id="rider-panel-rating" class="hidden bg-white rounded-t-3xl shadow-2xl p-5 z-20 text-center space-y-3">
         <div class="text-3xl">🎉</div>
         <h3 class="font-extrabold text-slate-800 text-base">الحمد لله على السلامة!</h3>
@@ -196,16 +221,28 @@
 
     <!-- 3. شاشة الكابتن -->
     <div id="screen-captain" class="hidden flex-1 flex flex-col bg-slate-50 h-screen">
-      <header class="p-4 bg-white shadow-sm flex justify-between items-center">
+      <header class="p-3.5 bg-white shadow-sm flex justify-between items-center">
         <div>
           <h2 class="font-extrabold text-slate-800 text-sm">لوحة الكابتن 🛵</h2>
           <p id="cap-header-info" class="text-[11px] text-slate-500 font-semibold"></p>
         </div>
-        <div class="flex items-center gap-2">
-          <span id="cap-earnings-badge" class="bg-emerald-50 text-emerald-700 text-xs font-extrabold px-2.5 py-1 rounded-full">0.00 د.أ</span>
-          <button onclick="logout()" class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">خروج</button>
-        </div>
+        <button onclick="logout()" class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">خروج</button>
       </header>
+
+      <div class="grid grid-cols-3 gap-2 px-4 pt-3">
+        <div class="bg-white p-2.5 rounded-xl text-center shadow-sm">
+          <div class="text-[10px] text-slate-500 font-bold">التحصيل</div>
+          <div id="cap-gross-badge" class="text-xs font-extrabold text-slate-800">0.00 د.أ</div>
+        </div>
+        <div class="bg-white p-2.5 rounded-xl text-center shadow-sm">
+          <div class="text-[10px] text-slate-500 font-bold">العمولة (<span id="cap-comm-label">15</span>%)</div>
+          <div id="cap-comm-badge" class="text-xs font-extrabold text-red-600">0.00 د.أ</div>
+        </div>
+        <div class="bg-emerald-50 p-2.5 rounded-xl text-center shadow-sm border border-emerald-200">
+          <div class="text-[10px] text-emerald-800 font-bold">صافي ربحك</div>
+          <div id="cap-net-badge" class="text-xs font-extrabold nshmi-text">0.00 د.أ</div>
+        </div>
+      </div>
 
       <div class="p-4 space-y-4 flex-1 overflow-y-auto">
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
@@ -234,6 +271,10 @@
           </div>
           <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-3 rounded-xl"></div>
 
+          <button onclick="openGoogleMapsNav()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-extrabold">
+            🧭 فتح الاتجاهات في خرائط Google
+          </button>
+
           <div class="border border-slate-100 rounded-xl p-2 bg-slate-50">
             <div id="cap-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
             <div class="flex gap-1">
@@ -257,11 +298,29 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
-      getFirestore, collection, addDoc, doc, setDoc, updateDoc,
+      getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc,
       onSnapshot, query, where, runTransaction, serverTimestamp, orderBy
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // مفاتيح مشروعك NshmiBike مدمجة وجاهزة
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('btn-install-pwa').classList.remove('hidden');
+    });
+
+    window.installPWA = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      document.getElementById('btn-install-pwa').classList.add('hidden');
+    };
+
     const firebaseConfig = {
       apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU",
       authDomain: "nshmibike.firebaseapp.com",
@@ -276,6 +335,12 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    let pricing = {
+      scooterBase: 0.25, scooterPerKm: 0.15, scooterMin: 0.60,
+      bikeBase: 0.30, bikePerKm: 0.18, bikeMin: 0.75,
+      commissionPct: 15
+    };
+    let activeDiscountPct = 0;
     let currentUser = null;
     let selectedRole = 'RIDER';
     let selectedTier = 'SCOOTER';
@@ -285,12 +350,18 @@
     let currentDistKm = 4.2;
     let fares = { SCOOTER: 0.90, BIKE: 1.05, EXPRESS: 0.95 };
     let activeRideId = null;
+    let activeRideData = null;
     let lastCompletedRideId = null;
-    let capTotalEarnings = 0;
-    let unsubRide = null;
-    let unsubChat = null;
-    let unsubCaptainOffers = null;
-    let gpsWatchId = null;
+    let capTotalGross = 0;
+    let unsubRide = null, unsubChat = null, unsubCaptainOffers = null, gpsWatchId = null;
+
+    onSnapshot(doc(db, 'settings', 'pricing'), (snap) => {
+      if (snap.exists()) {
+        pricing = { ...pricing, ...snap.data() };
+        document.getElementById('cap-comm-label').innerText = pricing.commissionPct;
+        if (map) updateRoute();
+      }
+    });
 
     const bikeIcon = L.divIcon({
       html: '<div style="font-size:26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">🛵</div>',
@@ -325,21 +396,21 @@
       btn.disabled = true;
 
       try {
-        try { await signInAnonymously(auth); } catch (e) { console.warn('Auth skipped:', e.message); }
+        try { await signInAnonymously(auth); } catch (e) {}
+
+        const userRef = doc(db, 'users', phone);
+        const existing = await getDoc(userRef);
+        if (existing.exists() && existing.data().isBlocked) {
+          throw new Error('تم إيقاف هذا الحساب من الإدارة. تواصل مع الدعم.');
+        }
 
         currentUser = {
-          id: phone,
-          name,
-          phone,
-          role: selectedRole,
+          id: phone, name, phone, role: selectedRole,
           bikeModel: document.getElementById('cap-bike-model').value || 'سكوتر نشمي',
           plate: document.getElementById('cap-plate').value || '15-2026'
         };
 
-        await setDoc(doc(db, 'users', phone), {
-          ...currentUser,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
+        await setDoc(userRef, { ...currentUser, updatedAt: serverTimestamp() }, { merge: true });
 
         document.getElementById('screen-login').classList.add('hidden');
         if (selectedRole === 'RIDER') {
@@ -351,7 +422,7 @@
           document.getElementById('cap-header-info').innerText = `${name} • ${currentUser.bikeModel} (${currentUser.plate})`;
         }
       } catch (err) {
-        errEl.innerText = 'خطأ في الاتصال: ' + err.message;
+        errEl.innerText = err.message;
         errEl.classList.remove('hidden');
       } finally {
         btn.innerText = 'دخول إلى NshmiBike';
@@ -381,7 +452,7 @@
         gpsPickup = [pos.coords.latitude, pos.coords.longitude];
         document.getElementById('pickup-select').value = 'gps';
         updateRoute();
-      }, () => alert('يرجى السماح بصلاحية الموقع GPS في المتصفح'));
+      }, () => alert('يرجى السماح بصلاحية الموقع GPS وإغلاق أي أيقونة طافية'));
     };
 
     function parseCoords(val) {
@@ -398,6 +469,20 @@
       return Math.max(1.0, R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 1.28);
     }
 
+    window.applyPromo = async () => {
+      const code = document.getElementById('promo-input').value.trim().toUpperCase();
+      if (!code) return;
+      const snap = await getDoc(doc(db, 'promos', code));
+      if (!snap.exists() || !snap.data().active) {
+        activeDiscountPct = 0;
+        updateRoute();
+        return alert('كود الخصم غير صحيح أو منتهي');
+      }
+      activeDiscountPct = Number(snap.data().discountPct || 0);
+      updateRoute();
+      alert(`🎉 تم تفعيل خصم ${activeDiscountPct}% بنجاح!`);
+    };
+
     window.updateRoute = () => {
       if (!map) return;
       const pCoords = parseCoords(document.getElementById('pickup-select').value);
@@ -413,9 +498,15 @@
       map.fitBounds([pCoords, dCoords], { padding: [45, 45] });
 
       currentDistKm = haversine(pCoords, dCoords);
-      fares.SCOOTER = Math.max(0.60, +(0.25 + currentDistKm * 0.15).toFixed(2));
-      fares.BIKE = Math.max(0.75, +(0.30 + currentDistKm * 0.18).toFixed(2));
-      fares.EXPRESS = Math.max(0.70, +(0.25 + currentDistKm * 0.16).toFixed(2));
+      const mult = 1 - (activeDiscountPct / 100);
+
+      const rawSc = Math.max(pricing.scooterMin, pricing.scooterBase + currentDistKm * pricing.scooterPerKm);
+      const rawBk = Math.max(pricing.bikeMin || 0.75, pricing.bikeBase + currentDistKm * pricing.bikePerKm);
+      const rawEx = Math.max(0.70, pricing.scooterBase + currentDistKm * (pricing.scooterPerKm + 0.01));
+
+      fares.SCOOTER = Math.max(0.40, +(rawSc * mult).toFixed(2));
+      fares.BIKE = Math.max(0.50, +(rawBk * mult).toFixed(2));
+      fares.EXPRESS = Math.max(0.45, +(rawEx * mult).toFixed(2));
 
       document.getElementById('price-SCOOTER').innerText = fares.SCOOTER.toFixed(2) + ' د.أ';
       document.getElementById('price-BIKE').innerText = fares.BIKE.toFixed(2) + ' د.أ';
@@ -423,8 +514,9 @@
 
       const estCarFare = Math.max(1.50, +(0.47 + currentDistKm * 0.34 + 0.30).toFixed(2));
       const saved = Math.max(0.50, +(estCarFare - fares[selectedTier]).toFixed(2));
+      const promoNote = activeDiscountPct > 0 ? ` (شامل خصم ${activeDiscountPct}%)` : '';
       document.getElementById('car-savings-badge').innerText =
-        `المسافة ${currentDistKm.toFixed(1)} كم • توفر ~${saved.toFixed(2)} د.أ مقارنة بالسيارة!`;
+        `المسافة ${currentDistKm.toFixed(1)} كم • توفر ~${saved.toFixed(2)} د.أ عن السيارة${promoNote}`;
     };
 
     window.selectTier = (tier) => {
@@ -446,11 +538,8 @@
       const dCoords = parseCoords(dSel.value);
 
       const rideDoc = await addDoc(collection(db, 'rides'), {
-        riderId: currentUser.id,
-        riderName: currentUser.name,
-        riderPhone: currentUser.phone,
-        tier: selectedTier,
-        fareJod: fares[selectedTier],
+        riderId: currentUser.id, riderName: currentUser.name, riderPhone: currentUser.phone,
+        tier: selectedTier, fareJod: fares[selectedTier],
         distanceKm: Number(currentDistKm.toFixed(1)),
         pickupAddress: pSel.options[pSel.selectedIndex].text,
         dropoffAddress: dSel.options[dSel.selectedIndex].text,
@@ -477,17 +566,14 @@
           else capMarker = L.marker([data.captainLat, data.captainLng], { icon: bikeIcon }).addTo(map);
         }
 
-        if (data.status === 'SEARCHING') {
-          badge.innerText = 'جاري البحث عن كابتن قريب... 🛵';
-        } else if (data.status === 'ACCEPTED') {
+        if (data.status === 'SEARCHING') badge.innerText = 'جاري البحث عن كابتن قريب... 🛵';
+        else if (data.status === 'ACCEPTED') {
           badge.innerText = 'الكابتن في طريقه إليك!';
           badge.className = 'bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full';
           showCaptainInfo(data);
-        } else if (data.status === 'ARRIVED') {
-          badge.innerText = 'الكابتن وصل لموقعك 📍';
-        } else if (data.status === 'ON_TRIP') {
-          badge.innerText = 'الرحلة جارية نحو وجهتك 💨';
-        } else if (data.status === 'COMPLETED') {
+        } else if (data.status === 'ARRIVED') badge.innerText = 'الكابتن وصل لموقعك 📍';
+        else if (data.status === 'ON_TRIP') badge.innerText = 'الرحلة جارية نحو وجهتك 💨';
+        else if (data.status === 'COMPLETED') {
           lastCompletedRideId = activeRideId;
           if (unsubRide) unsubRide();
           if (unsubChat) unsubChat();
@@ -524,15 +610,11 @@
       const shareText = `أنا الآن في رحلة مع NshmiBike 🛵\nرقم الرحلة: ${activeRideId}`;
       if (navigator.share) {
         try { await navigator.share({ title: 'تتبع رحلتي NshmiBike', text: shareText }); } catch (e) {}
-      } else {
-        alert(shareText);
-      }
+      } else alert(shareText);
     };
 
     window.cancelRideRider = async () => {
-      if (activeRideId) {
-        await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED' });
-      }
+      if (activeRideId) await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED' });
       resetRiderUI();
     };
 
@@ -550,18 +632,12 @@
 
     window.triggerSOS = async () => {
       await addDoc(collection(db, 'sos_alerts'), {
-        userId: currentUser?.id || 'guest',
-        rideId: activeRideId || null,
-        createdAt: serverTimestamp()
+        userId: currentUser?.id || 'guest', rideId: activeRideId || null, createdAt: serverTimestamp()
       });
-      if (confirm('🚨 تم إرسال تنبيه الطوارئ لمركز NshmiBike.\nهل تريد الاتصال بـ 911 الآن؟')) {
-        window.location.href = 'tel:911';
-      }
+      if (confirm('🚨 تم إرسال تنبيه الطوارئ للإدارة.\nهل تريد الاتصال بـ 911 الآن؟')) window.location.href = 'tel:911';
     };
 
-    // =====================================================
     // منطق الكابتن
-    // =====================================================
     window.toggleCaptainOnline = () => {
       const isOnline = document.getElementById('cap-helmet-check').checked;
       const listEl = document.getElementById('cap-requests-list');
@@ -580,12 +656,16 @@
         listEl.innerHTML = '';
         snapshot.forEach((docSnap) => {
           const r = docSnap.data();
+          const net = Number(r.fareJod || 0) * (1 - pricing.commissionPct / 100);
           const card = document.createElement('div');
           card.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2';
           card.innerHTML = `
             <div class="flex justify-between items-center">
               <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">${r.tier} • ${r.distanceKm} كم</span>
-              <span class="font-extrabold text-base nshmi-text">${Number(r.fareJod || 0).toFixed(2)} د.أ</span>
+              <div class="text-left">
+                <div class="font-extrabold text-base nshmi-text">${Number(r.fareJod || 0).toFixed(2)} د.أ</div>
+                <div class="text-[10px] text-slate-500">صافي ربحك: ${net.toFixed(2)} د.أ</div>
+              </div>
             </div>
             <div class="text-xs text-slate-700 font-semibold">${r.pickupAddress}</div>
             <div class="text-xs text-slate-700 font-semibold">${r.dropoffAddress}</div>
@@ -602,18 +682,12 @@
       try {
         await runTransaction(db, async (tx) => {
           const snap = await tx.get(rideRef);
-          if (!snap.exists() || snap.data().status !== 'SEARCHING') {
-            throw new Error('تم أخذ الطلب من كابتن آخر');
-          }
+          if (!snap.exists() || snap.data().status !== 'SEARCHING') throw new Error('تم أخذ الطلب من كابتن آخر');
           tx.update(rideRef, {
             status: 'ACCEPTED',
-            captainId: currentUser.id,
-            captainName: currentUser.name,
-            captainPhone: currentUser.phone,
-            bikeModel: currentUser.bikeModel,
-            plate: currentUser.plate,
-            captainLat: snap.data().pickupLat,
-            captainLng: snap.data().pickupLng
+            captainId: currentUser.id, captainName: currentUser.name,
+            captainPhone: currentUser.phone, bikeModel: currentUser.bikeModel, plate: currentUser.plate,
+            captainLat: snap.data().pickupLat, captainLng: snap.data().pickupLng
           });
         });
 
@@ -625,8 +699,7 @@
           gpsWatchId = navigator.geolocation.watchPosition((pos) => {
             if (activeRideId) {
               updateDoc(doc(db, 'rides', activeRideId), {
-                captainLat: pos.coords.latitude,
-                captainLng: pos.coords.longitude
+                captainLat: pos.coords.latitude, captainLng: pos.coords.longitude
               }).catch(() => {});
             }
           });
@@ -635,24 +708,30 @@
         unsubRide = onSnapshot(rideRef, (snap) => {
           const d = snap.data();
           if (!d) return;
-          document.getElementById('cap-active-fare').innerText = `${Number(d.fareJod).toFixed(2)} د.أ (${d.paymentMethod})`;
+          activeRideData = d;
+          const fare = Number(d.fareJod || 0);
+          const net = fare * (1 - pricing.commissionPct / 100);
+          document.getElementById('cap-active-fare').innerText = `${fare.toFixed(2)} د.أ (${d.paymentMethod})`;
           document.getElementById('cap-active-details').innerHTML = `
             <div><strong>الراكب:</strong> ${d.riderName} (<a href="tel:${d.riderPhone}" class="text-emerald-700 underline">${d.riderPhone}</a>)</div>
             <div>${d.pickupAddress}</div>
             <div>${d.dropoffAddress}</div>
+            <div class="text-emerald-700 font-bold">صافي ربحك: ${net.toFixed(2)} د.أ (بعد عمولة ${pricing.commissionPct}%)</div>
           `;
           if (d.status === 'COMPLETED' || d.status === 'CANCELLED') {
             if (d.status === 'COMPLETED') {
-              capTotalEarnings += Number(d.fareJod || 0);
-              document.getElementById('cap-earnings-badge').innerText = capTotalEarnings.toFixed(2) + ' د.أ';
-              alert('تم إنهاء الرحلة بنجاح! 🎉');
-            } else {
-              alert('تم إلغاء الرحلة');
-            }
+              capTotalGross += fare;
+              const comm = capTotalGross * (pricing.commissionPct / 100);
+              const totalNet = capTotalGross - comm;
+              document.getElementById('cap-gross-badge').innerText = capTotalGross.toFixed(2) + ' د.أ';
+              document.getElementById('cap-comm-badge').innerText = comm.toFixed(2) + ' د.أ';
+              document.getElementById('cap-net-badge').innerText = totalNet.toFixed(2) + ' د.أ';
+              alert(`تم إنهاء الرحلة! 🎉\nالمحصّل: ${fare.toFixed(2)} د.أ\nصافي ربحك: ${net.toFixed(2)} د.أ`);
+            } else alert('تم إلغاء الرحلة');
             if (unsubRide) unsubRide();
             if (unsubChat) unsubChat();
             if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
-            activeRideId = null;
+            activeRideId = null; activeRideData = null;
             document.getElementById('cap-active-ride').classList.add('hidden');
             document.getElementById('cap-requests-section').classList.remove('hidden');
           }
@@ -661,6 +740,14 @@
       } catch (e) {
         alert(e.message);
       }
+    };
+
+    window.openGoogleMapsNav = () => {
+      if (!activeRideData) return;
+      const isGoingToDropoff = activeRideData.status === 'ON_TRIP';
+      const lat = isGoingToDropoff ? activeRideData.dropoffLat : activeRideData.pickupLat;
+      const lng = isGoingToDropoff ? activeRideData.dropoffLng : activeRideData.pickupLng;
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
     };
 
     window.updateRideStatus = async (status) => {
@@ -698,10 +785,7 @@
       if (!text) return;
       document.getElementById(inputId).value = '';
       await addDoc(collection(db, 'rides', activeRideId, 'messages'), {
-        senderName: currentUser.name,
-        role,
-        text,
-        createdAt: serverTimestamp()
+        senderName: currentUser.name, role, text, createdAt: serverTimestamp()
       });
     };
   </script>
