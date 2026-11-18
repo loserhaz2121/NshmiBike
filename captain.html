@@ -25,6 +25,15 @@
     <div id="toast-body" class="text-xs mt-0.5"></div>
   </div>
 
+  <div id="cap-summary-modal" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-5">
+    <div class="w-full max-w-sm bg-white rounded-3xl p-6 text-center space-y-3 shadow-2xl">
+      <div class="text-4xl">🎉</div>
+      <h3 id="summary-title" class="font-extrabold text-lg text-slate-800">تم إنهاء الرحلة!</h3>
+      <div id="summary-body" class="text-xs text-slate-700 bg-slate-50 p-4 rounded-2xl space-y-1.5 font-bold"></div>
+      <button onclick="closeSummary()" class="w-full jo-green text-white font-extrabold py-3 rounded-2xl text-sm shadow">حسناً ✓</button>
+    </div>
+  </div>
+
   <div class="w-full max-w-[440px] h-screen bg-slate-50 flex flex-col relative shadow-2xl overflow-hidden">
 
     <!-- 1. شاشة دخول الكابتن -->
@@ -123,20 +132,15 @@
           </div>
         </div>
 
-        <!-- الرحلة النشطة -->
         <div id="cap-active-ride" class="hidden bg-white p-4 rounded-2xl shadow-md border-2 border-[#007A3D] space-y-2.5">
           <div class="flex justify-between items-center">
             <span id="cap-ride-badge" class="bg-emerald-100 text-[#007A3D] text-xs font-extrabold px-3 py-1 rounded-full">في الطريق للعميل</span>
             <span id="cap-active-fare" class="font-extrabold text-sm jo-text"></span>
           </div>
           <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl"></div>
-
-          <!-- مؤقت مهلة الوصول + سماح الازدحام -->
           <div id="cap-arrival-box" class="hidden bg-blue-50 border border-blue-200 p-2 rounded-xl text-center text-[11px] font-extrabold text-blue-900"></div>
-
           <div id="cap-moved-info" class="text-[11px] font-bold text-slate-600 text-center bg-slate-100 py-1 rounded-lg">المسافة المقطوعة نحو العميل: 0.00 كم</div>
 
-          <!-- عداد الانتظار 5 دقائق (يتوقف عند التحرك خارج 200م) -->
           <div id="cap-wait-box" class="hidden bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-center space-y-2">
             <div id="cap-wait-timer" class="text-xs font-extrabold text-amber-900">⏱️ انتظار العميل: 05:00</div>
             <button id="btn-no-show" onclick="cancelNoShow()" disabled class="w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs">إلغاء بعد 5 دقائق (+0.50 د.أ تعويض)</button>
@@ -158,7 +162,6 @@
         </div>
       </div>
 
-      <!-- القائمة الجانبية -->
       <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="hidden fixed inset-0 bg-black/50 z-40"></div>
       <aside id="side-drawer" class="hidden fixed top-0 bottom-0 w-[80%] max-w-[310px] bg-white z-50 flex flex-col shadow-2xl overflow-y-auto safe-bottom">
         <div class="shmagh-strip shrink-0"></div>
@@ -183,7 +186,7 @@
         </nav>
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiCaptain Jordan • v2.8.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiCaptain Jordan • v3.0.0 🇯🇴</div>
         </div>
       </aside>
 
@@ -282,10 +285,17 @@
     }
     window.testAudio = () => notifyCaptain('🔔 NshmiCaptain', 'الرنين والإشعارات شغالة!', 'ride');
 
+    function showSummary(title, linesHtml) {
+      document.getElementById('summary-title').innerText = title;
+      document.getElementById('summary-body').innerHTML = linesHtml;
+      document.getElementById('cap-summary-modal').classList.remove('hidden');
+    }
+    window.closeSummary = () => document.getElementById('cap-summary-modal').classList.add('hidden');
+
     let commissionPct = 10, currentUser = null, activeRideId = null, activeRideData = null;
     let unsubRide = null, unsubChat = null, unsubCaptainOffers = null, gpsWatchId = null;
     let waitTimerInt = null, arrivalTimerInt = null, onlineTimerInt = null, locSyncInt = null;
-    let lastGpsPos = null, totalMovedKm = 0, waitPauseStateSync = null;
+    let lastGpsPos = null, totalMovedKm = 0, waitPauseStateSync = null, isFinishingRide = false;
     let knownRideIds = new Set(), declinedRideIds = new Set(), penalizedRides = new Set();
     let capCity = 'عمّان', capLat = 31.9539, capLng = 35.9106;
     let warnedLowBalance = false, stoppedForDebt = false, isApprovedCap = false;
@@ -567,13 +577,15 @@
 
     window.claimContest = async (id, reward) => {
       const uRef = doc(db, 'users', currentUser.id);
-      let ok = false;
-      await runTransaction(db, async (tx) => {
+      const claimedNow = await runTransaction(db, async (tx) => {
         const s = await tx.get(uRef);
         const claimed = s.data()?.claimedContests || [];
-        if (!claimed.includes(id)) { tx.update(uRef, { walletBalance: increment(reward), claimedContests: arrayUnion(id) }); ok = true; }
+        if (claimed.includes(id)) return false;
+        const curBal = Number(s.data()?.walletBalance || 0);
+        tx.update(uRef, { walletBalance: +(curBal + reward).toFixed(2), claimedContests: arrayUnion(id) });
+        return true;
       });
-      if (ok) alert(`🎉 تم إضافة ${reward.toFixed(2)} د.أ إلى محفظتك!`);
+      if (claimedNow) notifyCaptain('🎉 مكافأة المسابقة!', `تم إضافة ${reward.toFixed(2)} د.أ إلى محفظتك`, 'ride');
       openModal('contests');
     };
 
@@ -582,7 +594,7 @@
       if (!b || !p) return; currentUser.bikeModel = b; currentUser.plate = p;
       await updateDoc(doc(db, 'users', currentUser.id), { bikeModel: b, plate: p });
       document.getElementById('cap-header-info').innerText = `${currentUser.name} • ${b} (${p})`;
-      alert('✅ تم الحفظ'); closeModal();
+      closeModal(); notifyCaptain('✅ تم الحفظ', 'تم تحديث بيانات الدراجة', 'chat');
     };
     window.shareInvite = async () => {
       const t = `انضم لـ NshmiCaptain 🇯🇴 بكود ${currentUser.referralCode}: https://loserhaz2121.github.io/NshmiBike/captain.html`;
@@ -596,7 +608,7 @@
       if (refSnap.empty) return alert('❌ كود الإحالة غير موجود!');
       await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(0.50), claimedReferral: true, referredBy: c });
       currentUser.claimedReferral = true;
-      alert('🎉 تم التحقق وإضافة 0.50 د.أ لمحفظتك!'); closeModal();
+      closeModal(); notifyCaptain('🎉 مكافأة الإحالة', 'تم إضافة 0.50 د.أ لمحفظتك!', 'ride');
     };
 
     window.toggleCaptainOnline = () => {
@@ -694,28 +706,28 @@
       document.getElementById('cap-helmet-check').dispatchEvent(new Event('change'));
     };
 
-    // فرض غرامة 0.60 د.أ على الكابتن لمرة واحدة فقط في الرحلة (بالتأخير أو المغادرة)
     async function applyCaptainPenalty(rideId, reason) {
       if (!rideId || penalizedRides.has(rideId)) return;
       penalizedRides.add(rideId);
       const rideRef = doc(db, 'rides', rideId);
-      let charged = false;
+      const capRef = doc(db, 'users', currentUser.id);
       try {
-        await runTransaction(db, async (tx) => {
+        const charged = await runTransaction(db, async (tx) => {
           const s = await tx.get(rideRef);
-          if (s.exists() && !s.data().captainPenaltyApplied) {
-            tx.update(rideRef, { captainPenaltyApplied: true, penaltyReason: reason, penaltyJod: 0.60 });
-            charged = true;
-          }
+          const capSnap = await tx.get(capRef);
+          if (!s.exists() || s.data().captainPenaltyApplied || !['ACCEPTED', 'ARRIVED'].includes(s.data().status)) return false;
+          const curBal = Number(capSnap.data()?.walletBalance || 0);
+          tx.update(rideRef, { captainPenaltyApplied: true, penaltyReason: reason, penaltyJod: 0.60 });
+          tx.update(capRef, { walletBalance: +(curBal - 0.60).toFixed(2) });
+          return true;
         });
+        if (charged) {
+          const msg = reason === 'LATE_ARRIVAL'
+            ? 'تأخرت عن وقت الوصول المقدر + سماح الازدحام! تم خصم 0.60 د.أ.'
+            : 'ابتعدت عن موقع العميل بعد الوصول! تم خصم 0.60 د.أ.';
+          notifyCaptain('⛔ غرامة -0.60 د.أ', msg, 'ride');
+        }
       } catch (e) {}
-      if (charged) {
-        await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(-0.60) });
-        const msg = reason === 'LATE_ARRIVAL'
-          ? 'تأخرت عن وقت الوصول المقدر + سماح الازدحام! تم خصم 0.60 د.أ من رصيدك.'
-          : 'ابتعدت عن موقع العميل بعد تأكيد الوصول! تم خصم 0.60 د.أ من رصيدك.';
-        notifyCaptain('⛔ غرامة -0.60 د.أ', msg, 'ride');
-      }
     }
 
     function startCaptainArrivalTimer(rideId, deadlineMs, alreadyPenalized) {
@@ -732,7 +744,7 @@
           box.innerText = `⏱️ مهلة الوصول (شامل سماح الازدحام): ${m}:${s} (التأخير = -0.60 د.أ)`;
         } else {
           box.className = 'bg-red-50 border border-red-200 p-2 rounded-xl text-center text-[11px] font-extrabold text-[#CE1126]';
-          box.innerText = '⛔ انتهت مهلة الوصول! تم تسجيل غرامة تأخير -0.60 د.أ على رصيدك';
+          box.innerText = '⛔ انتهت مهلة الوصول! تم تسجيل غرامة تأخير -0.60 د.أ';
           applyCaptainPenalty(rideId, 'LATE_ARRIVAL');
         }
       };
@@ -751,7 +763,7 @@
           const eff = Number(d.pauseStartedMs || Date.now());
           const left = Math.max(0, 300 - Math.floor((eff - arrivedAtMs - totalPausedMs) / 1000));
           const m = String(Math.floor(left / 60)).padStart(2, '0'), s = String(left % 60).padStart(2, '0');
-          timerEl.innerText = `⏸️ توقف العداد (${m}:${s}) لأنك تحركت خارج محيط 200م! عُد لمكان العميل`;
+          timerEl.innerText = `⏸️ توقف العداد (${m}:${s}) لأنك تحركت خارج 200م! عُد لمكان العميل`;
           btnNoShow.disabled = true; btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs';
           return;
         }
@@ -776,28 +788,27 @@
 
       bArr.disabled = status !== 'ACCEPTED'; bArr.classList.toggle('opacity-40', status !== 'ACCEPTED');
       bStart.disabled = status !== 'ARRIVED'; bStart.classList.toggle('opacity-40', status !== 'ARRIVED');
-      bComp.disabled = status !== 'ON_TRIP'; bComp.classList.toggle('opacity-40', status !== 'ON_TRIP');
+      bComp.disabled = status !== 'ON_TRIP' || isFinishingRide; bComp.classList.toggle('opacity-40', status !== 'ON_TRIP');
       bCan.classList.toggle('hidden', status === 'ON_TRIP');
     }
 
     function attachCaptainToRide(rideId, initialMovedKm, startCoords) {
       const rideRef = doc(db, 'rides', rideId);
       activeRideId = rideId; totalMovedKm = initialMovedKm || 0; lastGpsPos = startCoords;
-      waitPauseStateSync = null;
+      waitPauseStateSync = null; isFinishingRide = false;
       document.getElementById('cap-requests-section').classList.add('hidden');
       document.getElementById('cap-active-ride').classList.remove('hidden');
       document.getElementById('cap-moved-info').innerText = `المسافة المقطوعة نحو العميل: ${totalMovedKm.toFixed(2)} كم`;
 
       if (navigator.geolocation) {
         gpsWatchId = navigator.geolocation.watchPosition((pos) => {
-          if (!activeRideId || !activeRideData) return;
+          if (!activeRideId || !activeRideData || isFinishingRide) return;
           const cur = [pos.coords.latitude, pos.coords.longitude];
           if (lastGpsPos) { const step = haversineKm(lastGpsPos, cur); if (step >= 0.015 && step <= 2.0) { totalMovedKm += step; lastGpsPos = cur; } }
           else lastGpsPos = cur;
 
           const updatePayload = { captainLat: cur[0], captainLng: cur[1], captainMovedKm: Number(totalMovedKm.toFixed(2)) };
 
-          // مراقبة بقاء الكابتن ضمن 200 متر بعد ضغط الوصول
           if (activeRideData.status === 'ARRIVED') {
             const distFromPickupM = haversineKm(cur, [activeRideData.pickupLat, activeRideData.pickupLng]) * 1000;
             const shouldPause = distFromPickupM > 200;
@@ -805,7 +816,7 @@
               waitPauseStateSync = true;
               updatePayload.waitPaused = true;
               updatePayload.pauseStartedMs = Date.now();
-              notifyCaptain('⏸️ توقف عداد الانتظار!', `تحركت ${Math.round(distFromPickupM)}م عن العميل — عُد للمنطقة فوراً لتجنب غرامة 0.60 د.أ`, 'chat');
+              notifyCaptain('⏸️ توقف عداد الانتظار!', `تحركت ${Math.round(distFromPickupM)}م عن العميل — عُد للمنطقة فوراً`, 'chat');
             } else if (!shouldPause && activeRideData.waitPaused && waitPauseStateSync !== false) {
               waitPauseStateSync = false;
               const addedPause = Date.now() - Number(activeRideData.pauseStartedMs || Date.now());
@@ -823,7 +834,7 @@
         }, () => {}, { enableHighAccuracy: true });
       }
 
-      unsubRide = onSnapshot(rideRef, async (snap) => {
+      unsubRide = onSnapshot(rideRef, (snap) => {
         const d = snap.data(); if (!d) return;
         activeRideData = d;
         waitPauseStateSync = !!d.waitPaused;
@@ -858,22 +869,7 @@
           if (waitTimerInt) clearInterval(waitTimerInt);
           document.getElementById('cap-wait-box').classList.add('hidden');
         } else if (['COMPLETED', 'CANCELLED', 'CANCELLED_NO_SHOW'].includes(d.status)) {
-          if (d.status === 'COMPLETED') {
-            let shouldSettleCap = false;
-            try {
-              await runTransaction(db, async (tx) => {
-                const s = await tx.get(rideRef);
-                if (s.exists() && !s.data().captainSettled) { tx.update(rideRef, { captainSettled: true }); shouldSettleCap = true; }
-              });
-            } catch (e) {}
-
-            if (shouldSettleCap) {
-              const delta = d.paymentMethod === 'محفظة نشمي' ? net : +(net - paidByRider).toFixed(2);
-              await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(delta) });
-              const signTxt = delta >= 0 ? `+${delta.toFixed(2)}` : `${delta.toFixed(2)}`;
-              alert(`تم إنهاء الرحلة! 🎉\nالمحصّل: ${paidByRider.toFixed(2)} د.أ\n${debtRec > 0 ? `منها ذمة للشركة: ${debtRec.toFixed(2)} د.أ\n` : ''}تعديل المحفظة: ${signTxt} د.أ\nصافي ربحك: ${net.toFixed(2)} د.أ`);
-            }
-          } else if (d.status === 'CANCELLED' && d.cancelledBy === 'RIDER') {
+          if (d.status === 'CANCELLED' && d.cancelledBy === 'RIDER') {
             const fee = Number(d.cancelFeeJod || 0);
             notifyCaptain(fee > 0 ? `💰 تعويض ${fee.toFixed(2)} د.أ!` : '❌ ألغى الراكب الطلب',
               fee > 0 ? 'نزل 0.50 د.أ بمحفظتك!' : 'تم إلغاء الطلب مجاناً', 'ride');
@@ -899,7 +895,7 @@
           const d = snap.data();
           const distToPickupKm = haversineKm(startCoords, [d.pickupLat, d.pickupLng]) * 1.28;
           const estPickupMins = Math.max(3, Math.ceil(distToPickupKm * 2.5 + 2));
-          const graceMins = Math.max(4, Math.ceil(estPickupMins * 0.5)); // سماح وقت الازدحام
+          const graceMins = Math.max(4, Math.ceil(estPickupMins * 0.5));
           const deadlineMs = Date.now() + (estPickupMins + graceMins) * 60000;
 
           tx.update(rideRef, {
@@ -920,7 +916,7 @@
       if (waitTimerInt) clearInterval(waitTimerInt);
       if (arrivalTimerInt) clearInterval(arrivalTimerInt);
       if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId);
-      activeRideId = null; activeRideData = null; totalMovedKm = 0; lastGpsPos = null; waitPauseStateSync = null;
+      activeRideId = null; activeRideData = null; totalMovedKm = 0; lastGpsPos = null; waitPauseStateSync = null; isFinishingRide = false;
       document.getElementById('cap-wait-box').classList.add('hidden');
       document.getElementById('cap-arrival-box').classList.add('hidden');
       document.getElementById('cap-active-ride').classList.add('hidden');
@@ -946,27 +942,30 @@
       if (activeRideData.waitPaused) return alert('⏸️ العداد متوقف لأنك تحركت خارج محيط العميل!');
       const btn = document.getElementById('btn-no-show'); btn.disabled = true;
       const rideRef = doc(db, 'rides', activeRideId);
-      let ok = false;
-      await runTransaction(db, async (tx) => {
-        const s = await tx.get(rideRef);
-        if (s.exists() && s.data().status === 'ARRIVED' && !s.data().waitPaused) {
-          tx.update(rideRef, { status: 'CANCELLED_NO_SHOW', compensationJod: 0.50 });
-          ok = true;
-        }
+      const capRef = doc(db, 'users', currentUser.id);
+      const riderRef = doc(db, 'users', activeRideData.riderId);
+
+      const ok = await runTransaction(db, async (tx) => {
+        const rSnap = await tx.get(rideRef);
+        const capSnap = await tx.get(capRef);
+        const riderSnap = await tx.get(riderRef);
+        if (!rSnap.exists() || rSnap.data().status !== 'ARRIVED' || rSnap.data().waitPaused || rSnap.data().financialSettled) return false;
+        const cBal = Number(capSnap.data()?.walletBalance || 0);
+        const rBal = Number(riderSnap.data()?.walletBalance || 0);
+        tx.update(rideRef, { status: 'CANCELLED_NO_SHOW', compensationJod: 0.50, financialSettled: true });
+        tx.update(capRef, { walletBalance: +(cBal + 0.50).toFixed(2) });
+        tx.update(riderRef, { walletBalance: +(rBal - 0.50).toFixed(2) });
+        return true;
       });
-      if (ok) {
-        await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(0.50) });
-        await updateDoc(doc(db, 'users', activeRideData.riderId), { walletBalance: increment(-0.50) });
-        alert('✅ تم إلغاء الرحلة ونزل 0.50 د.أ تعويضاً في محفظتك!');
-      }
       cleanupActiveRide();
+      if (ok) showSummary('تم إلغاء الرحلة لعدم الحضور', '<div>تم إضافة <span class="jo-text">+0.50 د.أ</span> تعويضاً لمحفظتك!</div>');
     };
 
     window.cancelRideCaptain = async () => {
       if (!activeRideId || activeRideData?.status === 'ON_TRIP') return;
       if (!confirm('هل أنت متأكد من إلغاء الرحلة؟')) return;
       await updateDoc(doc(db, 'users', currentUser.id), { cancelledByCaptain: increment(1) });
-      await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelledBy: 'CAPTAIN' });
+      await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelledBy: 'CAPTAIN', financialSettled: true });
       cleanupActiveRide();
     };
 
@@ -978,10 +977,80 @@
 
     window.updateRideStatus = async (status) => {
       if (!activeRideId || !activeRideData) return;
-      if (status === 'ON_TRIP' && activeRideData.status !== 'ARRIVED') return alert('يجب تأكيد الوصول أولاً');
-      if (status === 'COMPLETED' && activeRideData.status !== 'ON_TRIP') return alert('يجب بدء الرحلة أولاً');
-      if (status === 'COMPLETED') document.getElementById('btn-complete-trip').disabled = true;
-      await updateDoc(doc(db, 'rides', activeRideId), { status });
+      if (status === 'ON_TRIP') {
+        if (activeRideData.status !== 'ARRIVED') return alert('يجب تأكيد الوصول أولاً');
+        await updateDoc(doc(db, 'rides', activeRideId), { status: 'ON_TRIP' });
+        return;
+      }
+      if (status === 'COMPLETED') {
+        if (activeRideData.status !== 'ON_TRIP' || isFinishingRide) return;
+        isFinishingRide = true;
+        document.getElementById('btn-complete-trip').disabled = true;
+        if (gpsWatchId !== null) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; }
+
+        const rideRef = doc(db, 'rides', activeRideId);
+        const capRef = doc(db, 'users', currentUser.id);
+        const riderRef = doc(db, 'users', activeRideData.riderId);
+        const promoCode = activeRideData.promoCode;
+        const promoRef = promoCode ? doc(db, 'promos', promoCode) : null;
+
+        try {
+          const result = await runTransaction(db, async (tx) => {
+            const rSnap = await tx.get(rideRef);
+            const capSnap = await tx.get(capRef);
+            const riderSnap = await tx.get(riderRef);
+            const promoSnap = promoRef ? await tx.get(promoRef) : null;
+
+            if (!rSnap.exists() || rSnap.data().status !== 'ON_TRIP' || rSnap.data().financialSettled) {
+              return { ok: false };
+            }
+            const rd = rSnap.data();
+            const debtRec = Number(rd.settledDebtJod || 0);
+            const ridePriceOnly = Number(rd.originalFareJod || (Number(rd.fareJod || 0) - debtRec));
+            const paidByRider = Number(rd.fareJod || 0);
+            const commAmt = +(ridePriceOnly * (commissionPct / 100)).toFixed(2);
+            const net = +(ridePriceOnly - commAmt).toFixed(2);
+
+            const curCapBal = Number(capSnap.data()?.walletBalance || 0);
+            const capDelta = rd.paymentMethod === 'محفظة نشمي' ? net : +(net - paidByRider).toFixed(2);
+            const newCapBal = +(curCapBal + capDelta).toFixed(2);
+
+            const curRiderBal = Number(riderSnap.data()?.walletBalance || 0);
+            const riderDelta = rd.paymentMethod === 'محفظة نشمي' ? +(debtRec - paidByRider).toFixed(2) : debtRec;
+            const newRiderBal = +(curRiderBal + riderDelta).toFixed(2);
+
+            const riderUpdate = { walletBalance: newRiderBal };
+            if (promoCode && rd.promoCode) {
+              const curUsage = riderSnap.data()?.promoUsage || {};
+              riderUpdate.promoUsage = { ...curUsage, [rd.promoCode]: Number(curUsage[rd.promoCode] || 0) + 1 };
+            }
+
+            tx.update(rideRef, { status: 'COMPLETED', financialSettled: true, captainSettled: true, riderSettled: true, completedAt: serverTimestamp() });
+            tx.update(capRef, { walletBalance: newCapBal });
+            tx.update(riderRef, riderUpdate);
+            if (promoSnap && promoSnap.exists()) {
+              tx.update(promoRef, { usedCount: Number(promoSnap.data()?.usedCount || 0) + 1 });
+            }
+
+            return { ok: true, paidByRider, debtRec, capDelta, net };
+          });
+
+          cleanupActiveRide();
+          if (result && result.ok) {
+            const signTxt = result.capDelta >= 0 ? `+${result.capDelta.toFixed(2)}` : `${result.capDelta.toFixed(2)}`;
+            showSummary('تم إنهاء الرحلة! 🎉', `
+              <div>المحصّل من العميل: <b>${result.paidByRider.toFixed(2)} د.أ</b></div>
+              ${result.debtRec > 0 ? `<div class="text-[#CE1126]">منها ذمة مسددة للشركة: <b>${result.debtRec.toFixed(2)} د.أ</b></div>` : ''}
+              <div>تعديل المحفظة: <b dir="ltr">${signTxt} د.أ</b></div>
+              <div class="jo-text text-sm pt-1 border-t">صافي ربحك: <b>${result.net.toFixed(2)} د.أ</b></div>
+            `);
+          }
+        } catch (e) {
+          isFinishingRide = false;
+          document.getElementById('btn-complete-trip').disabled = false;
+          alert('حدث خطأ في الاتصال، حاول مرة أخرى: ' + e.message);
+        }
+      }
     };
 
     function listenChat(rideId) {
