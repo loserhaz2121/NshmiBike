@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>تتبع رحلة NshmiBike 🇯🇴</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+    #map { height: 100%; width: 100%; }
+    .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
+  </style>
+</head>
+<body class="h-screen flex flex-col bg-slate-100">
+  <div class="shmagh-strip shrink-0"></div>
+  <header class="bg-slate-900 text-white p-3.5 flex justify-between items-center shrink-0">
+    <div class="font-extrabold text-sm">تتبع مباشر • Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</div>
+    <span id="live-status" class="bg-emerald-600 text-[11px] font-bold px-3 py-1 rounded-full">جاري الاتصال...</span>
+  </header>
+  <div class="flex-1 relative"><div id="map"></div></div>
+  <div class="bg-white p-4 rounded-t-3xl shadow-2xl space-y-1.5 shrink-0">
+    <div id="track-cap" class="font-extrabold text-sm text-slate-800">جاري تحميل بيانات الكابتن...</div>
+    <div id="track-route" class="text-xs text-slate-500 font-semibold"></div>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const app = initializeApp({
+      apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU", authDomain: "nshmibike.firebaseapp.com",
+      projectId: "nshmibike", appId: "1:506031565051:web:fc915e5a2173e841c7a85e"
+    });
+    const db = getFirestore(app);
+    const rideId = new URLSearchParams(location.search).get('ride');
+    const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.9539, 35.9106], 14);
+    L.tileLayer('https://{s}.google.com/vt/lyrs=m&hl=ar&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(map);
+    const bikeIcon = L.divIcon({ html: '<div style="font-size:28px;">🛵</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] });
+    let capM, pM, dM;
+    if (!rideId) { document.getElementById('live-status').innerText = 'رابط غير صالح'; }
+    else {
+      onSnapshot(doc(db, 'rides', rideId), (snap) => {
+        if (!snap.exists()) { document.getElementById('live-status').innerText = 'الرحلة غير موجودة'; return; }
+        const d = snap.data();
+        const st = { SEARCHING: 'جاري البحث', ACCEPTED: 'الكابتن في الطريق', ARRIVED: 'الكابتن وصل', ON_TRIP: 'الرحلة جارية 💨', COMPLETED: 'وصل بالسلامة ✅', CANCELLED: 'ملغاة' };
+        document.getElementById('live-status').innerText = st[d.status] || d.status;
+        document.getElementById('track-cap').innerText = d.captainName ? `الراكب: ${d.riderName} • الكابتن: ${d.captainName} (${d.bikeModel} - ${d.plate})` : `الراكب: ${d.riderName}`;
+        document.getElementById('track-route').innerText = `${d.pickupAddress} ⬅️ ${d.dropoffAddress}`;
+        if (!pM) pM = L.circleMarker([d.pickupLat, d.pickupLng], { radius: 8, color: '#007A3D', fillOpacity: 1 }).addTo(map);
+        if (!dM) dM = L.circleMarker([d.dropoffLat, d.dropoffLng], { radius: 8, color: '#CE1126', fillOpacity: 1 }).addTo(map);
+        if (d.captainLat && d.captainLng) {
+          if (capM) capM.setLatLng([d.captainLat, d.captainLng]); else capM = L.marker([d.captainLat, d.captainLng], { icon: bikeIcon }).addTo(map);
+          map.panTo([d.captainLat, d.captainLng], { animate: true });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
