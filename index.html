@@ -95,7 +95,6 @@
         </div>
       </div>
 
-      <!-- الخطوة أ: اختيار الوجهة -->
       <div id="rider-panel-dest" class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] px-4 pt-3 safe-bottom z-20 shrink-0 space-y-2.5">
         <div id="debt-notice" class="hidden bg-red-50 text-[#CE1126] text-[10px] font-extrabold text-center py-1 rounded-lg"></div>
         <div class="flex items-center gap-2 text-xs font-bold text-slate-600 bg-blue-50/70 px-3 py-2 rounded-xl">
@@ -113,7 +112,6 @@
         </div>
       </div>
 
-      <!-- الخطوة ب: تأكيد السعر والطلب -->
       <div id="rider-panel-book" class="hidden bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-4 pt-3 safe-bottom z-20 shrink-0">
         <div class="flex items-center justify-between mb-2">
           <div class="text-xs font-extrabold text-slate-800 truncate flex-1">📍 إلى: <span id="chosen-dest-label" class="jo-text"></span></div>
@@ -146,7 +144,6 @@
         <button onclick="requestRide()" id="btn-request-ride" data-i18n="orderBtn" class="w-full jo-green text-white font-extrabold py-3 rounded-2xl shadow-lg text-sm">اطلب NshmiBike الآن 🇯🇴</button>
       </div>
 
-      <!-- لوحة الرحلة النشطة -->
       <div id="rider-panel-active" class="hidden bg-white rounded-t-3xl shadow-2xl px-4 pt-4 safe-bottom z-20 space-y-2.5 shrink-0">
         <div class="flex justify-between items-center">
           <span id="rider-ride-status" class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full">جاري توجيه الطلب لأقرب كابتن...</span>
@@ -164,10 +161,9 @@
           <div id="rider-messages" class="max-h-24 overflow-y-auto text-xs space-y-1 mb-2"></div>
           <div class="flex gap-1"><input id="rider-chat-input" type="text" placeholder="راسل الكابتن..." class="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs"><button onclick="sendChat()" class="jo-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button></div>
         </div>
-        <button onclick="cancelRideRider()" data-i18n="cancelBtn" class="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl text-xs">إلغاء الطلب</button>
+        <button onclick="cancelRideRider()" id="btn-rider-cancel" data-i18n="cancelBtn" class="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl text-xs">إلغاء الطلب</button>
       </div>
 
-      <!-- لوحة التقييم -->
       <div id="rider-panel-rating" class="hidden bg-white rounded-t-3xl shadow-2xl px-5 pt-5 safe-bottom z-20 text-center space-y-3 shrink-0">
         <div class="text-3xl">🎉</div>
         <h3 data-i18n="arrivedSafe" class="font-extrabold text-slate-800 text-base">الحمد لله على السلامة!</h3>
@@ -176,7 +172,6 @@
         <button onclick="rateRide(5)" data-i18n="newRideBtn" class="w-full jo-green text-white font-extrabold py-3 rounded-2xl text-sm">حجز رحلة جديدة</button>
       </div>
 
-      <!-- القائمة الجانبية -->
       <div id="drawer-backdrop" onclick="toggleDrawer(false)" class="hidden fixed inset-0 bg-black/50 z-40"></div>
       <aside id="side-drawer" class="hidden fixed top-0 bottom-0 w-[80%] max-w-[310px] bg-white z-50 flex flex-col shadow-2xl overflow-y-auto safe-bottom">
         <div class="shmagh-strip shrink-0"></div>
@@ -198,7 +193,7 @@
         </nav>
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.8.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v3.0.0 🇯🇴</div>
         </div>
       </aside>
 
@@ -712,8 +707,7 @@
           ? `⏱️ الكابتن بانتظارك: ${m}:${s} (الإلغاء الآن يخصم 0.50 د.أ)`
           : '⚠️ انتهى وقت الانتظار المجاني (5 دقائق)';
       };
-      update();
-      waitInterval = setInterval(update, 1000);
+      update(); waitInterval = setInterval(update, 1000);
     }
 
     async function buildSmartDispatchQueue(cityAr) {
@@ -747,7 +741,7 @@
         ? `${Number(initialData.fareJod).toFixed(2)} د.أ (شامل ${debt.toFixed(2)} ذمة)`
         : `${Number(initialData.fareJod).toFixed(2)} د.أ`;
 
-      unsubRide = onSnapshot(doc(db, 'rides', activeRideId), async (snap) => {
+      unsubRide = onSnapshot(doc(db, 'rides', activeRideId), (snap) => {
         const data = snap.data(); if (!data) return;
         activeRideData = data;
         const badge = document.getElementById('rider-ride-status');
@@ -760,19 +754,11 @@
         const capFault = !!(data.captainPenaltyApplied || data.waitPaused || isLate);
         const warnEl = document.getElementById('rider-cancel-warning');
 
-        if (data.status === 'ACCEPTED') {
-          startArrivalCountdown(data.arrivalDeadlineMs, !!data.captainPenaltyApplied);
-        } else {
-          if (arrivalInterval) clearInterval(arrivalInterval);
-          document.getElementById('rider-arrival-timer').classList.add('hidden');
-        }
+        if (data.status === 'ACCEPTED') startArrivalCountdown(data.arrivalDeadlineMs, !!data.captainPenaltyApplied);
+        else { if (arrivalInterval) clearInterval(arrivalInterval); document.getElementById('rider-arrival-timer').classList.add('hidden'); }
 
-        if (data.status === 'ARRIVED') {
-          startWaitCountdown(data);
-        } else {
-          if (waitInterval) clearInterval(waitInterval);
-          document.getElementById('rider-wait-timer').classList.add('hidden');
-        }
+        if (data.status === 'ARRIVED') startWaitCountdown(data);
+        else { if (waitInterval) clearInterval(waitInterval); document.getElementById('rider-wait-timer').classList.add('hidden'); }
 
         if (capFault && ['ACCEPTED', 'ARRIVED'].includes(data.status)) {
           warnEl.innerText = '✅ الإلغاء الآن مجاني لك (بسبب تأخر الكابتن أو مغادرته الموقع)';
@@ -812,25 +798,12 @@
             badge.innerText = 'الرحلة جارية 💨';
             if (prevStatus !== null) notifyRider('💨 انطلقت الرحلة', 'رحلة آمنة مع نشمي بايك', 'status');
           } else if (data.status === 'COMPLETED') {
-            const rRef = doc(db, 'rides', activeRideId);
-            let shouldSettleRider = false;
-            try {
-              await runTransaction(db, async (tx) => {
-                const s = await tx.get(rRef);
-                if (s.exists() && !s.data().riderSettled) { tx.update(rRef, { riderSettled: true }); shouldSettleRider = true; }
-              });
-            } catch (e) {}
-            if (shouldSettleRider) {
-              if (debt > 0) await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(debt) });
-              if (data.paymentMethod === 'محفظة نشمي') await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(-Number(data.fareJod)) });
-              if (data.promoCode) {
-                await updateDoc(doc(db, 'users', currentUser.id), { ['promoUsage.' + data.promoCode]: increment(1) });
-                await updateDoc(doc(db, 'promos', data.promoCode), { usedCount: increment(1) });
-              }
-            }
             appliedPromo = null; document.getElementById('promo-input').value = '';
+            const finishedId = activeRideId;
+            resetRideWatchers();
+            activeRideId = null;
+            lastCompletedRideId = finishedId;
             notifyRider('🎉 وصلت بالسلامة!', `الأجرة: ${Number(data.fareJod).toFixed(2)} د.أ`, 'status');
-            lastCompletedRideId = activeRideId; resetRideWatchers();
             document.getElementById('rider-panel-active').classList.add('hidden');
             document.getElementById('rider-panel-rating').classList.remove('hidden');
             document.getElementById('rating-summary').innerText = `${Number(data.fareJod).toFixed(2)} د.أ (${data.paymentMethod})`;
@@ -851,7 +824,7 @@
       const origFare = origFares[selectedTier];
       const finalFare = +(fares[selectedTier] + debt).toFixed(2);
       const discAmount = +(origFare - fares[selectedTier]).toFixed(2);
-      if (payMethod === 'محفظة نشمي' && currentUser.walletBalance < fares[selectedTier]) return alert('رصيد المحفظة غير كافٍ');
+      if (payMethod === 'محفظة نشمي' && currentUser.walletBalance < finalFare) return alert('رصيد المحفظة غير كافٍ');
 
       const btn = document.getElementById('btn-request-ride'); btn.innerText = 'جاري البحث عن أقرب وأفضل كابتن...'; btn.disabled = true;
       const cityAr = CITIES[currentCity].nameAr;
@@ -867,7 +840,7 @@
         pickupLat: pickupCoords[0], pickupLng: pickupCoords[1], dropoffLat: dropoffCoords[0], dropoffLng: dropoffCoords[1],
         paymentMethod: payMethod, extraHelmet: document.getElementById('extra-helmet').checked,
         dispatchQueue: queueIds, dispatchIndex: 0, targetCaptainId: firstTarget,
-        captainMovedKm: 0, status: 'SEARCHING', createdAt: serverTimestamp()
+        captainMovedKm: 0, financialSettled: false, status: 'SEARCHING', createdAt: serverTimestamp()
       };
       const rideDoc = await addDoc(collection(db, 'rides'), newRide);
       btn.innerText = dict[lang].orderBtn; btn.disabled = false;
@@ -891,16 +864,45 @@
       const capFault = !!(activeRideData?.captainPenaltyApplied || activeRideData?.waitPaused || isLate);
       const hasPenalty = activeRideData && !capFault && (activeRideData.status === 'ARRIVED' || movedKm >= 2.0);
 
-      if (hasPenalty) {
-        if (!confirm('⚠️ تنبيه غرامة الإلغاء:\nالكابتن وصل لموقعك (أو تحرك نحوك +2 كم).\nإلغاء الطلب الآن يترتب عليه غرامة 0.50 د.أ (50 قرشاً) تعويضاً للكابتن.\nهل تريد المتابعة؟')) return;
-        await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelFeeJod: 0.50, cancelledBy: 'RIDER' });
-        await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(-0.50) });
-        if (activeRideData.captainId) await updateDoc(doc(db, 'users', activeRideData.captainId), { walletBalance: increment(0.50) });
-        alert('تم إلغاء الطلب وتحويل 0.50 د.أ تعويضاً للكابتن.');
-      } else {
-        await updateDoc(doc(db, 'rides', activeRideId), { status: 'CANCELLED', cancelFeeJod: 0, cancelledBy: 'RIDER' });
+      if (hasPenalty && !confirm('⚠️ تنبيه غرامة الإلغاء:\nالكابتن وصل لموقعك (أو تحرك نحوك +2 كم).\nإلغاء الطلب الآن يترتب عليه غرامة 0.50 د.أ تعويضاً للكابتن.\nهل تريد المتابعة؟')) return;
+
+      const btn = document.getElementById('btn-rider-cancel'); btn.disabled = true;
+      const rRef = doc(db, 'rides', activeRideId);
+      try {
+        const res = await runTransaction(db, async (tx) => {
+          const rSnap = await tx.get(rRef);
+          if (!rSnap.exists()) return { ok: false };
+          const rd = rSnap.data();
+          if (!['SEARCHING', 'ACCEPTED', 'ARRIVED'].includes(rd.status) || rd.financialSettled) return { ok: false };
+
+          const riderSnap = await tx.get(doc(db, 'users', currentUser.id));
+          let capSnap = null;
+          if (rd.captainId) capSnap = await tx.get(doc(db, 'users', rd.captainId));
+
+          const mKm = Number(rd.captainMovedKm || 0);
+          const late = rd.arrivalDeadlineMs && Date.now() > rd.arrivalDeadlineMs;
+          const fault = !!(rd.captainPenaltyApplied || rd.waitPaused || late);
+          const penalize = !fault && (rd.status === 'ARRIVED' || mKm >= 2.0);
+
+          if (penalize) {
+            const rBal = Number(riderSnap.data()?.walletBalance || 0);
+            tx.update(doc(db, 'users', currentUser.id), { walletBalance: +(rBal - 0.50).toFixed(2) });
+            if (capSnap && capSnap.exists()) {
+              const cBal = Number(capSnap.data()?.walletBalance || 0);
+              tx.update(doc(db, 'users', rd.captainId), { walletBalance: +(cBal + 0.50).toFixed(2) });
+            }
+            tx.update(rRef, { status: 'CANCELLED', cancelFeeJod: 0.50, cancelledBy: 'RIDER', financialSettled: true });
+            return { ok: true, charged: true };
+          } else {
+            tx.update(rRef, { status: 'CANCELLED', cancelFeeJod: 0, cancelledBy: 'RIDER', financialSettled: true });
+            return { ok: true, charged: false };
+          }
+        });
+        if (res?.charged) notifyRider('تم إلغاء الطلب', 'تم خصم 0.50 د.أ تعويضاً للكابتن', 'status');
+      } finally {
+        btn.disabled = false;
+        resetRiderUI();
       }
-      resetRiderUI();
     };
 
     function resetRideWatchers() {
