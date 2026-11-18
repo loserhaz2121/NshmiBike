@@ -95,10 +95,8 @@
       </div>
 
       <div class="p-3 space-y-3 flex-1 overflow-y-auto safe-bottom">
-        <!-- تنبيه الحد الأقصى للدين (-2.00 د.أ) -->
         <div id="cap-debt-alert" class="hidden p-3 rounded-2xl text-xs font-extrabold text-center shadow-sm"></div>
 
-        <!-- تفعيل الخوذة والمدينة -->
         <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 space-y-2">
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2.5 cursor-pointer flex-1">
@@ -136,7 +134,7 @@
         <div id="cap-active-ride" class="hidden bg-white p-4 rounded-2xl shadow-md border-2 border-[#007A3D] space-y-2.5">
           <div class="flex justify-between items-center">
             <span id="cap-ride-badge" class="bg-emerald-100 text-[#007A3D] text-xs font-extrabold px-3 py-1 rounded-full">في الطريق للعميل</span>
-            <span id="cap-active-fare" class="font-extrabold text-base jo-text"></span>
+            <span id="cap-active-fare" class="font-extrabold text-sm jo-text"></span>
           </div>
           <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl"></div>
           <div id="cap-moved-info" class="text-[11px] font-bold text-slate-600 text-center bg-slate-100 py-1 rounded-lg">المسافة المقطوعة نحو العميل: 0.00 كم</div>
@@ -171,11 +169,7 @@
         <div class="shmagh-strip shrink-0"></div>
         <div class="bg-gradient-to-br from-slate-900 to-[#007A3D] text-white p-5 flex items-center gap-3">
           <div id="drawer-avatar" class="w-14 h-14 rounded-full bg-white/20 border-2 border-white flex items-center justify-center text-2xl font-extrabold">ك</div>
-          <div class="overflow-hidden">
-            <div id="drawer-name" class="font-extrabold text-base truncate"></div>
-            <div id="drawer-phone" class="text-xs text-emerald-200 font-semibold" dir="ltr"></div>
-            <div id="drawer-email" class="text-[10px] text-white/75 truncate" dir="ltr"></div>
-          </div>
+          <div class="overflow-hidden"><div id="drawer-name" class="font-extrabold text-base truncate"></div><div id="drawer-phone" class="text-xs text-emerald-200 font-semibold" dir="ltr"></div><div id="drawer-email" class="text-[10px] text-white/75 truncate" dir="ltr"></div></div>
         </div>
 
         <nav class="flex-1 py-2 divide-y divide-slate-100 text-sm font-bold text-slate-700">
@@ -186,10 +180,7 @@
           <button onclick="openModal('stats')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>📊</span><span data-i18n="mStats">إحصائيات الأداء والقبول</span></button>
           <button onclick="openModal('profile')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>👤</span><span data-i18n="mProfile">الملف الشخصي</span></button>
           <button onclick="openModal('trips')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>🕒</span><span data-i18n="mTrips">رحلاتي</span></button>
-          <button onclick="openModal('wallet')" class="w-full px-5 py-3 flex items-center justify-between hover:bg-slate-50">
-            <span class="flex items-center gap-3"><span>💳</span><span data-i18n="mWallet">المحفظة والأرباح</span></span>
-            <span id="drawer-wallet-val" class="text-xs font-extrabold jo-text">0.00 د.أ</span>
-          </button>
+          <button onclick="openModal('wallet')" class="w-full px-5 py-3 flex items-center justify-between hover:bg-slate-50"><span class="flex items-center gap-3"><span>💳</span><span data-i18n="mWallet">المحفظة والأرباح</span></span><span id="drawer-wallet-val" class="text-xs font-extrabold jo-text">0.00 د.أ</span></button>
           <button onclick="openModal('vehicle')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>🏍️</span><span data-i18n="mVehicle">إضافة / تغيير دراجة</span></button>
           <button onclick="openModal('inbox')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>📬</span><span data-i18n="mInbox">صندوق الرسائل</span></button>
           <button onclick="openModal('invite')" class="w-full px-5 py-3 flex items-center gap-3 hover:bg-slate-50"><span>👥</span><span data-i18n="mInvite">دعوة كباتن وأصدقاء</span></button>
@@ -202,16 +193,13 @@
 
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiCaptain Jordan • v2.5.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiCaptain Jordan • v2.6.0 🇯🇴</div>
         </div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
         <div class="w-full max-w-[440px] bg-white rounded-t-3xl sm:rounded-3xl px-5 pt-5 safe-bottom max-h-[85vh] overflow-y-auto space-y-4">
-          <div class="flex justify-between items-center border-b pb-2.5">
-            <h3 id="modal-title" class="font-extrabold text-base text-slate-800"></h3>
-            <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 font-bold">✕</button>
-          </div>
+          <div class="flex justify-between items-center border-b pb-2.5"><h3 id="modal-title" class="font-extrabold text-base text-slate-800"></h3><button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 font-bold">✕</button></div>
           <div id="modal-body" class="text-xs text-slate-700 space-y-3"></div>
         </div>
       </div>
@@ -292,11 +280,9 @@
       } catch (e) {}
     }
     async function notifyCaptain(title, body, kind = 'ride') {
-      playTone(kind);
-      if (navigator.vibrate) navigator.vibrate(kind === 'ride' ? [350, 150, 350, 150, 350] : [200, 100, 200]);
+      playTone(kind); if (navigator.vibrate) navigator.vibrate(kind === 'ride' ? [350, 150, 350, 150, 350] : [200, 100, 200]);
       const toast = document.getElementById('toast-banner');
-      document.getElementById('toast-title').innerText = title;
-      document.getElementById('toast-body').innerText = body;
+      document.getElementById('toast-title').innerText = title; document.getElementById('toast-body').innerText = body;
       toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000);
       try {
         const LN = window.Capacitor?.Plugins?.LocalNotifications;
@@ -356,20 +342,16 @@
         alertBox.className = 'p-3 rounded-2xl text-xs font-extrabold text-center shadow-sm bg-red-600 text-white';
         alertBox.innerText = `⛔ تم إيقاف استقبال الطلبات لبلوغ رصيدك (${bal.toFixed(2)} د.أ / الحد الأقصى -2.00 د.أ). يرجى تسليم المستحقات للإدارة لإعادة التفعيل فوراً.`;
         alertBox.classList.remove('hidden');
-        if (chk.checked) {
-          chk.checked = false;
-          toggleCaptainOnline();
-        }
+        if (chk.checked) { chk.checked = false; toggleCaptainOnline(); }
         chk.disabled = true;
       } else if (bal <= -1.30) {
-        stoppedForDebt = false;
-        chk.disabled = false;
+        stoppedForDebt = false; chk.disabled = false;
         alertBox.className = 'p-3 rounded-2xl text-xs font-extrabold text-center shadow-sm bg-amber-100 text-amber-900 border border-amber-300';
         alertBox.innerText = `⚠️ تحذير: رصيدك (${bal.toFixed(2)} د.أ) اقترب من حد الإيقاف (-2.00 د.أ)! يرجى تسليم المستحقات للمندوب قبل توقف حسابك.`;
         alertBox.classList.remove('hidden');
         if (!warnedLowBalance) {
           warnedLowBalance = true;
-          notifyCaptain('⚠️ تنبيه الرصيد اقترب من -2.00 د.أ!', `رصيدك الحالي ${bal.toFixed(2)} د.أ — سارع بالتسديد قبل توقف الحساب`, 'chat');
+          notifyCaptain('⚠️ تنبيه الرصيد اقترب من -2.00 د.أ!', `رصيدك الحالي ${bal.toFixed(2)} د.أ — سارع بالتسديد`, 'chat');
         }
       } else {
         stoppedForDebt = false; warnedLowBalance = false; chk.disabled = false;
@@ -649,14 +631,19 @@
             updateDoc(doc(db, 'users', currentUser.id), { offersSeen: increment(1) }).catch(() => {});
             notifyCaptain(r.targetCaptainId === currentUser.id ? '⚡ طلب مخصص لك (الأقرب)!' : '🛵 طلب متاح قريب!', `${r.pickupAddress} ⬅️ ${r.dropoffAddress}`, 'ride');
           }
-          const origFare = Number(r.originalFareJod || r.fareJod || 0);
-          const capNet = origFare * (1 - commissionPct / 100);
+          // حساب صافي ربح الكابتن على سعر الرحلة الحقيقي فقط بدون الذمم السالبة على العميل
+          const debtRec = Number(r.settledDebtJod || 0);
+          const ridePriceOnly = Number(r.originalFareJod || (Number(r.fareJod || 0) - debtRec));
+          const capNet = +(ridePriceOnly * (1 - commissionPct / 100)).toFixed(2);
           const card = document.createElement('div');
           card.className = 'bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 space-y-2';
           card.innerHTML = `
             <div class="flex justify-between items-center">
               <span class="bg-emerald-100 text-[#007A3D] text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">${r.tier} • ${r.distanceKm} كم</span>
-              <div class="text-left"><div class="font-extrabold text-base jo-text">تحصيل: ${Number(r.fareJod||0).toFixed(2)} د.أ</div><div class="text-[10px] text-slate-600 font-bold">صافي ربحك: ${capNet.toFixed(2)} د.أ</div></div>
+              <div class="text-left">
+                <div class="font-extrabold text-base jo-text">تحصيل: ${Number(r.fareJod||0).toFixed(2)} د.أ</div>
+                <div class="text-[10px] text-slate-600 font-bold">صافي ربحك: ${capNet.toFixed(2)} د.أ ${debtRec > 0 ? `<span class="text-[#CE1126]">(منها ${debtRec.toFixed(2)} ذمة للشركة)</span>` : ''}</div>
+              </div>
             </div>
             <div class="text-xs font-semibold">${r.pickupAddress}</div><div class="text-xs font-semibold">${r.dropoffAddress}</div>
             <div class="text-[11px] text-slate-500">الراكب: ${r.riderName} • ${r.paymentMethod}</div>
@@ -732,16 +719,18 @@
         unsubRide = onSnapshot(rideRef, async (snap) => {
           const d = snap.data(); if (!d) return;
           activeRideData = d;
-          const origFare = Number(d.originalFareJod || d.fareJod || 0);
+          const debtRec = Number(d.settledDebtJod || 0);
+          const ridePriceOnly = Number(d.originalFareJod || (Number(d.fareJod || 0) - debtRec));
           const paidByRider = Number(d.fareJod || 0);
-          const commAmt = +(origFare * (commissionPct / 100)).toFixed(2);
-          const net = +(origFare - commAmt).toFixed(2);
+          const commAmt = +(ridePriceOnly * (commissionPct / 100)).toFixed(2);
+          const net = +(ridePriceOnly - commAmt).toFixed(2);
 
           document.getElementById('cap-active-fare').innerText = `تحصيل ${paidByRider.toFixed(2)} د.أ (${d.paymentMethod})`;
           document.getElementById('cap-active-details').innerHTML = `
             <div><strong>الراكب:</strong> ${d.riderName} (<a href="tel:${d.riderPhone}" class="jo-text underline">${d.riderPhone}</a>)</div>
             <div>${d.pickupAddress}</div><div>${d.dropoffAddress}</div>
-            <div class="jo-text font-bold">صافي ربحك: ${net.toFixed(2)} د.أ (عمولة الشركة: ${commAmt.toFixed(2)} د.أ)</div>`;
+            <div class="jo-text font-bold">صافي ربحك: ${net.toFixed(2)} د.أ (عمولة الشركة: ${commAmt.toFixed(2)} د.أ)</div>
+            ${debtRec > 0 ? `<div class="text-[#CE1126] font-bold">ذمة سابقة تُحصّل للشركة: ${debtRec.toFixed(2)} د.أ</div>` : ''}`;
 
           if (d.status === 'ARRIVED') {
             document.getElementById('cap-ride-badge').innerText = 'وصلت للعميل 📍';
@@ -752,11 +741,11 @@
             document.getElementById('cap-wait-box').classList.add('hidden');
           } else if (['COMPLETED', 'CANCELLED', 'CANCELLED_NO_SHOW'].includes(d.status)) {
             if (d.status === 'COMPLETED') {
-              // المعادلة الموحدة لخصم العمولة وتعويض خصومات الشركة في محفظة الكابتن
+              // يأخذ الكابتن صافي الرحلة الحقيقية فقط، وتسترد الشركة 100% من الذمة السالبة والعمولة
               const delta = d.paymentMethod === 'محفظة نشمي' ? net : +(net - paidByRider).toFixed(2);
               await updateDoc(doc(db, 'users', currentUser.id), { walletBalance: increment(delta) });
               const signTxt = delta >= 0 ? `+${delta.toFixed(2)}` : `${delta.toFixed(2)}`;
-              alert(`تم إنهاء الرحلة! 🎉\nالمحصّل: ${paidByRider.toFixed(2)} د.أ\nتعديل المحفظة (العمولة/الدعم): ${signTxt} د.أ\nصافي ربحك: ${net.toFixed(2)} د.أ`);
+              alert(`تم إنهاء الرحلة! 🎉\nالمحصّل من العميل: ${paidByRider.toFixed(2)} د.أ\n${debtRec > 0 ? `منها ذمة للشركة: ${debtRec.toFixed(2)} د.أ\n` : ''}تعديل المحفظة (العمولة/الذمة/الدعم): ${signTxt} د.أ\nصافي ربحك الحقيقي: ${net.toFixed(2)} د.أ`);
             } else if (d.status === 'CANCELLED' && d.cancelledBy === 'RIDER') {
               const fee = Number(d.cancelFeeJod || 0);
               notifyCaptain(fee > 0 ? `💰 تعويض ${fee.toFixed(2)} د.أ!` : '❌ ألغى الراكب الطلب',
@@ -814,22 +803,17 @@
     window.updateRideStatus = async (status) => { if (activeRideId) await updateDoc(doc(db, 'rides', activeRideId), { status }); };
 
     function listenChat(rideId) {
-      if (unsubChat) unsubChat();
-      let firstLoad = true;
+      if (unsubChat) unsubChat(); let firstLoad = true;
       const q = query(collection(db, 'rides', rideId, 'messages'), orderBy('createdAt', 'asc'));
       unsubChat = onSnapshot(q, (snap) => {
         const box = document.getElementById('cap-messages'); box.innerHTML = '';
         snap.forEach((m) => {
-          const d = m.data(), div = document.createElement('div');
-          div.className = 'bg-white px-2 py-1 rounded-lg border border-slate-100';
+          const d = m.data(), div = document.createElement('div'); div.className = 'bg-white px-2 py-1 rounded-lg border border-slate-100';
           const s = document.createElement('span'); s.className = 'font-bold jo-text'; s.textContent = d.senderName + ': ';
-          const t = document.createElement('span'); t.textContent = d.text;
-          div.appendChild(s); div.appendChild(t); box.appendChild(div);
+          const t = document.createElement('span'); t.textContent = d.text; div.appendChild(s); div.appendChild(t); box.appendChild(div);
         });
         box.scrollTop = box.scrollHeight;
-        if (!firstLoad) {
-          snap.docChanges().forEach((c) => { if (c.type === 'added' && c.doc.data().role !== 'CAPTAIN') notifyCaptain('💬 رسالة من الراكب', c.doc.data().text, 'chat'); });
-        }
+        if (!firstLoad) snap.docChanges().forEach((c) => { if (c.type === 'added' && c.doc.data().role !== 'CAPTAIN') notifyCaptain('💬 رسالة من الراكب', c.doc.data().text, 'chat'); });
         firstLoad = false;
       });
     }
