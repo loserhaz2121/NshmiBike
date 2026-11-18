@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <!-- الخطوة أ: اختيار الوجهة (مقفلة على 35 كم) -->
+      <!-- الخطوة أ: اختيار الوجهة -->
       <div id="rider-panel-dest" class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] px-4 pt-3 safe-bottom z-20 shrink-0 space-y-2.5">
         <div id="debt-notice" class="hidden bg-red-50 text-[#CE1126] text-[10px] font-extrabold text-center py-1 rounded-lg"></div>
         <div class="flex items-center gap-2 text-xs font-bold text-slate-600 bg-blue-50/70 px-3 py-2 rounded-xl">
@@ -141,6 +141,7 @@
         </div>
 
         <div id="car-savings-badge" class="bg-emerald-50 text-[#007A3D] text-[10px] font-bold text-center py-1 rounded-lg mb-1.5"></div>
+        <div id="book-debt-line" class="hidden bg-red-50 text-[#CE1126] text-[10px] font-extrabold text-center py-1 rounded-lg mb-1.5"></div>
 
         <div class="flex gap-1.5 mb-1.5">
           <input id="promo-input" type="text" placeholder="كود الخصم / Promo" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs uppercase font-bold">
@@ -164,7 +165,7 @@
       <div id="rider-panel-active" class="hidden bg-white rounded-t-3xl shadow-2xl px-4 pt-4 safe-bottom z-20 space-y-2.5 shrink-0">
         <div class="flex justify-between items-center">
           <span id="rider-ride-status" class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full">جاري توجيه الطلب لأقرب كابتن...</span>
-          <span id="rider-ride-fare" class="font-extrabold text-slate-800 text-sm"></span>
+          <span id="rider-ride-fare" class="font-extrabold text-slate-800 text-xs"></span>
         </div>
         <div id="rider-wait-timer" class="hidden bg-red-50 text-[#CE1126] text-xs font-extrabold text-center py-1.5 rounded-xl"></div>
         <div id="rider-cancel-warning" class="hidden bg-amber-50 text-amber-900 text-[11px] font-bold text-center py-1 rounded-lg"></div>
@@ -211,7 +212,7 @@
         </nav>
         <div class="p-4 border-t border-slate-100">
           <button onclick="logout()" class="w-full text-right text-[#CE1126] font-extrabold text-sm py-1" data-i18n="logout">تسجيل الخروج</button>
-          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.5.0 🇯🇴</div>
+          <div class="text-[11px] text-slate-400 mt-1">NshmiBike Jordan • v2.6.0 🇯🇴</div>
         </div>
       </aside>
 
@@ -246,7 +247,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const MAX_RIDE_KM = 35; // قفل الخريطة على 35 كم
+    const MAX_RIDE_KM = 35;
     const CITIES = {
       amman: {
         nameAr: 'عمّان', nameEn: 'Amman', center: [31.9539, 35.9106],
@@ -350,7 +351,7 @@
     window.testAudio = () => notifyRider('🔔 NshmiBike', 'الصوت والإشعارات شغالة!', 'chat');
 
     let pricing = { scooterBase: 0.25, scooterPerKm: 0.15, scooterMin: 0.60, bikeBase: 0.30, bikePerKm: 0.18, bikeMin: 0.75 };
-    let appliedPromo = null; // { code, discountPct, maxDiscountJod, companyPays }
+    let appliedPromo = null;
     let currentUser = null, selectedTier = 'SCOOTER', currentCity = 'amman';
     let map, pickupMarker, dropoffMarker, routeLine, capMarker;
     let pickupCoords = CITIES.amman.center, pickupAddress = 'موقعي الحالي (GPS)';
@@ -376,8 +377,17 @@
           currentUser.promoUsage = d.promoUsage || {};
           document.getElementById('drawer-wallet-val').innerText = currentUser.walletBalance.toFixed(2) + ' د.أ';
           const debtEl = document.getElementById('debt-notice');
-          if (currentUser.walletBalance < 0) { debtEl.innerText = `⚠️ رصيد مستحق: ${Math.abs(currentUser.walletBalance).toFixed(2)} د.أ`; debtEl.classList.remove('hidden'); }
-          else debtEl.classList.add('hidden');
+          const bookDebt = document.getElementById('book-debt-line');
+          if (currentUser.walletBalance < 0) {
+            const dAmt = Math.abs(currentUser.walletBalance).toFixed(2);
+            debtEl.innerText = `⚠️ رصيد مستحق للشركة: ${dAmt} د.أ (يُحصّل مع الرحلة القادمة)`;
+            debtEl.classList.remove('hidden');
+            bookDebt.innerText = `+ يضاف ${dAmt} د.أ ذمة سابقة مستحقة للشركة`;
+            bookDebt.classList.remove('hidden');
+          } else {
+            debtEl.classList.add('hidden');
+            bookDebt.classList.add('hidden');
+          }
         }
       });
       document.getElementById('drawer-avatar').innerText = currentUser.name.charAt(0);
@@ -520,10 +530,7 @@
 
     function detectClosestCity(coords) {
       let best = 'amman', bestDist = 9999;
-      for (const [key, c] of Object.entries(CITIES)) {
-        const d = haversine(coords, c.center);
-        if (d < bestDist) { bestDist = d; best = key; }
-      }
+      for (const [key, c] of Object.entries(CITIES)) { const d = haversine(coords, c.center); if (d < bestDist) { bestDist = d; best = key; } }
       return best;
     }
 
@@ -543,18 +550,12 @@
       });
     }
 
-    window.switchCity = (cityKey) => {
-      renderCityPlaces(cityKey);
-      if (map) map.setView(CITIES[cityKey].center, 14);
-    };
+    window.switchCity = (cityKey) => { renderCityPlaces(cityKey); if (map) map.setView(CITIES[cityKey].center, 14); };
 
     function initMap() {
       if (map) { map.invalidateSize(); return; }
-      // minZoom: 11 يمنع تصغير الخريطة خارج حدود المدينة
       map = L.map('map', { zoomControl: false, attributionControl: false, minZoom: 11 }).setView(CITIES.amman.center, 15);
-      L.tileLayer('https://{s}.google.com/vt/lyrs=m&hl=ar&x={x}&y={y}&z={z}', {
-        maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-      }).addTo(map);
+      L.tileLayer('https://{s}.google.com/vt/lyrs=m&hl=ar&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(map);
       map.on('click', (e) => {
         if (!document.getElementById('rider-panel-dest').classList.contains('hidden') ||
             !document.getElementById('rider-panel-book').classList.contains('hidden')) {
@@ -605,12 +606,9 @@
       } catch (e) { box.innerHTML = '<div class="text-xs text-red-500 p-2">اضغط على الخريطة مباشرة</div>'; }
     };
 
-    // قفل اختيار الوجهة على مسافة 35 كم كحد أقصى
     window.pickDestination = (coords, label) => {
       const roadKm = haversine(pickupCoords, coords) * 1.28;
-      if (roadKm > MAX_RIDE_KM) {
-        return alert(`⚠️ عذراً، هذه الوجهة بعيدة (${roadKm.toFixed(1)} كم).\nالحد الأقصى للرحلة داخل المدينة هو ${MAX_RIDE_KM} كم فقط.`);
-      }
+      if (roadKm > MAX_RIDE_KM) return alert(`⚠️ عذراً، هذه الوجهة بعيدة (${roadKm.toFixed(1)} كم).\nالحد الأقصى للرحلة داخل المدينة هو ${MAX_RIDE_KM} كم فقط.`);
       dropoffCoords = coords; dropoffAddress = label;
       document.getElementById('chosen-dest-label').innerText = label;
       document.getElementById('rider-panel-dest').classList.add('hidden');
@@ -660,8 +658,7 @@
 
       const calcDisc = (orig) => {
         if (!appliedPromo) return 0;
-        const pctDisc = +(orig * (appliedPromo.discountPct / 100)).toFixed(2);
-        return Math.min(appliedPromo.maxDiscountJod, pctDisc);
+        return Math.min(appliedPromo.maxDiscountJod, +(orig * (appliedPromo.discountPct / 100)).toFixed(2));
       };
 
       fares.SCOOTER = Math.max(0.30, +(origFares.SCOOTER - calcDisc(origFares.SCOOTER)).toFixed(2));
@@ -723,9 +720,9 @@
       if (!dropoffCoords) return alert('اختر وجهتك أولاً');
       if (currentDistKm > MAX_RIDE_KM) return alert(`⚠️ الحد الأقصى للرحلة ${MAX_RIDE_KM} كم فقط.`);
       const payMethod = document.getElementById('payment-method').value;
-      const debt = currentUser.walletBalance < 0 ? Math.abs(currentUser.walletBalance) : 0;
-      const origFare = origFares[selectedTier];
-      const finalFare = +(fares[selectedTier] + debt).toFixed(2);
+      const debt = currentUser.walletBalance < 0 ? +Math.abs(currentUser.walletBalance).toFixed(2) : 0;
+      const origFare = origFares[selectedTier]; // سعر الرحلة الأصلي فقط بدون الدين
+      const finalFare = +(fares[selectedTier] + debt).toFixed(2); // المبلغ الإجمالي الذي يدفعه العميل
       const discAmount = +(origFare - fares[selectedTier]).toFixed(2);
       if (payMethod === 'محفظة نشمي' && currentUser.walletBalance < fares[selectedTier]) return alert('رصيد المحفظة غير كافٍ');
 
@@ -737,9 +734,13 @@
       const rideDoc = await addDoc(collection(db, 'rides'), {
         riderId: currentUser.id, riderName: currentUser.name, riderPhone: currentUser.phone,
         city: cityAr, tier: selectedTier,
-        originalFareJod: +(origFare + debt).toFixed(2), fareJod: finalFare, discountJod: discAmount,
-        promoCode: appliedPromo ? appliedPromo.code : null, companyPaysPromo: appliedPromo ? appliedPromo.companyPays : false,
-        settledDebtJod: debt, distanceKm: Number(currentDistKm.toFixed(1)),
+        originalFareJod: origFare,
+        fareJod: finalFare,
+        discountJod: discAmount,
+        settledDebtJod: debt,
+        promoCode: appliedPromo ? appliedPromo.code : null,
+        companyPaysPromo: appliedPromo ? appliedPromo.companyPays : false,
+        distanceKm: Number(currentDistKm.toFixed(1)),
         pickupAddress, dropoffAddress,
         pickupLat: pickupCoords[0], pickupLng: pickupCoords[1], dropoffLat: dropoffCoords[0], dropoffLng: dropoffCoords[1],
         paymentMethod: payMethod, extraHelmet: document.getElementById('extra-helmet').checked,
@@ -751,7 +752,9 @@
       activeRideId = rideDoc.id; lastRideStatus = 'SEARCHING';
       document.getElementById('rider-panel-book').classList.add('hidden');
       document.getElementById('rider-panel-active').classList.remove('hidden');
-      document.getElementById('rider-ride-fare').innerText = finalFare.toFixed(2) + ' د.أ';
+      document.getElementById('rider-ride-fare').innerText = debt > 0
+        ? `${finalFare.toFixed(2)} د.أ (شامل ${debt.toFixed(2)} ذمة)`
+        : `${finalFare.toFixed(2)} د.أ`;
 
       if (dispatchInterval) clearInterval(dispatchInterval);
       let dIdx = 0;
