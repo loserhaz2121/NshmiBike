@@ -10,10 +10,7 @@
     body { font-family: 'Cairo', sans-serif; background: #f1f5f9; }
     .jo-green { background-color: #007A3D; }
     .jo-text { color: #007A3D; }
-    .shmagh-strip {
-      height: 6px;
-      background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #ffffff 8px, #ffffff 16px);
-    }
+    .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
   </style>
 </head>
 <body class="min-h-screen bg-slate-100 pb-12">
@@ -34,53 +31,32 @@
     <header class="bg-slate-900 text-white p-4 sticky top-0 z-20 shadow flex justify-between items-center">
       <div>
         <h1 class="font-extrabold text-base">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
-        <p class="text-[11px] text-slate-400">فصل كامل للعملاء والكباتن • اعتماد فوري</p>
+        <p class="text-[11px] text-slate-400">شباب ورجال (+18) فقط • ذروة حية • تتبع كامل</p>
       </div>
       <a href="index.html" class="jo-green text-xs font-bold px-3 py-1.5 rounded-xl">تطبيق العميل</a>
     </header>
 
     <div class="grid grid-cols-2 gap-3 p-4">
-      <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100">
-        <div class="text-[11px] text-slate-500 font-bold">إجمالي قيمة الرحلات</div>
-        <div id="stat-gross" class="text-lg font-extrabold text-slate-800 mt-0.5">0.00 د.أ</div>
-      </div>
-      <div class="bg-emerald-50 p-3.5 rounded-2xl shadow-sm border border-emerald-200">
-        <div class="text-[11px] text-[#007A3D] font-bold">عمولة الشركة (<span id="stat-comm-pct">10</span>%)</div>
-        <div id="stat-profit" class="text-lg font-extrabold jo-text mt-0.5">0.00 د.أ</div>
-      </div>
-      <div class="bg-amber-50 p-3.5 rounded-2xl shadow-sm border border-amber-200">
-        <div class="text-[11px] text-amber-900 font-bold">غرامات الكباتن</div>
-        <div id="stat-penalties" class="text-lg font-extrabold text-amber-700 mt-0.5">0.00 د.أ</div>
-      </div>
-      <div class="bg-red-50 p-3.5 rounded-2xl shadow-sm border border-red-200">
-        <div class="text-[11px] text-[#CE1126] font-bold">دعم الخصومات</div>
-        <div id="stat-subsidy" class="text-lg font-extrabold text-[#CE1126] mt-0.5">0.00 د.أ</div>
-      </div>
+      <div class="bg-white p-3.5 rounded-2xl shadow-sm"><div class="text-[11px] text-slate-500 font-bold">إجمالي الرحلات</div><div id="stat-gross" class="text-lg font-extrabold text-slate-800 mt-0.5">0.00 د.أ</div></div>
+      <div class="bg-emerald-50 p-3.5 rounded-2xl shadow-sm border border-emerald-200"><div class="text-[11px] text-[#007A3D] font-bold">عمولة الشركة (<span id="stat-comm-pct">10</span>%)</div><div id="stat-profit" class="text-lg font-extrabold jo-text mt-0.5">0.00 د.أ</div></div>
+      <div class="bg-amber-50 p-3.5 rounded-2xl shadow-sm border border-amber-200"><div class="text-[11px] text-amber-900 font-bold">غرامات الكباتن</div><div id="stat-penalties" class="text-lg font-extrabold text-amber-700 mt-0.5">0.00 د.أ</div></div>
+      <div class="bg-red-50 p-3.5 rounded-2xl shadow-sm border border-red-200"><div class="text-[11px] text-[#CE1126] font-bold">دعم الخصومات</div><div id="stat-subsidy" class="text-lg font-extrabold text-[#CE1126] mt-0.5">0.00 د.أ</div></div>
     </div>
 
     <div id="sos-banner" class="hidden mx-4 mb-4 bg-red-600 text-white p-4 rounded-2xl shadow-lg space-y-2">
-      <div class="font-extrabold text-sm">🚨 تنبيه طوارئ SOS عاجل!</div>
-      <div id="sos-list" class="space-y-2 text-xs"></div>
+      <div class="font-extrabold text-sm">🚨 تنبيه طوارئ SOS عاجل!</div><div id="sos-list" class="space-y-2 text-xs"></div>
     </div>
 
     <div class="flex gap-2 px-4 mb-4 overflow-x-auto">
       <button onclick="showTab('captains')" id="tab-btn-captains" class="tab-btn jo-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🏍️ الكباتن</button>
       <button onclick="showTab('riders')" id="tab-btn-riders" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🙋‍♂️ العملاء</button>
       <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات (<span id="stat-completed">0</span>/<span id="stat-active">0</span>)</button>
-      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🎁 الخصومات والتسعيرة</button>
+      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">⚡ الذروة والتسعيرة</button>
     </div>
 
-    <div id="tab-captains" class="px-4 space-y-2.5">
-      <div id="admin-captains-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
-    </div>
-
-    <div id="tab-riders" class="hidden px-4 space-y-2.5">
-      <div id="admin-riders-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
-    </div>
-
-    <div id="tab-rides" class="hidden px-4 space-y-3">
-      <div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
-    </div>
+    <div id="tab-captains" class="px-4 space-y-2.5"><div id="admin-captains-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div></div>
+    <div id="tab-riders" class="hidden px-4 space-y-2.5"><div id="admin-riders-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div></div>
+    <div id="tab-rides" class="hidden px-4 space-y-3"><div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div></div>
 
     <div id="tab-pricing" class="hidden px-4 space-y-4">
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3 border border-emerald-100">
@@ -93,15 +69,14 @@
           <div class="col-span-2"><label class="font-bold text-slate-600 block mb-1">الحد الإجمالي</label><input id="promo-max-total" type="number" value="200" class="w-full border rounded-xl p-2 font-bold"></div>
         </div>
         <label class="flex items-center gap-2 text-xs font-bold text-[#007A3D] bg-emerald-50 p-2.5 rounded-xl">
-          <input id="promo-company-pays" type="checkbox" checked class="accent-[#007A3D] w-4 h-4">
-          <span>الشركة تتحمل الخصم (بحد أقصى المبلغ المحدد)</span>
+          <input id="promo-company-pays" type="checkbox" checked class="accent-[#007A3D] w-4 h-4"><span>الشركة تتحمل الخصم (بحد أقصى المبلغ المحدد)</span>
         </label>
         <button onclick="addPromo()" class="w-full jo-green text-white font-extrabold py-2.5 rounded-xl text-xs">إنشاء كود الخصم ✓</button>
         <div id="promos-list" class="space-y-2 text-xs pt-2"></div>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
-        <h2 class="font-extrabold text-slate-800 text-sm">💰 ضبط التسعيرة والعمولة</h2>
+        <h2 class="font-extrabold text-slate-800 text-sm">⚡ ضبط التسعيرة، الذروة، والطقس</h2>
         <div class="grid grid-cols-3 gap-2 text-xs">
           <div><label class="font-bold text-slate-600 block mb-1">فتح سكوتر</label><input id="p-sc-base" type="number" step="0.05" value="0.25" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">لكل كم سكوتر</label><input id="p-sc-km" type="number" step="0.01" value="0.15" class="w-full border rounded-xl p-2 font-bold"></div>
@@ -109,8 +84,10 @@
           <div><label class="font-bold text-slate-600 block mb-1">فتح بايك</label><input id="p-bk-base" type="number" step="0.05" value="0.30" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">لكل كم بايك</label><input id="p-bk-km" type="number" step="0.01" value="0.18" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">عمولتك (%)</label><input id="p-comm" type="number" step="1" value="10" class="w-full border rounded-xl p-2 font-bold jo-text"></div>
+          <div class="col-span-2"><label class="font-bold text-slate-600 block mb-1">معامل الذروة (1.0 عادي / 1.25 ذروة)</label><input id="p-surge" type="number" step="0.05" value="1.0" class="w-full border rounded-xl p-2 font-bold text-amber-700"></div>
+          <div class="flex items-end"><label class="flex items-center gap-1.5 text-[11px] font-bold text-blue-800 bg-blue-50 p-2 rounded-xl w-full"><input id="p-rain" type="checkbox" class="w-4 h-4"><span>🌧️ مطر</span></label></div>
         </div>
-        <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ التسعيرة ✓</button>
+        <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ ونشر التعديلات ✓</button>
       </div>
     </div>
   </div>
@@ -118,31 +95,18 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc,
-      onSnapshot, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU",
-      authDomain: "nshmibike.firebaseapp.com",
-      databaseURL: "https://nshmibike-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "nshmibike",
-      storageBucket: "nshmibike.firebasestorage.app",
-      messagingSenderId: "506031565051",
-      appId: "1:506031565051:web:fc915e5a2173e841c7a85e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const ADMIN_SECRET_PIN = '849201';
+    const app = initializeApp({
+      apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU", authDomain: "nshmibike.firebaseapp.com",
+      databaseURL: "https://nshmibike-default-rtdb.europe-west1.firebasedatabase.app", projectId: "nshmibike",
+      storageBucket: "nshmibike.firebasestorage.app", messagingSenderId: "506031565051", appId: "1:506031565051:web:fc915e5a2173e841c7a85e"
+    });
+    const auth = getAuth(app), db = getFirestore(app), ADMIN_SECRET_PIN = '849201';
     let currentCommPct = 10;
 
     window.checkAdminPin = async () => {
-      if (document.getElementById('admin-pin').value.trim() !== ADMIN_SECRET_PIN) {
-        document.getElementById('pin-err').classList.remove('hidden'); return;
-      }
+      if (document.getElementById('admin-pin').value.trim() !== ADMIN_SECRET_PIN) { document.getElementById('pin-err').classList.remove('hidden'); return; }
       try { await signInAnonymously(auth); } catch (e) {}
       document.getElementById('admin-lock').classList.add('hidden');
       document.getElementById('admin-app').classList.remove('hidden');
@@ -162,27 +126,20 @@
       const pSnap = await getDoc(doc(db, 'settings', 'pricing'));
       if (pSnap.exists()) {
         const p = pSnap.data();
-        document.getElementById('p-sc-base').value = p.scooterBase ?? 0.25;
-        document.getElementById('p-sc-km').value = p.scooterPerKm ?? 0.15;
-        document.getElementById('p-sc-min').value = p.scooterMin ?? 0.60;
-        document.getElementById('p-bk-base').value = p.bikeBase ?? 0.30;
-        document.getElementById('p-bk-km').value = p.bikePerKm ?? 0.18;
-        currentCommPct = Number(p.commissionPct ?? 10);
-        document.getElementById('p-comm').value = currentCommPct;
-        document.getElementById('stat-comm-pct').innerText = currentCommPct;
+        document.getElementById('p-sc-base').value = p.scooterBase ?? 0.25; document.getElementById('p-sc-km').value = p.scooterPerKm ?? 0.15;
+        document.getElementById('p-sc-min').value = p.scooterMin ?? 0.60; document.getElementById('p-bk-base').value = p.bikeBase ?? 0.30;
+        document.getElementById('p-bk-km').value = p.bikePerKm ?? 0.18; currentCommPct = Number(p.commissionPct ?? 10);
+        document.getElementById('p-comm').value = currentCommPct; document.getElementById('stat-comm-pct').innerText = currentCommPct;
+        document.getElementById('p-surge').value = p.surgeMultiplier ?? 1.0; document.getElementById('p-rain').checked = !!p.rainMode;
       }
 
-      // جدول الكباتن المستقل (captains)
       onSnapshot(collection(db, 'captains'), (snap) => {
         const list = document.getElementById('admin-captains-list'); list.innerHTML = '';
         const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
         arr.sort((a, b) => (a.isApproved !== true ? -1 : 1) || Number(a.walletBalance || 0) - Number(b.walletBalance || 0));
-        if (!arr.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا يوجد كباتن مسجلون بعد</div>'; return; }
-
+        if (!arr.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا يوجد كباتن بعد</div>'; return; }
         arr.forEach(u => {
-          const bal = Number(u.walletBalance || 0);
-          const approved = u.isApproved === true;
-          const stopped = bal <= -2.0;
+          const bal = Number(u.walletBalance || 0), approved = u.isApproved === true, stopped = bal <= -2.0;
           const balColor = stopped ? 'text-[#CE1126] font-extrabold' : (bal < 0 ? 'text-amber-600 font-extrabold' : 'jo-text font-extrabold');
           const card = document.createElement('div');
           card.className = `bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2 ${!approved ? 'border-2 border-amber-400' : (stopped ? 'border-2 border-[#CE1126]' : '')}`;
@@ -190,8 +147,8 @@
             <div class="flex-1">
               <div class="font-extrabold text-slate-800 text-xs">${u.name} ${u.isOnline ? '<span class="text-emerald-600">🟢 متصل</span>' : ''}</div>
               <div class="text-[11px] text-slate-500">${u.phone} • ${u.email || ''}</div>
-              <div class="text-[11px] text-slate-600">${u.city || ''} • ${u.bikeModel || ''} (${u.plate || ''})</div>
-              <div class="text-xs mt-0.5 ${balColor}">الرصيد: ${bal.toFixed(2)} د.أ ${stopped ? '(⛔ متوقف -2.00)' : ''} ${!approved ? '<span class="text-amber-600">• بانتظار الموافقة</span>' : '<span class="jo-text">• معتمد ✓</span>'}</div>
+              <div class="text-[11px] text-slate-600">${u.city || ''} • ${u.bikeModel || ''} (${u.plate || ''}) ${u.lastHelmetSelfieAt ? '• 🪖 سيلفي موثق' : ''}</div>
+              <div class="text-xs mt-0.5 ${balColor}">الرصيد: ${bal.toFixed(2)} د.أ ${stopped ? '(⛔ متوقف)' : ''} ${!approved ? '<span class="text-amber-600">• بانتظار الموافقة</span>' : '<span class="jo-text">• معتمد ✓</span>'}</div>
             </div>
             <div class="flex flex-col gap-1">
               <button onclick="approveCaptain('${u.id}', ${!approved})" class="${approved ? 'bg-slate-200 text-slate-700' : 'bg-amber-500 text-slate-900'} px-2.5 py-1.5 rounded-xl font-extrabold text-[11px]">${approved ? 'إلغاء الاعتماد' : '✓ اعتماد الكابتن'}</button>
@@ -203,20 +160,18 @@
         });
       });
 
-      // جدول العملاء المستقل (riders)
       onSnapshot(collection(db, 'riders'), (snap) => {
         const list = document.getElementById('admin-riders-list'); list.innerHTML = '';
         const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
         arr.sort((a, b) => Number(a.walletBalance || 0) - Number(b.walletBalance || 0));
-        if (!arr.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا يوجد عملاء مسجلون بعد</div>'; return; }
-
+        if (!arr.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا يوجد عملاء بعد</div>'; return; }
         arr.forEach(u => {
           const bal = Number(u.walletBalance || 0);
           const card = document.createElement('div');
           card.className = 'bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2';
           card.innerHTML = `
             <div class="flex-1">
-              <div class="font-extrabold text-slate-800 text-xs">${u.name}</div>
+              <div class="font-extrabold text-slate-800 text-xs">${u.name} ${u.avgRating ? `★ ${u.avgRating}` : ''}</div>
               <div class="text-[11px] text-slate-500">${u.phone} • ${u.email || ''}</div>
               <div class="text-xs mt-0.5 ${bal < 0 ? 'text-[#CE1126] font-extrabold' : 'jo-text font-extrabold'}">الرصيد: ${bal.toFixed(2)} د.أ</div>
             </div>
@@ -231,40 +186,32 @@
 
       onSnapshot(collection(db, 'rides'), (snap) => {
         let gross = 0, subsidyTotal = 0, penaltiesTotal = 0, completed = 0, active = 0;
-        const rides = [];
-        snap.forEach(d => rides.push({ id: d.id, ...d.data() }));
+        const rides = []; snap.forEach(d => rides.push({ id: d.id, ...d.data() }));
         rides.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
         const listEl = document.getElementById('admin-rides-list');
         listEl.innerHTML = rides.length ? '' : '<div class="bg-white p-6 rounded-2xl">لا توجد رحلات بعد</div>';
 
         rides.forEach(r => {
-          const origFare = Number(r.originalFareJod || r.fareJod || 0);
-          const paidFare = Number(r.fareJod || 0);
-          const disc = Number(r.discountJod || 0);
-          if (r.status === 'COMPLETED') { completed++; gross += origFare; if (r.companyPaysPromo) subsidyTotal += disc; }
-          if (['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP'].includes(r.status)) active++;
+          const orig = Number(r.originalFareJod || r.fareJod || 0), paid = Number(r.fareJod || 0), disc = Number(r.discountJod || 0);
+          if (r.status === 'COMPLETED') { completed++; gross += orig; if (r.companyPaysPromo) subsidyTotal += disc; }
+          if (['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP', 'SCHEDULED'].includes(r.status)) active++;
           if (r.captainPenaltyApplied) penaltiesTotal += Number(r.penaltyJod || 0.60);
 
-          let finesHtml = '';
-          if (r.captainPenaltyApplied) {
-            const reasonTxt = r.penaltyReason === 'LATE_ARRIVAL' ? 'تأخر بالوصول' : 'غادر محيط العميل';
-            finesHtml += `<div class="text-[10px] bg-red-50 text-[#CE1126] font-extrabold px-2 py-0.5 rounded-lg inline-block">⛔ غرامة كابتن -0.60 د.أ (${reasonTxt})</div> `;
-          }
-          if (Number(r.cancelFeeJod || 0) > 0 || Number(r.compensationJod || 0) > 0) {
-            finesHtml += `<div class="text-[10px] bg-amber-50 text-amber-800 font-extrabold px-2 py-0.5 rounded-lg inline-block">⚠️ غرامة عميل 0.50 د.أ</div>`;
-          }
+          let tags = '';
+          if (r.scheduledFor) tags += `<span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-lg">📅 مجدول: ${r.scheduledFor}</span> `;
+          if (r.captainPenaltyApplied) tags += `<span class="bg-red-50 text-[#CE1126] text-[10px] font-extrabold px-2 py-0.5 rounded-lg">⛔ غرامة كابتن -0.60</span> `;
+          if (Number(r.cancelFeeJod || 0) > 0 || Number(r.compensationJod || 0) > 0) tags += `<span class="bg-amber-50 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-lg">⚠️ غرامة عميل 0.50</span>`;
 
-          const card = document.createElement('div');
-          card.className = 'bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1 border border-slate-100';
+          const card = document.createElement('div'); card.className = 'bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1 border border-slate-100';
           card.innerHTML = `
             <div class="flex justify-between items-center">
               <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100">${r.city || ''} • ${r.status} • ${r.distanceKm || 0} كم</span>
-              <span class="font-extrabold text-sm jo-text">${paidFare.toFixed(2)} د.أ ${disc > 0 ? `<span class="text-[10px] text-[#CE1126]">(خصم ${disc.toFixed(2)})</span>` : ''}</span>
+              <span class="font-extrabold text-sm jo-text">${paid.toFixed(2)} د.أ</span>
             </div>
-            <div class="text-xs font-bold text-slate-800">العميل: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'جاري التوجيه'}</div>
+            <div class="text-xs font-bold text-slate-800">العميل: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'قيد التوجيه'} ${r.ridePin ? `(PIN: ${r.ridePin})` : ''}</div>
             <div class="text-[11px] text-slate-500">${r.pickupAddress || ''} ⬅️ ${r.dropoffAddress || ''}</div>
-            ${finesHtml ? `<div class="pt-1">${finesHtml}</div>` : ''}`;
+            ${r.expressRecipient ? `<div class="text-[10px] text-blue-700 font-bold">📦 مستلم الطرد: ${r.expressRecipient}</div>` : ''}
+            ${tags ? `<div class="pt-1">${tags}</div>` : ''}`;
           listEl.appendChild(card);
         });
 
@@ -277,75 +224,47 @@
       });
 
       onSnapshot(collection(db, 'sos_alerts'), (snap) => {
-        const unresolved = [];
-        snap.forEach(d => { if (!d.data().resolved) unresolved.push({ id: d.id, ...d.data() }); });
-        const banner = document.getElementById('sos-banner'), list = document.getElementById('sos-list');
-        if (!unresolved.length) { banner.classList.add('hidden'); return; }
-        banner.classList.remove('hidden'); list.innerHTML = '';
-        unresolved.forEach(s => {
-          const row = document.createElement('div');
-          row.className = 'bg-red-700/70 p-2.5 rounded-xl flex justify-between items-center';
+        const un = []; snap.forEach(d => { if (!d.data().resolved) un.push({ id: d.id, ...d.data() }); });
+        const b = document.getElementById('sos-banner'), l = document.getElementById('sos-list');
+        if (!un.length) { b.classList.add('hidden'); return; }
+        b.classList.remove('hidden'); l.innerHTML = '';
+        un.forEach(s => {
+          const row = document.createElement('div'); row.className = 'bg-red-700/70 p-2.5 rounded-xl flex justify-between items-center';
           row.innerHTML = `<span>مستخدم: ${s.userId}</span><button onclick="resolveSOS('${s.id}')" class="bg-white text-red-700 font-extrabold px-2.5 py-1 rounded-lg">معالجة ✓</button>`;
-          list.appendChild(row);
+          l.appendChild(row);
         });
       });
 
       onSnapshot(collection(db, 'promos'), (snap) => {
         const box = document.getElementById('promos-list'); box.innerHTML = '';
         snap.forEach(d => {
-          const p = d.data();
-          const row = document.createElement('div');
-          row.className = 'flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100';
-          row.innerHTML = `
-            <div>
-              <div class="font-extrabold text-slate-800">${d.id} <span class="jo-text">(${p.discountPct}% • سقف ${Number(p.maxDiscountJod ?? 0.75).toFixed(2)} د.أ)</span></div>
-              <div class="text-[10px] text-slate-500">لكل عميل: ${p.maxPerUser || 1} رحلات • المستخدم: ${p.usedCount || 0}/${p.maxTotalUses || 999}</div>
-            </div>
-            <button onclick="deletePromo('${d.id}')" class="text-[#CE1126] font-bold">حذف</button>`;
+          const p = d.data(), row = document.createElement('div'); row.className = 'flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100';
+          row.innerHTML = `<div><div class="font-extrabold text-slate-800">${d.id} <span class="jo-text">(${p.discountPct}% • سقف ${Number(p.maxDiscountJod ?? 0.75).toFixed(2)} د.أ)</span></div><div class="text-[10px] text-slate-500">لكل عميل: ${p.maxPerUser || 1} • المستخدم: ${p.usedCount || 0}/${p.maxTotalUses || 999}</div></div><button onclick="deletePromo('${d.id}')" class="text-[#CE1126] font-bold">حذف</button>`;
           box.appendChild(row);
         });
       });
     }
 
-    window.approveCaptain = async (id, approve) => { await updateDoc(doc(db, 'captains', id), { isApproved: approve }); };
-    window.resetZero = async (col, id, name) => { if (confirm(`تصفير رصيد (${name}) إلى 0.00؟`)) await updateDoc(doc(db, col, id), { walletBalance: 0 }); };
-    window.settleBalance = async (col, id, name, curBal) => {
-      const def = curBal < 0 ? Math.abs(curBal).toFixed(2) : '5.00';
-      const val = prompt(`استلام كاش / شحن رصيد لـ (${name})\nالرصيد الحالي: ${curBal.toFixed(2)} د.أ\nالمبلغ بالدينار:`, def);
-      if (!val) return;
-      const amt = Number(val);
-      if (isNaN(amt) || amt <= 0) return alert('أدخل مبلغاً صحيحاً');
-      await updateDoc(doc(db, col, id), { walletBalance: +(curBal + amt).toFixed(2) });
-    };
+    window.approveCaptain = async (id, a) => { await updateDoc(doc(db, 'captains', id), { isApproved: a }); };
+    window.resetZero = async (col, id, n) => { if (confirm(`تصفير رصيد (${n})؟`)) await updateDoc(doc(db, col, id), { walletBalance: 0 }); };
+    window.settleBalance = async (col, id, n, cb) => { const v = prompt(`رصيد (${n}): ${cb.toFixed(2)}\nالمبلغ بالدينار:`, cb < 0 ? Math.abs(cb).toFixed(2) : '5.00'); if (!v) return; const a = Number(v); if (!isNaN(a) && a > 0) await updateDoc(doc(db, col, id), { walletBalance: +(cb + a).toFixed(2) }); };
     window.toggleBlockUser = async (col, id, b) => { await updateDoc(doc(db, col, id), { isBlocked: !b }); };
-
     window.savePricing = async () => {
       currentCommPct = Number(document.getElementById('p-comm').value);
       await setDoc(doc(db, 'settings', 'pricing'), {
-        scooterBase: Number(document.getElementById('p-sc-base').value),
-        scooterPerKm: Number(document.getElementById('p-sc-km').value),
-        scooterMin: Number(document.getElementById('p-sc-min').value),
-        bikeBase: Number(document.getElementById('p-bk-base').value),
-        bikePerKm: Number(document.getElementById('p-bk-km').value),
-        commissionPct: currentCommPct, updatedAt: serverTimestamp()
+        scooterBase: Number(document.getElementById('p-sc-base').value), scooterPerKm: Number(document.getElementById('p-sc-km').value), scooterMin: Number(document.getElementById('p-sc-min').value),
+        bikeBase: Number(document.getElementById('p-bk-base').value), bikePerKm: Number(document.getElementById('p-bk-km').value), commissionPct: currentCommPct,
+        surgeMultiplier: Number(document.getElementById('p-surge').value || 1.0), rainMode: document.getElementById('p-rain').checked, updatedAt: serverTimestamp()
       });
-      document.getElementById('stat-comm-pct').innerText = currentCommPct;
-      alert('✅ تم حفظ التسعيرة والعمولة!');
+      document.getElementById('stat-comm-pct').innerText = currentCommPct; alert('✅ تم حفظ التعديلات!');
     };
-
     window.addPromo = async () => {
-      const code = document.getElementById('promo-code').value.trim().toUpperCase();
-      const pct = Number(document.getElementById('promo-pct').value);
-      const maxDiscountJod = Number(document.getElementById('promo-max-jod').value || 0.75);
-      const maxPerUser = Number(document.getElementById('promo-per-user').value || 1);
-      const maxTotalUses = Number(document.getElementById('promo-max-total').value || 100);
-      const companyPays = document.getElementById('promo-company-pays').checked;
-      if (!code || pct <= 0 || pct > 90) return alert('أدخل كوداً ونسبة خصم صحيحة');
-      await setDoc(doc(db, 'promos', code), { discountPct: pct, maxDiscountJod, maxPerUser, maxTotalUses, usedCount: 0, companyPays, active: true });
-      document.getElementById('promo-code').value = ''; document.getElementById('promo-pct').value = '';
-      alert(`✅ تم إنشاء الكود!`);
+      const code = document.getElementById('promo-code').value.trim().toUpperCase(), pct = Number(document.getElementById('promo-pct').value);
+      const maxDiscountJod = Number(document.getElementById('promo-max-jod').value || 0.75), maxPerUser = Number(document.getElementById('promo-per-user').value || 1), maxTotalUses = Number(document.getElementById('promo-max-total').value || 100);
+      if (!code || pct <= 0 || pct > 90) return alert('أدخل كوداً ونسبة صحيحة');
+      await setDoc(doc(db, 'promos', code), { discountPct: pct, maxDiscountJod, maxPerUser, maxTotalUses, usedCount: 0, companyPays: document.getElementById('promo-company-pays').checked, active: true });
+      document.getElementById('promo-code').value = ''; document.getElementById('promo-pct').value = ''; alert('✅ تم الإنشاء!');
     };
-
     window.deletePromo = async (id) => { await deleteDoc(doc(db, 'promos', id)); };
     window.resolveSOS = async (id) => { await updateDoc(doc(db, 'sos_alerts', id), { resolved: true }); };
   </script>
