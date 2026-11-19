@@ -104,7 +104,7 @@
         <div class="flex gap-1.5">
           <button onclick="openModal('contests')" data-ar="🏆 مسابقات" data-en="🏆 Contests" class="i18n bg-amber-500 text-slate-900 text-[11px] font-extrabold px-2 py-1 rounded-full">🏆 مسابقات</button>
           <button onclick="toggleLanguage()" class="bg-white/10 text-white text-[11px] font-extrabold px-2 py-1 rounded-full lang-switch-label">EN</button>
-          <button onclick="testAudio()" class="jo-green text-white text-xs font-bold px-2 py-1 rounded-full">🔔</button>
+          <button onclick="openModal('inbox')" class="jo-green text-white text-xs font-bold px-2 py-1 rounded-full">📬</button>
         </div>
       </header>
 
@@ -193,19 +193,19 @@
           <div class="overflow-hidden"><div id="drawer-name" class="font-extrabold text-base truncate"></div><div id="drawer-phone" class="text-xs text-emerald-200 font-semibold" dir="ltr"></div><div id="drawer-email" class="text-[10px] text-white/75 truncate" dir="ltr"></div></div>
         </div>
         <nav class="flex-1 py-2 divide-y divide-slate-100 text-sm font-bold text-slate-700">
+          <button onclick="openModal('inbox')" class="w-full px-5 py-3 flex items-center gap-3 bg-emerald-50/70"><span>📬</span><span data-ar="صندوق الرسائل والإنذارات" data-en="Inbox & Admin Alerts" class="i18n">صندوق الرسائل والإنذارات</span></button>
           <button onclick="openModal('contests')" class="w-full px-5 py-3 flex items-center justify-between bg-amber-50/70"><span class="flex items-center gap-3"><span>🏆</span><span data-ar="المسابقات والمكافآت" data-en="Contests & Bonuses" class="i18n">المسابقات والمكافآت</span></span></button>
           <button onclick="openModal('stats')" class="w-full px-5 py-3 flex items-center gap-3"><span>📊</span><span data-ar="إحصائيات الأداء" data-en="Performance Stats" class="i18n">إحصائيات الأداء</span></button>
           <button onclick="openModal('profile')" class="w-full px-5 py-3 flex items-center gap-3"><span>👤</span><span data-ar="الملف الشخصي" data-en="Profile" class="i18n">الملف الشخصي</span></button>
           <button onclick="openModal('trips')" class="w-full px-5 py-3 flex items-center gap-3"><span>🕒</span><span data-ar="رحلاتي" data-en="My Trips" class="i18n">رحلاتي</span></button>
           <button onclick="openModal('wallet')" class="w-full px-5 py-3 flex items-center justify-between"><span class="flex items-center gap-3"><span>💳</span><span data-ar="المحفظة" data-en="Wallet" class="i18n">المحفظة</span></span><span id="drawer-wallet-val" class="text-xs font-extrabold jo-text">0.00</span></button>
           <button onclick="openModal('vehicle')" class="w-full px-5 py-3 flex items-center gap-3"><span>🏍️</span><span data-ar="تغيير الدراجة" data-en="Switch Vehicle" class="i18n">تغيير الدراجة</span></button>
-          <button onclick="openModal('inbox')" class="w-full px-5 py-3 flex items-center gap-3"><span>📬</span><span data-ar="صندوق الرسائل" data-en="Inbox" class="i18n">صندوق الرسائل</span></button>
           <button onclick="openModal('invite')" class="w-full px-5 py-3 flex items-center gap-3"><span>👥</span><span data-ar="دعوة كباتن" data-en="Invite Captains" class="i18n">دعوة كباتن</span></button>
           <button onclick="openModal('contact')" class="w-full px-5 py-3 flex items-center gap-3"><span>🎧</span><span data-ar="الدعم" data-en="Support" class="i18n">الدعم</span></button>
           <button onclick="openModal('settings')" class="w-full px-5 py-3 flex items-center gap-3"><span>⚙️</span><span data-ar="الإعدادات واللغة" data-en="Settings & Language" class="i18n">الإعدادات واللغة</span></button>
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط" data-en="Terms" class="i18n">الشروط</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v4.1 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v4.2 🇯🇴</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -241,9 +241,7 @@
       document.querySelectorAll('.i18n-ph').forEach(el => { const v = el.getAttribute('data-' + lang + '-ph'); if (v) el.placeholder = v; });
       document.getElementById('btn-login').innerText = authMode === 'login' ? t('دخول الكابتن 🔔', 'Captain Sign In 🔔') : t('تسجيل كابتن جديد 🔔', 'Register Captain 🔔');
       const d = document.getElementById('side-drawer'); d.style.right = lang === 'ar' ? '0' : 'auto'; d.style.left = lang === 'ar' ? 'auto' : '0';
-      if (document.getElementById('cap-helmet-check')) {
-        document.getElementById('cap-online-status').innerText = document.getElementById('cap-helmet-check').checked ? `${t('متاح في','Online in')} ${capCity} 🟢` : t('غير متاح حالياً','Offline');
-      }
+      if (document.getElementById('cap-helmet-check')) document.getElementById('cap-online-status').innerText = document.getElementById('cap-helmet-check').checked ? `${t('متاح في','Online in')} ${capCity} 🟢` : t('غير متاح حالياً','Offline');
       if (latestOffers.length) renderOffersList(latestOffers);
     }
 
@@ -260,23 +258,10 @@
       const tb = document.getElementById('toast-banner'); document.getElementById('toast-title').innerText = title; document.getElementById('toast-body').innerText = body; tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 5000);
       try { const LN = window.Capacitor?.Plugins?.LocalNotifications; if (LN) await LN.schedule({ notifications: [{ title, body, id: Math.floor(Math.random() * 99999) + 1, channelId: 'nshmi_alerts' }] }); else if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body }); } catch (e) {}
     }
-    window.testAudio = () => notifyCaptain('🔔 NshmiCaptain', t('الرنين الفوري شغال!', 'Alerts & Ringtone Ready!'), 'ride');
 
     window.setCapRiderStars = (n) => { capRiderStars = n; for (let i = 1; i <= 5; i++) document.getElementById('cr-star-' + i).className = i <= n ? 'scale-110 transition' : 'opacity-30 transition'; };
-    function showSummary(title, linesHtml, rideId, riderId) {
-      lastFinishedRideId = rideId || null; lastFinishedRiderId = riderId || null;
-      document.getElementById('cap-rate-rider-box').classList.toggle('hidden', !rideId); if (rideId) setCapRiderStars(5);
-      document.getElementById('summary-title').innerText = title; document.getElementById('summary-body').innerHTML = linesHtml;
-      document.getElementById('cap-summary-modal').classList.remove('hidden');
-    }
-    window.closeSummary = async () => {
-      document.getElementById('cap-summary-modal').classList.add('hidden');
-      if (lastFinishedRideId && lastFinishedRiderId) {
-        await updateDoc(doc(db, 'rides', lastFinishedRideId), { riderRatingByCaptain: capRiderStars }).catch(() => {});
-        await updateDoc(doc(db, 'riders', lastFinishedRiderId), { avgRating: capRiderStars }).catch(() => {});
-      }
-      lastFinishedRideId = null; lastFinishedRiderId = null;
-    };
+    function showSummary(title, linesHtml, rideId, riderId) { lastFinishedRideId = rideId || null; lastFinishedRiderId = riderId || null; document.getElementById('cap-rate-rider-box').classList.toggle('hidden', !rideId); if (rideId) setCapRiderStars(5); document.getElementById('summary-title').innerText = title; document.getElementById('summary-body').innerHTML = linesHtml; document.getElementById('cap-summary-modal').classList.remove('hidden'); }
+    window.closeSummary = async () => { document.getElementById('cap-summary-modal').classList.add('hidden'); if (lastFinishedRideId && lastFinishedRiderId) { await updateDoc(doc(db, 'rides', lastFinishedRideId), { riderRatingByCaptain: capRiderStars }).catch(() => {}); await updateDoc(doc(db, 'riders', lastFinishedRiderId), { avgRating: capRiderStars }).catch(() => {}); } lastFinishedRideId = null; lastFinishedRiderId = null; };
 
     let commissionPct = 10, currentUser = null, activeRideId = null, activeRideData = null, capMap = null, capGpsMark = null, pickupM = null, dropM = null, heatLayer = null;
     let unsubRide = null, unsubChat = null, unsubCaptainOffers = null, gpsWatchId = null;
@@ -289,11 +274,7 @@
     function haversineKm(c1, c2) { const R = 6371, dLat = (c2[0]-c1[0])*Math.PI/180, dLon = (c2[1]-c1[1])*Math.PI/180; const a = Math.sin(dLat/2)**2 + Math.cos(c1[0]*Math.PI/180)*Math.cos(c2[0]*Math.PI/180)*Math.sin(dLon/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
     function detectCity(lat, lng) { let b = 'عمّان', md = 9999; for (const [n, c] of Object.entries(CITY_CENTERS)) { const d = haversineKm([lat, lng], c); if (d < md) { md = d; b = n; } } return b; }
     function formatOnlineTime(sec) { const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60); return h > 0 ? `${h}${t('س','h')} ${m}${t('د','m')}` : `${m}${t('د','m')}`; }
-    function renderStatsBar() {
-      capMetrics.acceptRate = capMetrics.offersSeen > 0 ? Math.min(100, Math.round((capMetrics.acceptedCount / capMetrics.offersSeen) * 100)) : 100;
-      document.getElementById('stat-accept').innerText = capMetrics.acceptRate + '%'; document.getElementById('stat-rating').innerText = capMetrics.ratingPct + '%';
-      document.getElementById('stat-online').innerText = formatOnlineTime(capMetrics.onlineSeconds); document.getElementById('stat-trips').innerText = capMetrics.completedCount; document.getElementById('stat-cancels').innerText = capMetrics.cancelledByCaptain;
-    }
+    function renderStatsBar() { capMetrics.acceptRate = capMetrics.offersSeen > 0 ? Math.min(100, Math.round((capMetrics.acceptedCount / capMetrics.offersSeen) * 100)) : 100; document.getElementById('stat-accept').innerText = capMetrics.acceptRate + '%'; document.getElementById('stat-rating').innerText = capMetrics.ratingPct + '%'; document.getElementById('stat-online').innerText = formatOnlineTime(capMetrics.onlineSeconds); document.getElementById('stat-trips').innerText = capMetrics.completedCount; document.getElementById('stat-cancels').innerText = capMetrics.cancelledByCaptain; }
     onSnapshot(doc(db, 'settings', 'pricing'), (s) => { if (s.exists() && s.data().commissionPct != null) commissionPct = Number(s.data().commissionPct); });
 
     function initCapMap() {
@@ -310,26 +291,33 @@
       const alertBox = document.getElementById('cap-debt-alert'), chk = document.getElementById('cap-helmet-check'), topBal = document.getElementById('cap-wallet-top');
       topBal.innerText = bal.toFixed(2) + t(' د.أ',' JOD');
       topBal.className = bal <= -2.0 ? 'text-xs font-extrabold text-[#CE1126]' : (bal < 0 ? 'text-xs font-extrabold text-amber-600' : 'text-xs font-extrabold jo-text');
-      if (!approved) {
-        isApprovedCap = false; if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); }
-        scrCap.classList.add('hidden'); scrPend.classList.remove('hidden');
-        document.getElementById('pending-info').innerHTML = `<div>${currentUser.name}</div><div>${currentUser.phone}</div><div>${currentUser.bikeModel} (${currentUser.plate})</div>`;
-        return;
-      }
+      if (!approved) { isApprovedCap = false; if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); } scrCap.classList.add('hidden'); scrPend.classList.remove('hidden'); document.getElementById('pending-info').innerHTML = `<div>${currentUser.name}</div><div>${currentUser.phone}</div><div>${currentUser.bikeModel} (${currentUser.plate})</div>`; return; }
       isApprovedCap = true; scrPend.classList.add('hidden'); scrCap.classList.remove('hidden'); initCapMap();
-      if (bal <= -2.00) {
-        stoppedForDebt = true; alertBox.className = 'p-2.5 rounded-2xl text-xs font-extrabold text-center bg-red-600 text-white';
-        alertBox.innerText = t(`⛔ متوقف لبلوغ رصيدك (${bal.toFixed(2)} د.أ / الحد -2.00).`, `⛔ Suspended at ${bal.toFixed(2)} JOD (Limit -2.00).`); alertBox.classList.remove('hidden');
-        if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); } chk.disabled = true;
-      } else if (bal <= -1.30) {
-        stoppedForDebt = false; chk.disabled = false; alertBox.className = 'p-2.5 rounded-2xl text-xs font-extrabold text-center bg-amber-100 text-amber-900 border';
-        alertBox.innerText = t(`⚠️ رصيدك (${bal.toFixed(2)} د.أ) اقترب من -2.00 د.أ!`, `⚠️ Balance (${bal.toFixed(2)} JOD) near -2.00 limit!`); alertBox.classList.remove('hidden');
-        if (!warnedLowBalance) { warnedLowBalance = true; notifyCaptain(t('⚠️ تنبيه الرصيد', '⚠️ Balance Warning'), `${bal.toFixed(2)}`, 'chat'); }
-      } else { stoppedForDebt = false; warnedLowBalance = false; chk.disabled = false; alertBox.classList.add('hidden'); }
+      if (bal <= -2.00) { stoppedForDebt = true; alertBox.className = 'p-2.5 rounded-2xl text-xs font-extrabold text-center bg-red-600 text-white'; alertBox.innerText = t(`⛔ متوقف لبلوغ رصيدك (${bal.toFixed(2)} د.أ / الحد -2.00).`, `⛔ Suspended at ${bal.toFixed(2)} JOD (Limit -2.00).`); alertBox.classList.remove('hidden'); if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); } chk.disabled = true; }
+      else if (bal <= -1.30) { stoppedForDebt = false; chk.disabled = false; alertBox.className = 'p-2.5 rounded-2xl text-xs font-extrabold text-center bg-amber-100 text-amber-900 border'; alertBox.innerText = t(`⚠️ رصيدك (${bal.toFixed(2)} د.أ) اقترب من -2.00 د.أ!`, `⚠️ Balance (${bal.toFixed(2)} JOD) near -2.00 limit!`); alertBox.classList.remove('hidden'); if (!warnedLowBalance) { warnedLowBalance = true; notifyCaptain(t('⚠️ تنبيه الرصيد', '⚠️ Balance Warning'), `${bal.toFixed(2)}`, 'chat'); } }
+      else { stoppedForDebt = false; warnedLowBalance = false; chk.disabled = false; alertBox.classList.add('hidden'); }
+    }
+
+    // الاستماع الفوري لإشعارات وإنذارات الإدارة للكباتن
+    function listenAdminAlerts() {
+      const seenKey = 'nshmi_seen_cap_' + currentUser.id;
+      const seen = new Set(JSON.parse(localStorage.getItem(seenKey) || '[]'));
+      onSnapshot(query(collection(db, 'admin_alerts'), where('audience', '==', 'CAPTAINS')), (snap) => {
+        let changed = false;
+        snap.forEach((ds) => {
+          const a = ds.data();
+          if ((a.targetId === 'ALL' || a.targetId === currentUser.id) && !seen.has(ds.id)) {
+            seen.add(ds.id); changed = true;
+            const icon = a.type === 'WARNING' ? '⚠️' : (a.type === 'CONTEST' ? '🏆' : '📢');
+            notifyCaptain(`${icon} ${a.title}`, a.body, a.type === 'WARNING' ? 'ride' : 'chat');
+          }
+        });
+        if (changed) localStorage.setItem(seenKey, JSON.stringify([...seen].slice(-50)));
+      });
     }
 
     async function completeCaptainLogin(userObj) {
-      currentUser = userObj; await setupNotifChannel();
+      currentUser = userObj; await setupNotifChannel(); listenAdminAlerts();
       const userRef = doc(db, 'captains', currentUser.id);
       onSnapshot(userRef, (s) => {
         if (s.exists()) {
@@ -403,7 +391,18 @@
     window.closeModal = () => document.getElementById('app-modal').classList.add('hidden');
     window.openModal = async (type) => {
       toggleDrawer(false); const ti = document.getElementById('modal-title'), b = document.getElementById('modal-body'); document.getElementById('app-modal').classList.remove('hidden');
-      if (type === 'contests') {
+      if (type === 'inbox') {
+        ti.innerText = t('📬 صندوق الرسائل والإنذارات', '📬 Inbox & Admin Alerts'); b.innerHTML = t('جاري التحميل...', 'Loading...');
+        const aSnap = await getDocs(query(collection(db, 'admin_alerts'), where('audience', '==', 'CAPTAINS')));
+        const alerts = []; aSnap.forEach(d => { const a = d.data(); if (a.targetId === 'ALL' || a.targetId === currentUser.id) alerts.push(a); });
+        alerts.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+        b.innerHTML = alerts.length ? alerts.map(a => {
+          const cls = a.type === 'WARNING' ? 'bg-red-50 border-red-200 text-[#CE1126]' : (a.type === 'CONTEST' ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-900');
+          const ic = a.type === 'WARNING' ? '⚠️' : (a.type === 'CONTEST' ? '🏆' : '📢');
+          return `<div class="p-3 rounded-xl border ${cls}"><div class="font-extrabold">${ic} ${a.title}</div><div class="mt-0.5 text-slate-700">${a.body}</div></div>`;
+        }).join('') : `<div class="text-center py-6 text-slate-400">${t('لا توجد رسائل أو إنذارات حالياً','No messages or warnings yet')}</div>`;
+      }
+      else if (type === 'contests') {
         ti.innerText = t('🏆 المسابقات', '🏆 Contests'); const om = Math.floor(capMetrics.onlineSeconds / 60);
         b.innerHTML = [{ id:'c_daily_10', title: t('🔥 تحدي 10 رحلات','🔥 10 Rides Challenge'), target:10, type:'trips', reward:3 }, { id:'c_hours_3', title: t('⏱️ تحدي 3 ساعات','⏱️ 3 Hours Online'), target:180, type:'mins', reward:2 }].map(c => {
           const cur = c.type === 'mins' ? om : capMetrics.completedCount, pct = Math.min(100, Math.round((cur/c.target)*100)), cl = capMetrics.claimedContests.includes(c.id);
@@ -415,7 +414,6 @@
       else if (type === 'trips') { ti.innerText = t('🕒 رحلاتي', '🕒 Trips'); b.innerHTML = '...'; const s = await getDocs(query(collection(db, 'rides'), where('captainId', '==', currentUser.id))); const l = []; s.forEach(d => l.push(d.data())); l.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)); b.innerHTML = l.length ? l.map(r => `<div class="bg-slate-50 p-3 rounded-xl border"><div class="flex justify-between font-extrabold"><span>${r.riderName} • ${r.status}</span><span class="jo-text">${Number(r.originalFareJod||r.fareJod).toFixed(2)}</span></div></div>`).join('') : t('لا توجد رحلات', 'No trips'); }
       else if (type === 'wallet') { ti.innerText = t('💳 المحفظة', '💳 Wallet'); b.innerHTML = `<div class="bg-gradient-to-br from-slate-900 to-[#007A3D] text-white p-5 rounded-2xl text-center"><div class="text-3xl font-extrabold">${currentUser.walletBalance.toFixed(2)} ${t('د.أ','JOD')}</div></div>`; }
       else if (type === 'vehicle') { ti.innerText = t('🏍️ الدراجة', '🏍️ Vehicle'); b.innerHTML = `<div class="space-y-3"><input id="edit-bike" type="text" value="${currentUser.bikeModel}" class="w-full border rounded-xl p-2.5"><input id="edit-plate" type="text" value="${currentUser.plate}" class="w-full border rounded-xl p-2.5"><button onclick="saveVehicle()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">${t('حفظ','Save')}</button></div>`; }
-      else if (type === 'inbox') { ti.innerText = t('📬 الرسائل', '📬 Inbox'); b.innerHTML = `<div class="bg-emerald-50 p-3 rounded-xl font-bold">${t('🇯🇴 التزم بالمهلة وعدم الابتعاد بعد الوصول!', '🇯🇴 Stay within 200m after arrival!')}</div>`; }
       else if (type === 'invite') { ti.innerText = t('🎁 دعوة', '🎁 Invite'); b.innerHTML = `<div class="bg-emerald-50 p-4 rounded-2xl text-center space-y-2"><div class="text-2xl font-extrabold jo-text">${currentUser.referralCode}</div><button onclick="shareInvite()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">${t('مشاركة واتساب','Share')}</button></div>`; }
       else if (type === 'contact') { ti.innerText = t('🎧 الدعم', '🎧 Support'); b.innerHTML = `<a href="tel:911" class="block text-center w-full bg-[#CE1126] text-white font-bold py-2.5 rounded-xl">🚨 911</a>`; }
       else if (type === 'settings') { ti.innerText = t('⚙️ الإعدادات', '⚙️ Settings'); b.innerHTML = `<button onclick="toggleLanguage(); closeModal();" class="w-full jo-green text-white font-bold py-3 rounded-xl">🌐 ${lang==='ar'?'English':'العربية'}</button>`; }
@@ -436,8 +434,7 @@
       if (localStorage.getItem('nshmi_selfie_' + currentUser.id) !== todayKey) {
         chk.checked = false;
         alert(t('📸 يرجى التقاط صورة سيلفي بالخوذة لتفعيل شفت اليوم!', '📸 Take a quick helmet selfie to go online!'));
-        document.getElementById('helmet-selfie-input').click();
-        return;
+        document.getElementById('helmet-selfie-input').click(); return;
       }
       toggleCaptainOnline(true);
     };
@@ -525,10 +522,7 @@
         const rRef = doc(db, 'rides', rideId), snap = await getDoc(rRef);
         if (snap.exists()) {
           const d = snap.data(), upd = { declinedCaptainIds: arrayUnion(currentUser.id) };
-          if (d.targetCaptainId === currentUser.id) {
-            const q = d.dispatchQueue || [], ni = (d.dispatchIndex || 0) + 1;
-            upd.dispatchIndex = ni; upd.targetCaptainId = ni < q.length ? q[ni] : 'ALL';
-          }
+          if (d.targetCaptainId === currentUser.id) { const q = d.dispatchQueue || [], ni = (d.dispatchIndex || 0) + 1; upd.dispatchIndex = ni; upd.targetCaptainId = ni < q.length ? q[ni] : 'ALL'; }
           await updateDoc(rRef, upd);
         }
       } catch (e) {}
@@ -688,14 +682,12 @@
       cleanupActiveRide(); if (ok) showSummary(t('إلغاء لعدم الحضور','No-Show Cancel'), '+0.50 JOD', null, null);
     };
 
-    // إذا اعتذر الكابتن بعد القبول، لا نلغي رحلة العميل بل نرجعها فوراً لـ SEARCHING ليبحث للعميل عن كابتن آخر!
     window.cancelRideCaptain = async () => {
       if (!activeRideId || activeRideData?.status === 'ON_TRIP' || !confirm(t('هل تريد الاعتذار وإعادة توجيه الطلب لكابتن آخر؟', 'Cancel and reassign this ride to another captain?'))) return;
       const rId = activeRideId; declinedRideIds.add(rId);
       await updateDoc(doc(db, 'captains', currentUser.id), { cancelledByCaptain: increment(1) }).catch(() => {});
       await updateDoc(doc(db, 'rides', rId), {
-        status: 'SEARCHING',
-        declinedCaptainIds: arrayUnion(currentUser.id),
+        status: 'SEARCHING', declinedCaptainIds: arrayUnion(currentUser.id),
         captainId: null, captainName: null, captainPhone: null, bikeModel: null, plate: null,
         captainLat: null, captainLng: null, arrivedAtMs: null, waitPaused: false, pauseStartedMs: null, totalPausedMs: 0, arrivalDeadlineMs: null,
         targetCaptainId: 'ALL'
