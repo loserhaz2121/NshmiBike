@@ -90,10 +90,10 @@
       <button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full bg-[#CE1126] text-white font-extrabold py-3 rounded-2xl text-sm">تسجيل الخروج</button>
     </div>
 
-    <!-- 3. شاشة الكابتن الرئيسية (خريطة كبيرة + لوحة سفلية مضغوطة مثل أوبر وجراب) -->
+    <!-- 3. شاشة الكابتن الرئيسية -->
     <div id="screen-captain" class="hidden flex-1 flex flex-col h-full relative">
       <div class="shmagh-strip shrink-0"></div>
-      <header class="px-3 py-2.5 bg-slate-900 text-white shadow flex justify-between items-center shrink-0 z-20">
+      <header class="px-3 py-2 bg-slate-900 text-white shadow flex justify-between items-center shrink-0 z-20">
         <div class="flex items-center gap-2">
           <button onclick="toggleDrawer(true)" class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-base font-bold">☰</button>
           <div>
@@ -102,35 +102,31 @@
           </div>
         </div>
         <div class="flex gap-1.5">
-          <button onclick="openModal('contests')" data-ar="🏆" data-en="🏆" class="bg-amber-500 text-slate-900 text-xs font-extrabold px-2.5 py-1 rounded-full">🏆</button>
+          <button onclick="openModal('contests')" class="bg-amber-500 text-slate-900 text-xs font-extrabold px-2.5 py-1 rounded-full">🏆</button>
           <button onclick="toggleLanguage()" class="bg-white/10 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full lang-switch-label">EN</button>
           <button onclick="openModal('inbox')" class="jo-green text-white text-xs font-bold px-2.5 py-1 rounded-full">📬</button>
         </div>
       </header>
 
-      <!-- خريطة كبيرة مرنة تملأ كامل المساحة العلوية -->
-      <div class="relative flex-1 bg-slate-200 min-h-[260px]">
+      <!-- الخريطة: تكبر في الانتظار وتصغر تلقائياً عند وصول الطلب -->
+      <div id="cap-map-wrap" class="relative flex-1 bg-slate-200 min-h-[160px]">
         <div id="cap-map"></div>
-
-        <!-- شريط الإحصائيات العائم أعلى الخريطة -->
-        <div class="absolute top-2.5 left-2.5 right-2.5 z-10 grid grid-cols-5 gap-1 text-center pointer-events-none">
+        <div class="absolute top-2 left-2 right-2 z-10 grid grid-cols-5 gap-1 text-center pointer-events-none">
           <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="القبول" data-en="Accept" class="i18n text-[8px] text-slate-500 font-bold">القبول</div><div id="stat-accept" class="text-[10px] font-extrabold jo-text">100%</div></div>
           <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="التقييم" data-en="Rating" class="i18n text-[8px] text-slate-500 font-bold">التقييم</div><div id="stat-rating" class="text-[10px] font-extrabold text-amber-600">100%</div></div>
           <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="المتاح" data-en="Online" class="i18n text-[8px] text-slate-500 font-bold">المتاح</div><div id="stat-online" class="text-[10px] font-extrabold">0د</div></div>
           <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="الرحلات" data-en="Trips" class="i18n text-[8px] text-slate-500 font-bold">الرحلات</div><div id="stat-trips" class="text-[10px] font-extrabold">0</div></div>
           <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="الإلغاء" data-en="Cancels" class="i18n text-[8px] text-slate-500 font-bold">الإلغاء</div><div id="stat-cancels" class="text-[10px] font-extrabold text-[#CE1126]">0</div></div>
         </div>
-
-        <div data-ar="🔥 الدوائر الحمراء = مناطق طلب عالية" data-en="🔥 Red Circles = High Demand" class="i18n absolute bottom-3 left-2.5 z-10 bg-white/95 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-red-600 shadow">🔥 الدوائر الحمراء = مناطق طلب عالية</div>
+        <div data-ar="🔥 مناطق طلب عالية" data-en="🔥 High Demand" class="i18n absolute bottom-2 left-2 z-10 bg-white/95 px-2 py-0.5 rounded-full text-[9px] font-extrabold text-red-600 shadow">🔥 مناطق طلب عالية</div>
       </div>
 
-      <!-- اللوحة السفلية المضغوطة (تنزل لأسفل الشاشة وتكبر فقط عند وجود طلب) -->
-      <div class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-3.5 pt-2.5 safe-bottom z-20 shrink-0 max-h-[52vh] overflow-y-auto space-y-2">
+      <!-- اللوحة السفلية -->
+      <div id="cap-bottom-sheet" class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-3.5 pt-2 safe-bottom z-20 shrink-0 max-h-[68vh] overflow-y-auto space-y-2">
         <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto"></div>
         <div id="cap-debt-alert" class="hidden p-2 rounded-xl text-[11px] font-extrabold text-center shadow-sm"></div>
 
-        <!-- شريط التفعيل والمحفظة والمدينة ووجهتي (مضغوط بسطرين) -->
-        <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 space-y-1.5">
+        <div id="cap-controls-bar" class="bg-slate-50 p-2 rounded-2xl border border-slate-100 space-y-1.5">
           <div class="flex items-center justify-between gap-2">
             <label class="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
               <input id="cap-helmet-check" type="checkbox" onchange="handleOnlineClick()" class="accent-[#007A3D] w-4 h-4 shrink-0">
@@ -153,10 +149,8 @@
           </div>
         </div>
 
-        <!-- قسم الطلبات المضغوط -->
         <div id="cap-requests-section"><div id="cap-requests-list" class="space-y-2"></div></div>
 
-        <!-- الرحلة النشطة -->
         <div id="cap-active-ride" class="hidden bg-white p-3 rounded-2xl border-2 border-[#007A3D] space-y-2">
           <div class="flex justify-between items-center">
             <span id="cap-ride-badge" class="bg-emerald-100 text-[#007A3D] text-xs font-extrabold px-3 py-1 rounded-full">...</span>
@@ -219,7 +213,7 @@
           <button onclick="openModal('settings')" class="w-full px-5 py-3 flex items-center gap-3"><span>⚙️</span><span data-ar="الإعدادات واللغة" data-en="Settings & Language" class="i18n">الإعدادات واللغة</span></button>
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط" data-en="Terms" class="i18n">الشروط</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v4.3 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v4.4 🇯🇴</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -247,6 +241,12 @@
 
     let lang = localStorage.getItem('nshmi_lang') || 'ar', authMode = 'login', capRiderStars = 5, lastFinishedRideId = null, lastFinishedRiderId = null;
     const t = (ar, en) => lang === 'ar' ? ar : en;
+
+    function setMapCompact(compact) {
+      const w = document.getElementById('cap-map-wrap'); if (!w) return;
+      w.className = compact ? 'relative h-[26vh] min-h-[155px] shrink-0 bg-slate-200' : 'relative flex-1 bg-slate-200 min-h-[220px]';
+      setTimeout(() => capMap?.invalidateSize(), 200);
+    }
 
     function applyLanguage() {
       document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -465,7 +465,12 @@
     function renderOffersList(docs) {
       const listEl = document.getElementById('cap-requests-list'), destFilter = document.getElementById('cap-dest-filter').value.trim();
       const filtered = destFilter ? docs.filter(r => (r.dropoffAddress || '').includes(destFilter) || (r.pickupAddress || '').includes(destFilter)) : docs;
-      if (filtered.length === 0) { listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-3 bg-slate-50 rounded-xl">${t('بانتظار طلبات في','Waiting for rides in')} ${capCity}... 🛵</div>`; setTimeout(() => capMap?.invalidateSize(), 200); return; }
+      if (filtered.length === 0) {
+        setMapCompact(false);
+        listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-2 bg-slate-50 rounded-xl">${t('بانتظار طلبات في','Waiting for rides in')} ${capCity}... 🛵</div>`;
+        return;
+      }
+      setMapCompact(true);
       listEl.innerHTML = '';
       filtered.forEach((r) => {
         const debtRec = Number(r.settledDebtJod || 0), ridePriceOnly = Number(r.originalFareJod || (Number(r.fareJod || 0) - debtRec)), capNet = +(ridePriceOnly * (1 - commissionPct / 100)).toFixed(2);
@@ -479,21 +484,19 @@
           <div class="flex gap-2"><button onclick="declineRide('${r.id}')" class="w-20 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs">${t('رفض','Decline')}</button><button onclick="acceptRide('${r.id}')" class="flex-1 jo-green text-white font-extrabold py-2 rounded-xl text-xs">${t('قبول الرحلة','Accept Ride')}</button></div>`;
         listEl.appendChild(card);
       });
-      setTimeout(() => capMap?.invalidateSize(), 200);
     }
 
     function toggleCaptainOnline(isOnline) {
       unlockAudio();
       const listEl = document.getElementById('cap-requests-list'), statusLbl = document.getElementById('cap-online-status');
       if (!isOnline) {
-        keepAwake(false); stopRingLoop();
+        keepAwake(false); stopRingLoop(); setMapCompact(false);
         if (unsubCaptainOffers) unsubCaptainOffers();
         if (onlineTimerInt) { clearInterval(onlineTimerInt); onlineTimerInt = null; }
         if (locSyncInt) { clearInterval(locSyncInt); locSyncInt = null; }
         updateDoc(doc(db, 'captains', currentUser.id), { isOnline: false, onlineSeconds: capMetrics.onlineSeconds }).catch(() => {});
         statusLbl.innerText = t('غير متاح حالياً', 'Offline'); knownRideIds.clear();
-        listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-3 bg-slate-50 rounded-xl">${t('فعّل الخوذة بالأعلى...','Enable helmet check above...')}</div>`;
-        setTimeout(() => capMap?.invalidateSize(), 200);
+        listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-2 bg-slate-50 rounded-xl">${t('فعّل الخوذة بالأعلى...','Enable helmet check above...')}</div>`;
         return;
       }
 
@@ -598,11 +601,13 @@
     window.onExpressPhoto = () => { expressPhotoDone = true; document.getElementById('express-photo-status').classList.remove('hidden'); };
 
     function attachCaptainToRide(rideId, initialMovedKm, startCoords) {
-      stopRingLoop(); expressPhotoDone = false; document.getElementById('cap-pin-input').value = ''; document.getElementById('cash-received-input').value = '';
+      stopRingLoop(); setMapCompact(true);
+      expressPhotoDone = false; document.getElementById('cap-pin-input').value = ''; document.getElementById('cash-received-input').value = '';
       document.getElementById('express-photo-status').classList.add('hidden');
       const rideRef = doc(db, 'rides', rideId); activeRideId = rideId; totalMovedKm = initialMovedKm || 0; lastGpsPos = startCoords; waitPauseStateSync = null; isFinishingRide = false;
-      document.getElementById('cap-requests-section').classList.add('hidden'); document.getElementById('cap-active-ride').classList.remove('hidden');
-      setTimeout(() => capMap?.invalidateSize(), 250);
+      document.getElementById('cap-controls-bar').classList.add('hidden');
+      document.getElementById('cap-requests-section').classList.add('hidden');
+      document.getElementById('cap-active-ride').classList.remove('hidden');
 
       if (navigator.geolocation) {
         gpsWatchId = navigator.geolocation.watchPosition((pos) => {
@@ -670,8 +675,9 @@
       if (pickupM && capMap) { capMap.removeLayer(pickupM); pickupM = null; } if (dropM && capMap) { capMap.removeLayer(dropM); dropM = null; }
       activeRideId = null; activeRideData = null; totalMovedKm = 0; lastGpsPos = null; waitPauseStateSync = null; isFinishingRide = false;
       ['cap-wait-box', 'cap-arrival-box', 'cap-active-ride'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      document.getElementById('cap-controls-bar').classList.remove('hidden');
       document.getElementById('cap-requests-section').classList.remove('hidden');
-      setTimeout(() => capMap?.invalidateSize(), 250);
+      setMapCompact(latestOffers.length > 0);
     }
 
     window.markArrived = () => {
@@ -760,7 +766,7 @@
       if (unsubChat) unsubChat(); let first = true;
       unsubChat = onSnapshot(query(collection(db, 'rides', rideId, 'messages'), orderBy('createdAt', 'asc')), (snap) => {
         const box = document.getElementById('cap-messages'); box.innerHTML = '';
-        snap.forEach((m) => { const d = m.data(), div = document.createElement('div'); div.className = 'bg-white px-2 py-1 rounded-lg border'; const s = document.createElement('span'); s.className = 'font-bold jo-text'; s.textContent = d.senderName + ': '; const tx = document.createElement('span'); tx.textContent = d.text; div.appendChild(s); div.appendChild(tx); box.appendChild(div); });
+        snap.forEach((m) => { const d = m.data(), div = document.createElement('div'); div.className = 'bg-white px-2 py-1 rounded-lg border'; const s = document.createElement('span'); s.className = 'font-bold jo-text'; s.textContent = d.senderName + ': '; const tx = document.createElement('span'); tx.textContent = d.text; div.appendChild(s); div.appendChild(t ? tx : tx); box.appendChild(div); });
         box.scrollTop = box.scrollHeight;
         if (!first) snap.docChanges().forEach((c) => { if (c.type === 'added' && c.doc.data().role !== 'CAPTAIN') notifyCaptain(t('💬 رسالة من الراكب','💬 Customer Message'), c.doc.data().text, 'chat'); });
         first = false;
