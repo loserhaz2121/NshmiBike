@@ -76,7 +76,7 @@
         </div>
         <div class="flex gap-1.5">
           <button onclick="toggleLanguage()" class="bg-slate-100 text-slate-700 text-[11px] font-extrabold px-2.5 py-1 rounded-full lang-switch-label">EN</button>
-          <button onclick="testAudio()" class="bg-emerald-50 text-[#007A3D] text-[11px] font-bold px-2 py-1 rounded-full">🔔</button>
+          <button onclick="openModal('inbox')" class="bg-emerald-50 text-[#007A3D] text-[11px] font-bold px-2 py-1 rounded-full">📬</button>
           <button onclick="triggerSOS()" class="bg-[#CE1126] text-white text-[11px] font-bold px-2.5 py-1 rounded-full">🆘 SOS</button>
         </div>
       </header>
@@ -215,7 +215,7 @@
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط والأحكام" data-en="Terms & Conditions" class="i18n">الشروط والأحكام</span></button>
           <button onclick="openModal('diag')" class="w-full px-5 py-3 flex items-center gap-3"><span>🛠️</span><span data-ar="فحص الاتصال" data-en="Diagnostics" class="i18n">فحص الاتصال</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiBike • v4.1 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiBike • v4.2 🇯🇴</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -240,7 +240,6 @@
     const auth = getAuth(app), db = getFirestore(app);
     const MAX_RIDE_KM = 35, SESSION_KEY = 'nshmi_rider_v2';
 
-    // قاعدة معالم أردنية شاملة للبحث الفوري بالاسم (عمّان، إربد، الزرقاء)
     const LOCAL_LANDMARKS = [
       { city:'amman', ar:'سيتي مول', en:'City Mall', c:[31.9815,35.8390] }, { city:'amman', ar:'مكة مول', en:'Mecca Mall', c:[31.9762,35.8444] },
       { city:'amman', ar:'العبدلي مول / البوليفارد', en:'Abdali Mall Boulevard', c:[31.9648,35.9080] }, { city:'amman', ar:'تاج مول', en:'Taj Mall', c:[31.9447,35.8753] },
@@ -261,12 +260,7 @@
       { city:'zarqa', ar:'الرصيفة', en:'Russeifa', c:[32.0178,36.0464] }, { city:'zarqa', ar:'مستشفى الزرقاء الحكومي', en:'Zarqa Hospital', c:[32.0844,36.0985] }
     ];
 
-    const CITIES = {
-      amman: { nameAr: 'عمّان', nameEn: 'Amman', center: [31.9539, 35.9106] },
-      irbid: { nameAr: 'إربد', nameEn: 'Irbid', center: [32.5568, 35.8469] },
-      zarqa: { nameAr: 'الزرقاء', nameEn: 'Zarqa', center: [32.0608, 36.0942] }
-    };
-
+    const CITIES = { amman: { nameAr: 'عمّان', nameEn: 'Amman', center: [31.9539, 35.9106] }, irbid: { nameAr: 'إربد', nameEn: 'Irbid', center: [32.5568, 35.8469] }, zarqa: { nameAr: 'الزرقاء', nameEn: 'Zarqa', center: [32.0608, 36.0942] } };
     let lang = localStorage.getItem('nshmi_lang') || 'ar', authMode = 'login', chosenStars = 5;
     const t = (ar, en) => lang === 'ar' ? ar : en;
 
@@ -291,10 +285,9 @@
     function playTone(kind) { try { unlockAudio(); if (!audioCtx) return; (kind === 'chat' ? [880, 1175] : [587, 784, 988]).forEach((f, i) => { const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = f; g.gain.setValueAtTime(0.28, audioCtx.currentTime + i * 0.13); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.13 + 0.28); o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime + i * 0.13); o.stop(audioCtx.currentTime + i * 0.13 + 0.3); }); } catch (e) {} }
     async function notifyRider(title, body, kind = 'status') {
       playTone(kind); if (navigator.vibrate) navigator.vibrate([250, 100, 250]);
-      const tb = document.getElementById('toast-banner'); document.getElementById('toast-title').innerText = title; document.getElementById('toast-body').innerText = body; tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 4500);
+      const tb = document.getElementById('toast-banner'); document.getElementById('toast-title').innerText = title; document.getElementById('toast-body').innerText = body; tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 5000);
       try { const LN = window.Capacitor?.Plugins?.LocalNotifications; if (LN) await LN.schedule({ notifications: [{ title, body, id: Math.floor(Math.random() * 99999) + 1, channelId: 'nshmi_alerts' }] }); else if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body }); } catch (e) {}
     }
-    window.testAudio = () => notifyRider('🔔 NshmiBike', t('الصوت والإشعارات شغالة!', 'Sound & Alerts Ready!'), 'chat');
 
     let pricing = { scooterBase: 0.25, scooterPerKm: 0.15, scooterMin: 0.60, bikeBase: 0.30, bikePerKm: 0.18, bikeMin: 0.75, surgeMultiplier: 1.0, rainMode: false };
     let appliedPromo = null, currentUser = null, selectedTier = 'SCOOTER', currentCity = 'amman';
@@ -332,8 +325,26 @@
       return { km: haversine(from, to) * 1.28, latLngs: [from, to] };
     }
 
+    // الاستماع الفوري لإشعارات وإنذارات وعروض الإدارة المرسلة للعملاء
+    function listenAdminAlerts() {
+      const seenKey = 'nshmi_seen_rider_' + currentUser.id;
+      const seen = new Set(JSON.parse(localStorage.getItem(seenKey) || '[]'));
+      onSnapshot(query(collection(db, 'admin_alerts'), where('audience', '==', 'RIDERS')), (snap) => {
+        let changed = false;
+        snap.forEach((ds) => {
+          const a = ds.data();
+          if ((a.targetId === 'ALL' || a.targetId === currentUser.id) && !seen.has(ds.id)) {
+            seen.add(ds.id); changed = true;
+            const icon = a.type === 'WARNING' ? '⚠️' : (a.type === 'OFFER' ? '🎁' : '📢');
+            notifyRider(`${icon} ${a.title}`, a.body, a.type === 'WARNING' ? 'status' : 'chat');
+          }
+        });
+        if (changed) localStorage.setItem(seenKey, JSON.stringify([...seen].slice(-50)));
+      });
+    }
+
     async function completeLogin(userObj) {
-      currentUser = userObj; await setupNotifChannel();
+      currentUser = userObj; await setupNotifChannel(); listenAdminAlerts();
       onSnapshot(doc(db, 'riders', currentUser.id), (s) => {
         if (s.exists()) {
           const d = s.data(); currentUser.walletBalance = Number(d.walletBalance || 0); currentUser.promoUsage = d.promoUsage || {};
@@ -406,7 +417,19 @@
         b.innerHTML = l.length ? l.map(r => `<div class="bg-slate-50 p-3 rounded-xl border"><div class="flex justify-between font-extrabold"><span>${r.tier} • ${r.status}</span><span class="jo-text">${Number(r.fareJod).toFixed(2)}</span></div><div class="text-[11px] text-slate-500 mt-1">${r.pickupAddress} ⬅️ ${r.dropoffAddress}</div></div>`).join('') : t('لا توجد رحلات', 'No trips yet');
       }
       else if (type === 'wallet') { ti.innerText = t('💳 محفظتي', '💳 Wallet'); b.innerHTML = `<div class="bg-gradient-to-br from-[#007A3D] to-slate-900 text-white p-5 rounded-2xl text-center"><div class="text-3xl font-extrabold">${currentUser.walletBalance.toFixed(2)} ${t('د.أ','JOD')}</div></div><div class="bg-slate-50 p-3 rounded-2xl text-center font-semibold">${t('تُضاف الفكة هنا تلقائياً عند الدفع كاش.', 'Cash change is added here automatically.')}</div>`; }
-      else if (type === 'inbox') { ti.innerText = t('📬 العروض', '📬 Inbox'); const s = await getDocs(collection(db, 'promos')); let h = ''; s.forEach(d => { const p = d.data(); if (p.active) h += `<div class="bg-emerald-50 border p-3 rounded-xl font-bold">🎁 <u>${d.id}</u> (${p.discountPct}%)</div>`; }); b.innerHTML = `<div class="bg-slate-50 p-3 rounded-xl font-semibold">${t('🇯🇴 الخدمة للرجال والشباب (+18) فقط.', '🇯🇴 Adult males (18+) only.')}</div>` + h; }
+      else if (type === 'inbox') {
+        ti.innerText = t('📬 صندوق الرسائل والعروض', '📬 Inbox & Alerts'); b.innerHTML = t('جاري التحميل...', 'Loading...');
+        const [aSnap, pSnap] = await Promise.all([getDocs(query(collection(db, 'admin_alerts'), where('audience', '==', 'RIDERS'))), getDocs(collection(db, 'promos'))]);
+        const alerts = []; aSnap.forEach(d => { const a = d.data(); if (a.targetId === 'ALL' || a.targetId === currentUser.id) alerts.push(a); });
+        alerts.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+        let h = alerts.map(a => {
+          const cls = a.type === 'WARNING' ? 'bg-red-50 border-red-200 text-[#CE1126]' : (a.type === 'OFFER' ? 'bg-emerald-50 border-emerald-200 text-[#007A3D]' : 'bg-blue-50 border-blue-200 text-blue-900');
+          const ic = a.type === 'WARNING' ? '⚠️' : (a.type === 'OFFER' ? '🎁' : '📢');
+          return `<div class="p-3 rounded-xl border ${cls}"><div class="font-extrabold">${ic} ${a.title}</div><div class="mt-0.5 text-slate-700">${a.body}</div></div>`;
+        }).join('');
+        pSnap.forEach(d => { const p = d.data(); if (p.active) h += `<div class="bg-emerald-50 border p-3 rounded-xl font-bold">🎁 ${t('كود خصم:','Promo:')} <u>${d.id}</u> (${p.discountPct}%)</div>`; });
+        b.innerHTML = h || `<div class="text-center py-6 text-slate-400">${t('لا توجد رسائل حالياً','No messages yet')}</div>`;
+      }
       else if (type === 'invite' || type === 'referral') { ti.innerText = t('🎁 الإحالة', '🎁 Referral'); b.innerHTML = `<div class="bg-emerald-50 p-4 rounded-2xl text-center space-y-2"><div class="text-2xl font-extrabold jo-text">${currentUser.referralCode}</div><button onclick="shareInvite()" class="w-full jo-green text-white font-bold py-2.5 rounded-xl">${t('مشاركة 💬','Share 💬')}</button></div>${currentUser.claimedReferral ? '✓' : `<div class="flex gap-2"><input id="ref-input" type="text" placeholder="Code" class="flex-1 border rounded-xl p-2 uppercase font-bold"><button onclick="claimReferral()" class="bg-slate-900 text-white px-4 rounded-xl font-bold">${t('تفعيل','Claim')}</button></div>`}`; }
       else if (type === 'contact') { ti.innerText = t('🎧 الدعم', '🎧 Support'); b.innerHTML = `<a href="tel:911" class="block text-center w-full bg-[#CE1126] text-white font-bold py-2.5 rounded-xl">🚨 911</a>`; }
       else if (type === 'settings') { ti.innerText = t('⚙️ الإعدادات', '⚙️ Settings'); b.innerHTML = `<button onclick="toggleLanguage(); closeModal();" class="w-full jo-green text-white font-bold py-3 rounded-xl">🌐 ${lang==='ar'?'English':'العربية'}</button>`; }
@@ -477,23 +500,19 @@
 
     window.debouncedSearch = () => { clearTimeout(searchDebTimer); searchDebTimer = setTimeout(searchPlace, 350); };
 
-    // محرك بحث ذكي للمعالم (قاعدة محلية فورية + Photon + Nominatim)
     window.searchPlace = async () => {
       const q = document.getElementById('dest-search').value.trim(), box = document.getElementById('search-results');
       if (q.length < 2) { box.classList.add('hidden'); return; }
-      box.classList.remove('hidden'); box.innerHTML = `<div class="text-xs text-slate-500 p-2">${t('جاري البحث عن المعلم...', 'Searching landmarks...')}</div>`;
-
+      box.classList.remove('hidden'); box.innerHTML = `<div class="text-xs text-slate-500 p-2">${t('جاري البحث...', 'Searching...')}</div>`;
       const ql = q.toLowerCase(), results = [];
       LOCAL_LANDMARKS.forEach(l => {
-        if (l.ar.toLowerCase().includes(ql) || l.en.toLowerCase().includes(ql)) {
-          if (haversine(pickupCoords, l.c) <= MAX_RIDE_KM) results.push({ name: t(l.ar, l.en), coords: l.c, src: 'local' });
+        if ((l.ar.toLowerCase().includes(ql) || l.en.toLowerCase().includes(ql)) && haversine(pickupCoords, l.c) <= MAX_RIDE_KM) {
+          results.push({ name: t(l.ar, l.en), coords: l.c });
         }
       });
-
       try {
         const cc = CITIES[currentCity].center;
-        const pRes = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${cc[0]}&lon=${cc[1]}&limit=6`);
-        const pJson = await pRes.json();
+        const pJson = await (await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lat=${cc[0]}&lon=${cc[1]}&limit=6`)).json();
         (pJson.features || []).forEach(f => {
           const coords = [f.geometry.coordinates[1], f.geometry.coordinates[0]];
           if (haversine(pickupCoords, coords) <= MAX_RIDE_KM) {
@@ -502,36 +521,27 @@
           }
         });
       } catch (e) {}
-
       if (results.length < 3) {
         try {
-          const nRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=jo&accept-language=${lang}&limit=5&q=${encodeURIComponent(q)}`);
-          const nData = await nRes.json();
-          nData.forEach(item => {
-            const coords = [Number(item.lat), Number(item.lon)];
-            if (haversine(pickupCoords, coords) <= MAX_RIDE_KM) results.push({ name: item.display_name.split(',').slice(0, 3).join('، '), coords });
-          });
+          const nData = await (await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=jo&accept-language=${lang}&limit=5&q=${encodeURIComponent(q)}`)).json();
+          nData.forEach(item => { const coords = [Number(item.lat), Number(item.lon)]; if (haversine(pickupCoords, coords) <= MAX_RIDE_KM) results.push({ name: item.display_name.split(',').slice(0, 3).join('، '), coords }); });
         } catch (e) {}
       }
-
-      if (!results.length) { box.innerHTML = `<div class="text-xs text-red-500 p-2">${t('لم نجد نتائج، اضغط على الخريطة مباشرة', 'No results, tap on map directly')}</div>`; return; }
+      if (!results.length) { box.innerHTML = `<div class="text-xs text-red-500 p-2">${t('لم نجد نتائج، اضغط الخريطة', 'No results, tap map')}</div>`; return; }
       box.innerHTML = '';
       results.slice(0, 6).forEach(r => {
         const btn = document.createElement('button'); btn.className = 'w-full text-right bg-white p-2 rounded-xl border text-xs font-bold hover:bg-emerald-50';
-        btn.innerText = '📍 ' + r.name;
-        btn.onclick = () => { box.classList.add('hidden'); pickDestination(r.coords, r.name.split('،')[0]); };
-        box.appendChild(btn);
+        btn.innerText = '📍 ' + r.name; btn.onclick = () => { box.classList.add('hidden'); pickDestination(r.coords, r.name.split('،')[0]); }; box.appendChild(btn);
       });
     };
 
     window.pickDestination = async (coords, label) => {
       document.getElementById('search-results').classList.add('hidden');
       const rt = await fetchRoadRoute(pickupCoords, coords);
-      if (rt.km > MAX_RIDE_KM) return alert(t(`⚠️ المسافة (${rt.km.toFixed(1)} كم) تتجاوز الحد 35 كم.`, `⚠️ Distance (${rt.km.toFixed(1)} km) exceeds 35km limit.`));
+      if (rt.km > MAX_RIDE_KM) return alert(t(`⚠️ المسافة (${rt.km.toFixed(1)} كم) تتجاوز الحد 35 كم.`, `⚠️ Distance (${rt.km.toFixed(1)} km) exceeds 35km.`));
       dropoffCoords = coords; dropoffAddress = label; currentDistKm = Math.max(0.8, rt.km);
       document.getElementById('chosen-dest-label').innerText = label;
-      document.getElementById('rider-panel-dest').classList.add('hidden');
-      document.getElementById('rider-panel-book').classList.remove('hidden');
+      document.getElementById('rider-panel-dest').classList.add('hidden'); document.getElementById('rider-panel-book').classList.remove('hidden');
       updateRoute(rt.latLngs);
     };
     window.backToDestStep = () => { document.getElementById('rider-panel-book').classList.add('hidden'); document.getElementById('rider-panel-dest').classList.remove('hidden'); if (dropoffMarker) { map.removeLayer(dropoffMarker); dropoffMarker = null; } if (routeLine) { map.removeLayer(routeLine); routeLine = null; } dropoffCoords = null; if (pickupCoords) map.setView(pickupCoords, 15); };
@@ -596,8 +606,7 @@
 
     async function buildFastDispatchQueue(cityAr, excludeIds = []) {
       try {
-        const snap = await getDocs(query(collection(db, 'captains'), where('isOnline', '==', true))), cand = [];
-        const favs = currentUser.favoriteCaptains || [];
+        const snap = await getDocs(query(collection(db, 'captains'), where('isOnline', '==', true))), cand = [], favs = currentUser.favoriteCaptains || [];
         snap.forEach(d => {
           const u = d.data();
           if (!excludeIds.includes(d.id) && !u.isBlocked && u.isApproved === true && Number(u.walletBalance || 0) > -2.0 && (!u.city || u.city === cityAr)) {
@@ -646,7 +655,6 @@
           }
         }
 
-        // إخفاء زر الإلغاء تماماً بعد وصول الكابتن أو بدء الرحلة (تُحذف عند بدء الرحلة ON_TRIP)
         document.getElementById('btn-rider-cancel').classList.toggle('hidden', data.status === 'ON_TRIP');
 
         const isLate = data.arrivalDeadlineMs && Date.now() > data.arrivalDeadlineMs, capFault = !!(data.captainPenaltyApplied || data.waitPaused || isLate);
@@ -667,7 +675,6 @@
         if (data.status !== lastRideStatus) {
           const prev = lastRideStatus; lastRideStatus = data.status;
 
-          // إذا اعتذر الكابتن بعد القبول وأرجع الحالة لـ SEARCHING -> نعيد توجيه الطلب فوراً لكابتن آخر!
           if (data.status === 'SEARCHING' && ['ACCEPTED', 'ARRIVED'].includes(prev)) {
             document.getElementById('captain-info-box').classList.add('hidden'); document.getElementById('rider-chat-box').classList.add('hidden');
             if (capMarker && map) { map.removeLayer(capMarker); capMarker = null; }
