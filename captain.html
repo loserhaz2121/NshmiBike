@@ -11,10 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Cairo', sans-serif; background: #0f172a; }
-    #cap-map { height: 185px; width: 100%; z-index: 1; }
+    #cap-map { height: 100%; width: 100%; z-index: 1; }
     .jo-green { background-color: #007A3D; }
     .jo-text { color: #007A3D; }
-    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 34px) !important; }
+    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px) !important; }
     .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
     .gps-dot { width: 14px; height: 14px; background: #2563eb; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 6px rgba(37,99,235,0.25); }
   </style>
@@ -48,7 +48,7 @@
     <!-- 1. دخول وتسجيل الكابتن -->
     <div id="screen-login" class="flex-1 flex flex-col justify-center p-5 bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950 text-white relative overflow-y-auto safe-bottom">
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
-      <div class="flex justify-end mb-2"><button onclick="toggleLanguage()" class="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-xs font-extrabold">🌐 <span class="lang-switch-label">English</span></button></div>
+      <div class="flex justify-end mb-2"><button onclick="toggleLanguage()" class="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-xs font-extrabold">🌐 <span class="lang-switch-label">EN</span></button></div>
       <div class="text-center mb-4">
         <div class="w-16 h-16 jo-green rounded-3xl mx-auto flex items-center justify-center text-3xl shadow-lg mb-2 border-2 border-[#CE1126]">🏍️</div>
         <h1 class="text-2xl font-extrabold">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</h1>
@@ -90,98 +90,112 @@
       <button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full bg-[#CE1126] text-white font-extrabold py-3 rounded-2xl text-sm">تسجيل الخروج</button>
     </div>
 
-    <!-- 3. شاشة الكابتن الرئيسية -->
+    <!-- 3. شاشة الكابتن الرئيسية (خريطة كبيرة + لوحة سفلية مضغوطة مثل أوبر وجراب) -->
     <div id="screen-captain" class="hidden flex-1 flex flex-col h-full relative">
       <div class="shmagh-strip shrink-0"></div>
-      <header class="p-3 bg-slate-900 text-white shadow flex justify-between items-center shrink-0">
+      <header class="px-3 py-2.5 bg-slate-900 text-white shadow flex justify-between items-center shrink-0 z-20">
         <div class="flex items-center gap-2">
-          <button onclick="toggleDrawer(true)" class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center text-lg font-bold">☰</button>
+          <button onclick="toggleDrawer(true)" class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-base font-bold">☰</button>
           <div>
             <div class="font-extrabold text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</div>
             <div id="cap-header-info" class="text-[10px] text-emerald-300 font-semibold"></div>
           </div>
         </div>
         <div class="flex gap-1.5">
-          <button onclick="openModal('contests')" data-ar="🏆 مسابقات" data-en="🏆 Contests" class="i18n bg-amber-500 text-slate-900 text-[11px] font-extrabold px-2 py-1 rounded-full">🏆 مسابقات</button>
-          <button onclick="toggleLanguage()" class="bg-white/10 text-white text-[11px] font-extrabold px-2 py-1 rounded-full lang-switch-label">EN</button>
-          <button onclick="openModal('inbox')" class="jo-green text-white text-xs font-bold px-2 py-1 rounded-full">📬</button>
+          <button onclick="openModal('contests')" data-ar="🏆" data-en="🏆" class="bg-amber-500 text-slate-900 text-xs font-extrabold px-2.5 py-1 rounded-full">🏆</button>
+          <button onclick="toggleLanguage()" class="bg-white/10 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full lang-switch-label">EN</button>
+          <button onclick="openModal('inbox')" class="jo-green text-white text-xs font-bold px-2.5 py-1 rounded-full">📬</button>
         </div>
       </header>
 
-      <div class="relative bg-slate-200 shrink-0 border-b border-slate-200">
+      <!-- خريطة كبيرة مرنة تملأ كامل المساحة العلوية -->
+      <div class="relative flex-1 bg-slate-200 min-h-[260px]">
         <div id="cap-map"></div>
-        <div data-ar="🔥 الدوائر الحمراء = مناطق طلب عالية" data-en="🔥 Red Circles = High Demand Zones" class="i18n absolute bottom-2 left-2 z-10 bg-white/90 px-2 py-0.5 rounded-full text-[10px] font-extrabold text-red-600 shadow">🔥 الدوائر الحمراء = مناطق طلب عالية</div>
+
+        <!-- شريط الإحصائيات العائم أعلى الخريطة -->
+        <div class="absolute top-2.5 left-2.5 right-2.5 z-10 grid grid-cols-5 gap-1 text-center pointer-events-none">
+          <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="القبول" data-en="Accept" class="i18n text-[8px] text-slate-500 font-bold">القبول</div><div id="stat-accept" class="text-[10px] font-extrabold jo-text">100%</div></div>
+          <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="التقييم" data-en="Rating" class="i18n text-[8px] text-slate-500 font-bold">التقييم</div><div id="stat-rating" class="text-[10px] font-extrabold text-amber-600">100%</div></div>
+          <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="المتاح" data-en="Online" class="i18n text-[8px] text-slate-500 font-bold">المتاح</div><div id="stat-online" class="text-[10px] font-extrabold">0د</div></div>
+          <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="الرحلات" data-en="Trips" class="i18n text-[8px] text-slate-500 font-bold">الرحلات</div><div id="stat-trips" class="text-[10px] font-extrabold">0</div></div>
+          <div class="bg-white/95 backdrop-blur p-1 rounded-xl shadow-sm"><div data-ar="الإلغاء" data-en="Cancels" class="i18n text-[8px] text-slate-500 font-bold">الإلغاء</div><div id="stat-cancels" class="text-[10px] font-extrabold text-[#CE1126]">0</div></div>
+        </div>
+
+        <div data-ar="🔥 الدوائر الحمراء = مناطق طلب عالية" data-en="🔥 Red Circles = High Demand" class="i18n absolute bottom-3 left-2.5 z-10 bg-white/95 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-red-600 shadow">🔥 الدوائر الحمراء = مناطق طلب عالية</div>
       </div>
 
-      <div class="grid grid-cols-5 gap-1 px-3 pt-2 shrink-0 text-center">
-        <div class="bg-white p-1 rounded-xl shadow-sm"><div data-ar="القبول" data-en="Accept" class="i18n text-[9px] text-slate-500 font-bold">القبول</div><div id="stat-accept" class="text-[11px] font-extrabold jo-text">100%</div></div>
-        <div class="bg-white p-1 rounded-xl shadow-sm"><div data-ar="التقييم" data-en="Rating" class="i18n text-[9px] text-slate-500 font-bold">التقييم</div><div id="stat-rating" class="text-[11px] font-extrabold text-amber-600">100%</div></div>
-        <div class="bg-white p-1 rounded-xl shadow-sm"><div data-ar="المتاح" data-en="Online" class="i18n text-[9px] text-slate-500 font-bold">المتاح</div><div id="stat-online" class="text-[11px] font-extrabold">0د</div></div>
-        <div class="bg-white p-1 rounded-xl shadow-sm"><div data-ar="الرحلات" data-en="Trips" class="i18n text-[9px] text-slate-500 font-bold">الرحلات</div><div id="stat-trips" class="text-[11px] font-extrabold">0</div></div>
-        <div class="bg-white p-1 rounded-xl shadow-sm"><div data-ar="الإلغاء" data-en="Cancels" class="i18n text-[9px] text-slate-500 font-bold">الإلغاء</div><div id="stat-cancels" class="text-[11px] font-extrabold text-[#CE1126]">0</div></div>
-      </div>
+      <!-- اللوحة السفلية المضغوطة (تنزل لأسفل الشاشة وتكبر فقط عند وجود طلب) -->
+      <div class="bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-3.5 pt-2.5 safe-bottom z-20 shrink-0 max-h-[52vh] overflow-y-auto space-y-2">
+        <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto"></div>
+        <div id="cap-debt-alert" class="hidden p-2 rounded-xl text-[11px] font-extrabold text-center shadow-sm"></div>
 
-      <div class="p-3 space-y-2.5 flex-1 overflow-y-auto safe-bottom">
-        <div id="cap-debt-alert" class="hidden p-2.5 rounded-2xl text-xs font-extrabold text-center shadow-sm"></div>
-
-        <div class="bg-white p-3 rounded-2xl shadow-sm border space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="flex items-center gap-2 cursor-pointer flex-1">
-              <input id="cap-helmet-check" type="checkbox" onchange="handleOnlineClick()" class="accent-[#007A3D] w-5 h-5">
-              <div><div data-ar="🪖 سيلفي الخوذة + بدء العمل" data-en="🪖 Helmet Selfie + Go Online" class="i18n text-xs font-extrabold text-slate-800">🪖 سيلفي الخوذة + بدء العمل</div><div id="cap-online-status" class="text-[10px] text-slate-500">...</div></div>
+        <!-- شريط التفعيل والمحفظة والمدينة ووجهتي (مضغوط بسطرين) -->
+        <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 space-y-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <label class="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
+              <input id="cap-helmet-check" type="checkbox" onchange="handleOnlineClick()" class="accent-[#007A3D] w-4 h-4 shrink-0">
+              <div class="truncate">
+                <div data-ar="🪖 سيلفي الخوذة + العمل" data-en="🪖 Selfie + Go Online" class="i18n text-xs font-extrabold text-slate-800 truncate">🪖 سيلفي الخوذة + العمل</div>
+                <div id="cap-online-status" class="text-[10px] text-slate-500">...</div>
+              </div>
             </label>
             <input id="helmet-selfie-input" type="file" accept="image/*" capture="user" class="hidden" onchange="onSelfieTaken()">
-            <div class="text-left"><div data-ar="المحفظة" data-en="Wallet" class="i18n text-[10px] text-slate-400 font-bold">المحفظة</div><div id="cap-wallet-top" class="text-xs font-extrabold jo-text">0.00</div></div>
+            <div class="text-left shrink-0">
+              <div data-ar="المحفظة" data-en="Wallet" class="i18n text-[9px] text-slate-400 font-bold">المحفظة</div>
+              <div id="cap-wallet-top" class="text-xs font-extrabold jo-text">0.00</div>
+            </div>
           </div>
-          <div class="grid grid-cols-2 gap-1.5 pt-1.5 border-t text-[11px]">
-            <select id="cap-city-select" onchange="updateCaptainCity()" class="bg-slate-100 px-2 py-1 rounded-xl font-bold">
+          <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+            <select id="cap-city-select" onchange="updateCaptainCity()" class="bg-white border border-slate-200 px-2 py-1 rounded-xl font-bold">
               <option value="عمّان">🏙️ عمّان / Amman</option><option value="إربد">🏙️ إربد / Irbid</option><option value="الزرقاء">🏙️ الزرقاء / Zarqa</option>
             </select>
-            <input id="cap-dest-filter" type="text" oninput="refreshOffersUI()" data-ar-ph="🏠 وجهتي (مثال: الجامعة)" data-en-ph="🏠 My Destination" placeholder="🏠 وجهتي (مثال: الجامعة)" class="i18n-ph bg-slate-100 px-2.5 py-1 rounded-xl font-bold">
+            <input id="cap-dest-filter" type="text" oninput="refreshOffersUI()" data-ar-ph="🏠 وجهتي (اختياري)" data-en-ph="🏠 Destination" placeholder="🏠 وجهتي (اختياري)" class="i18n-ph bg-white border border-slate-200 px-2.5 py-1 rounded-xl font-bold">
           </div>
         </div>
 
-        <div id="cap-requests-section"><div id="cap-requests-list" class="space-y-2.5"></div></div>
+        <!-- قسم الطلبات المضغوط -->
+        <div id="cap-requests-section"><div id="cap-requests-list" class="space-y-2"></div></div>
 
-        <div id="cap-active-ride" class="hidden bg-white p-3.5 rounded-2xl shadow-md border-2 border-[#007A3D] space-y-2">
+        <!-- الرحلة النشطة -->
+        <div id="cap-active-ride" class="hidden bg-white p-3 rounded-2xl border-2 border-[#007A3D] space-y-2">
           <div class="flex justify-between items-center">
             <span id="cap-ride-badge" class="bg-emerald-100 text-[#007A3D] text-xs font-extrabold px-3 py-1 rounded-full">...</span>
             <span id="cap-active-fare" class="font-extrabold text-sm jo-text"></span>
           </div>
-          <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2.5 rounded-xl"></div>
-          <div id="cap-arrival-box" class="hidden bg-blue-50 border border-blue-200 p-2 rounded-xl text-center text-[11px] font-extrabold text-blue-900"></div>
-          <div id="cap-moved-info" class="text-[11px] font-bold text-slate-600 text-center bg-slate-100 py-1 rounded-lg">0.00 km</div>
+          <div id="cap-active-details" class="text-xs text-slate-700 space-y-1 bg-slate-50 p-2 rounded-xl"></div>
+          <div id="cap-arrival-box" class="hidden bg-blue-50 border border-blue-200 p-1.5 rounded-xl text-center text-[11px] font-extrabold text-blue-900"></div>
+          <div id="cap-moved-info" class="text-[10px] font-bold text-slate-600 text-center bg-slate-100 py-1 rounded-lg">0.00 km</div>
 
-          <div id="cap-wait-box" class="hidden bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-center space-y-2">
+          <div id="cap-wait-box" class="hidden bg-amber-50 border border-amber-200 p-2 rounded-xl text-center space-y-1.5">
             <div id="cap-wait-timer" class="text-xs font-extrabold text-amber-900">⏱️ 05:00</div>
-            <button id="btn-no-show" onclick="cancelNoShow()" disabled data-ar="إلغاء بعد 5 دقائق (+0.50 د.أ)" data-en="No-Show Cancel (+0.50 JOD)" class="i18n w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs">إلغاء بعد 5 دقائق (+0.50 د.أ)</button>
+            <button id="btn-no-show" onclick="cancelNoShow()" disabled data-ar="إلغاء بعد 5 دقائق (+0.50 د.أ)" data-en="No-Show Cancel (+0.50 JOD)" class="i18n w-full bg-slate-300 text-slate-600 font-extrabold py-1.5 rounded-xl text-xs">إلغاء بعد 5 دقائق (+0.50 د.أ)</button>
           </div>
 
-          <div id="cap-pin-box" class="hidden flex gap-1.5 bg-slate-100 p-2 rounded-xl">
-            <input id="cap-pin-input" type="tel" maxlength="4" data-ar-ph="🔐 أدخل كود العميل (4 أرقام)" data-en-ph="🔐 Enter Customer 4-Digit PIN" placeholder="🔐 أدخل كود العميل (4 أرقام)" class="i18n-ph flex-1 bg-white border rounded-xl px-2.5 py-1.5 text-xs font-extrabold text-center tracking-widest">
+          <div id="cap-pin-box" class="hidden flex gap-1.5 bg-slate-100 p-1.5 rounded-xl">
+            <input id="cap-pin-input" type="tel" maxlength="4" data-ar-ph="🔐 كود العميل (4 أرقام)" data-en-ph="🔐 Customer 4-Digit PIN" placeholder="🔐 كود العميل (4 أرقام)" class="i18n-ph flex-1 bg-white border rounded-xl px-2.5 py-1.5 text-xs font-extrabold text-center tracking-widest">
           </div>
           <div id="cap-express-photo-box" class="hidden bg-blue-50 p-2 rounded-xl text-center">
-            <label class="text-xs font-extrabold text-blue-800 cursor-pointer block"><span data-ar="📸 تصوير تسليم الطرد" data-en="📸 Take Parcel Photo Proof" class="i18n">📸 تصوير تسليم الطرد</span> <input id="express-photo-inp" type="file" accept="image/*" capture="environment" class="hidden" onchange="onExpressPhoto()"></label>
+            <label class="text-xs font-extrabold text-blue-800 cursor-pointer block"><span data-ar="📸 تصوير تسليم الطرد" data-en="📸 Parcel Photo Proof" class="i18n">📸 تصوير تسليم الطرد</span> <input id="express-photo-inp" type="file" accept="image/*" capture="environment" class="hidden" onchange="onExpressPhoto()"></label>
             <div id="express-photo-status" data-ar="✓ تم توثيق الصورة" data-en="✓ Photo Saved" class="i18n text-[10px] text-emerald-700 font-bold hidden">✓ تم توثيق الصورة</div>
           </div>
           <div id="cap-change-box" class="hidden bg-emerald-50 p-2 rounded-xl space-y-1">
-            <div data-ar="🪙 ميزة الفكة: لو دفع العميل أكبر، اكتبه لتحويل الباقي لمحفظته:" data-en="🪙 Change to Wallet: enter cash received to credit change:" class="i18n text-[10px] font-bold text-emerald-900">🪙 ميزة الفكة: لو دفع العميل أكبر، اكتبه لتحويل الباقي لمحفظته:</div>
-            <input id="cash-received-input" type="number" step="0.05" data-ar-ph="المبلغ المستلم كاش (اختياري)" data-en-ph="Cash received (optional)" placeholder="المبلغ المستلم كاش (اختياري)" class="i18n-ph w-full bg-white border rounded-xl px-2.5 py-1.5 text-xs font-bold">
+            <div data-ar="🪙 فكة للمحفظة: اكتب المبلغ المستلم كاش لتحويل الباقي للعميل:" data-en="🪙 Change to Wallet: cash received:" class="i18n text-[10px] font-bold text-emerald-900">🪙 فكة للمحفظة: اكتب المبلغ المستلم كاش لتحويل الباقي للعميل:</div>
+            <input id="cash-received-input" type="number" step="0.05" data-ar-ph="المبلغ المستلم (اختياري)" data-en-ph="Cash received (optional)" placeholder="المبلغ المستلم (اختياري)" class="i18n-ph w-full bg-white border rounded-xl px-2.5 py-1 text-xs font-bold">
           </div>
 
           <button onclick="openGoogleMapsNav()" data-ar="🧭 الملاحة عبر Google Maps" data-en="🧭 Navigate via Google Maps" class="i18n w-full bg-slate-900 text-white py-2 rounded-xl text-xs font-extrabold">🧭 الملاحة عبر Google Maps</button>
 
-          <div class="border rounded-xl p-2 bg-slate-50">
-            <div id="cap-messages" class="max-h-20 overflow-y-auto text-xs space-y-1 mb-1.5"></div>
+          <div class="border rounded-xl p-1.5 bg-slate-50">
+            <div id="cap-messages" class="max-h-16 overflow-y-auto text-xs space-y-1 mb-1"></div>
             <div class="flex gap-1"><input id="cap-chat-input" type="text" data-ar-ph="راسل الراكب..." data-en-ph="Message customer..." placeholder="راسل الراكب..." class="i18n-ph flex-1 bg-white border rounded-xl px-2.5 py-1 text-xs"><button onclick="sendChat()" data-ar="إرسال" data-en="Send" class="i18n jo-green text-white px-3 rounded-xl text-xs font-bold">إرسال</button></div>
           </div>
 
           <div class="grid grid-cols-3 gap-1.5">
-            <button id="btn-arrived" onclick="markArrived()" data-ar="1. وصلت (150م)" data-en="1. Arrived" class="i18n bg-amber-500 text-white py-2.5 rounded-xl text-[11px] font-extrabold">1. وصلت (150م)</button>
-            <button id="btn-start-trip" onclick="updateRideStatus('ON_TRIP')" disabled data-ar="2. بدء (PIN)" data-en="2. Start (PIN)" class="i18n bg-blue-600 text-white py-2.5 rounded-xl text-[11px] font-extrabold opacity-40">2. بدء (PIN)</button>
-            <button id="btn-complete-trip" onclick="updateRideStatus('COMPLETED')" disabled data-ar="3. إنهاء ✓" data-en="3. Finish ✓" class="i18n jo-green text-white py-2.5 rounded-xl text-[11px] font-extrabold opacity-40">3. إنهاء ✓</button>
+            <button id="btn-arrived" onclick="markArrived()" data-ar="1. وصلت (150م)" data-en="1. Arrived" class="i18n bg-amber-500 text-white py-2 rounded-xl text-[11px] font-extrabold">1. وصلت (150م)</button>
+            <button id="btn-start-trip" onclick="updateRideStatus('ON_TRIP')" disabled data-ar="2. بدء (PIN)" data-en="2. Start (PIN)" class="i18n bg-blue-600 text-white py-2 rounded-xl text-[11px] font-extrabold opacity-40">2. بدء (PIN)</button>
+            <button id="btn-complete-trip" onclick="updateRideStatus('COMPLETED')" disabled data-ar="3. إنهاء ✓" data-en="3. Finish ✓" class="i18n jo-green text-white py-2 rounded-xl text-[11px] font-extrabold opacity-40">3. إنهاء ✓</button>
           </div>
-          <button id="btn-cap-cancel" onclick="cancelRideCaptain()" data-ar="اعتذار وإعادة التوجيه لكابتن آخر" data-en="Cancel & Reassign Ride" class="i18n w-full bg-red-50 text-[#CE1126] font-bold py-2 rounded-xl text-xs">اعتذار وإعادة التوجيه لكابتن آخر</button>
+          <button id="btn-cap-cancel" onclick="cancelRideCaptain()" data-ar="اعتذار وإعادة التوجيه لكابتن آخر" data-en="Cancel & Reassign Ride" class="i18n w-full bg-red-50 text-[#CE1126] font-bold py-1.5 rounded-xl text-[11px]">اعتذار وإعادة التوجيه لكابتن آخر</button>
         </div>
       </div>
 
@@ -205,7 +219,7 @@
           <button onclick="openModal('settings')" class="w-full px-5 py-3 flex items-center gap-3"><span>⚙️</span><span data-ar="الإعدادات واللغة" data-en="Settings & Language" class="i18n">الإعدادات واللغة</span></button>
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط" data-en="Terms" class="i18n">الشروط</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v4.2 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v4.3 🇯🇴</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -236,7 +250,7 @@
 
     function applyLanguage() {
       document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.querySelectorAll('.lang-switch-label').forEach(el => el.innerText = lang === 'ar' ? 'English' : 'عربي');
+      document.querySelectorAll('.lang-switch-label').forEach(el => el.innerText = lang === 'ar' ? 'EN' : 'عربي');
       document.querySelectorAll('.i18n').forEach(el => { const v = el.getAttribute('data-' + lang); if (v) el.innerText = v; });
       document.querySelectorAll('.i18n-ph').forEach(el => { const v = el.getAttribute('data-' + lang + '-ph'); if (v) el.placeholder = v; });
       document.getElementById('btn-login').innerText = authMode === 'login' ? t('دخول الكابتن 🔔', 'Captain Sign In 🔔') : t('تسجيل كابتن جديد 🔔', 'Register Captain 🔔');
@@ -293,12 +307,12 @@
       topBal.className = bal <= -2.0 ? 'text-xs font-extrabold text-[#CE1126]' : (bal < 0 ? 'text-xs font-extrabold text-amber-600' : 'text-xs font-extrabold jo-text');
       if (!approved) { isApprovedCap = false; if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); } scrCap.classList.add('hidden'); scrPend.classList.remove('hidden'); document.getElementById('pending-info').innerHTML = `<div>${currentUser.name}</div><div>${currentUser.phone}</div><div>${currentUser.bikeModel} (${currentUser.plate})</div>`; return; }
       isApprovedCap = true; scrPend.classList.add('hidden'); scrCap.classList.remove('hidden'); initCapMap();
-      if (bal <= -2.00) { stoppedForDebt = true; alertBox.className = 'p-2.5 rounded-2xl text-xs font-extrabold text-center bg-red-600 text-white'; alertBox.innerText = t(`⛔ متوقف لبلوغ رصيدك (${bal.toFixed(2)} د.أ / الحد -2.00).`, `⛔ Suspended at ${bal.toFixed(2)} JOD (Limit -2.00).`); alertBox.classList.remove('hidden'); if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); } chk.disabled = true; }
-      else if (bal <= -1.30) { stoppedForDebt = false; chk.disabled = false; alertBox.className = 'p-2.5 rounded-2xl text-xs font-extrabold text-center bg-amber-100 text-amber-900 border'; alertBox.innerText = t(`⚠️ رصيدك (${bal.toFixed(2)} د.أ) اقترب من -2.00 د.أ!`, `⚠️ Balance (${bal.toFixed(2)} JOD) near -2.00 limit!`); alertBox.classList.remove('hidden'); if (!warnedLowBalance) { warnedLowBalance = true; notifyCaptain(t('⚠️ تنبيه الرصيد', '⚠️ Balance Warning'), `${bal.toFixed(2)}`, 'chat'); } }
+      setTimeout(() => capMap?.invalidateSize(), 250);
+      if (bal <= -2.00) { stoppedForDebt = true; alertBox.className = 'p-2 rounded-xl text-[11px] font-extrabold text-center bg-red-600 text-white'; alertBox.innerText = t(`⛔ متوقف لبلوغ رصيدك (${bal.toFixed(2)} د.أ / الحد -2.00).`, `⛔ Suspended at ${bal.toFixed(2)} JOD (Limit -2.00).`); alertBox.classList.remove('hidden'); if (chk.checked) { chk.checked = false; toggleCaptainOnline(false); } chk.disabled = true; }
+      else if (bal <= -1.30) { stoppedForDebt = false; chk.disabled = false; alertBox.className = 'p-2 rounded-xl text-[11px] font-extrabold text-center bg-amber-100 text-amber-900 border'; alertBox.innerText = t(`⚠️ رصيدك (${bal.toFixed(2)} د.أ) اقترب من -2.00 د.أ!`, `⚠️ Balance (${bal.toFixed(2)} JOD) near -2.00 limit!`); alertBox.classList.remove('hidden'); if (!warnedLowBalance) { warnedLowBalance = true; notifyCaptain(t('⚠️ تنبيه الرصيد', '⚠️ Balance Warning'), `${bal.toFixed(2)}`, 'chat'); } }
       else { stoppedForDebt = false; warnedLowBalance = false; chk.disabled = false; alertBox.classList.add('hidden'); }
     }
 
-    // الاستماع الفوري لإشعارات وإنذارات الإدارة للكباتن
     function listenAdminAlerts() {
       const seenKey = 'nshmi_seen_cap_' + currentUser.id;
       const seen = new Set(JSON.parse(localStorage.getItem(seenKey) || '[]'));
@@ -451,20 +465,21 @@
     function renderOffersList(docs) {
       const listEl = document.getElementById('cap-requests-list'), destFilter = document.getElementById('cap-dest-filter').value.trim();
       const filtered = destFilter ? docs.filter(r => (r.dropoffAddress || '').includes(destFilter) || (r.pickupAddress || '').includes(destFilter)) : docs;
-      if (filtered.length === 0) { listEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-6 bg-white rounded-2xl">${t('بانتظار طلبات في','Waiting for rides in')} ${capCity}... 🛵</div>`; return; }
+      if (filtered.length === 0) { listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-3 bg-slate-50 rounded-xl">${t('بانتظار طلبات في','Waiting for rides in')} ${capCity}... 🛵</div>`; setTimeout(() => capMap?.invalidateSize(), 200); return; }
       listEl.innerHTML = '';
       filtered.forEach((r) => {
         const debtRec = Number(r.settledDebtJod || 0), ridePriceOnly = Number(r.originalFareJod || (Number(r.fareJod || 0) - debtRec)), capNet = +(ridePriceOnly * (1 - commissionPct / 100)).toFixed(2);
         const isSched = r.status === 'SCHEDULED', card = document.createElement('div');
-        card.className = `bg-white p-3.5 rounded-2xl shadow-sm border space-y-2 ${isSched ? 'border-purple-300 bg-purple-50/30' : 'border-slate-100'}`;
+        card.className = `bg-white p-3 rounded-2xl shadow-sm border space-y-1.5 ${isSched ? 'border-purple-300 bg-purple-50/30' : 'border-slate-200'}`;
         card.innerHTML = `
-          <div class="flex justify-between items-center"><span class="bg-emerald-100 text-[#007A3D] text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">${isSched ? `📅 ${r.scheduledFor}` : `${r.tier} • ${r.distanceKm} ${t('كم','km')}`}</span>
-            <div class="text-left"><div class="font-extrabold text-base jo-text">${t('تحصيل:','Collect:')} ${Number(r.fareJod||0).toFixed(2)}</div><div class="text-[10px] font-bold text-slate-600">${t('صافي ربحك:','Your Net:')} ${capNet.toFixed(2)}</div></div>
+          <div class="flex justify-between items-center"><span class="bg-emerald-100 text-[#007A3D] text-[10px] font-extrabold px-2 py-0.5 rounded-full">${isSched ? `📅 ${r.scheduledFor}` : `${r.tier} • ${r.distanceKm} ${t('كم','km')}`}</span>
+            <div class="text-left"><div class="font-extrabold text-sm jo-text">${t('تحصيل:','Collect:')} ${Number(r.fareJod||0).toFixed(2)}</div><div class="text-[10px] font-bold text-slate-600">${t('صافي ربحك:','Net:')} ${capNet.toFixed(2)}</div></div>
           </div>
-          <div class="text-xs font-semibold">${r.pickupAddress}</div><div class="text-xs font-semibold">${r.dropoffAddress}</div>
-          <div class="flex gap-2"><button onclick="declineRide('${r.id}')" class="w-24 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">${t('رفض','Decline')}</button><button onclick="acceptRide('${r.id}')" class="flex-1 jo-green text-white font-extrabold py-2.5 rounded-xl text-xs">${t('قبول الرحلة','Accept Ride')}</button></div>`;
+          <div class="text-[11px] font-semibold truncate">${r.pickupAddress} ⬅️ ${r.dropoffAddress}</div>
+          <div class="flex gap-2"><button onclick="declineRide('${r.id}')" class="w-20 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs">${t('رفض','Decline')}</button><button onclick="acceptRide('${r.id}')" class="flex-1 jo-green text-white font-extrabold py-2 rounded-xl text-xs">${t('قبول الرحلة','Accept Ride')}</button></div>`;
         listEl.appendChild(card);
       });
+      setTimeout(() => capMap?.invalidateSize(), 200);
     }
 
     function toggleCaptainOnline(isOnline) {
@@ -477,7 +492,8 @@
         if (locSyncInt) { clearInterval(locSyncInt); locSyncInt = null; }
         updateDoc(doc(db, 'captains', currentUser.id), { isOnline: false, onlineSeconds: capMetrics.onlineSeconds }).catch(() => {});
         statusLbl.innerText = t('غير متاح حالياً', 'Offline'); knownRideIds.clear();
-        listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-6 bg-white rounded-2xl">${t('فعّل الخوذة بالأعلى...','Enable helmet check above...')}</div>`;
+        listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-3 bg-slate-50 rounded-xl">${t('فعّل الخوذة بالأعلى...','Enable helmet check above...')}</div>`;
+        setTimeout(() => capMap?.invalidateSize(), 200);
         return;
       }
 
@@ -549,8 +565,8 @@
       box.classList.remove('hidden');
       const tick = () => {
         const left = Math.floor((deadlineMs - Date.now()) / 1000);
-        if (left > 0 && !alreadyPenalized) { box.className = 'bg-blue-50 border border-blue-200 p-2 rounded-xl text-center text-[11px] font-extrabold text-blue-900'; box.innerText = `${t('⏱️ مهلة الوصول:', '⏱️ Deadline:')} ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`; }
-        else { box.className = 'bg-red-50 border border-red-200 p-2 rounded-xl text-center text-[11px] font-extrabold text-[#CE1126]'; box.innerText = t('⛔ انتهت مهلة الوصول! (-0.60 د.أ)', '⛔ Late! (-0.60 JOD)'); applyCaptainPenalty(rideId, 'LATE_ARRIVAL'); }
+        if (left > 0 && !alreadyPenalized) { box.className = 'bg-blue-50 border border-blue-200 p-1.5 rounded-xl text-center text-[11px] font-extrabold text-blue-900'; box.innerText = `${t('⏱️ مهلة الوصول:', '⏱️ Deadline:')} ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`; }
+        else { box.className = 'bg-red-50 border border-red-200 p-1.5 rounded-xl text-center text-[11px] font-extrabold text-[#CE1126]'; box.innerText = t('⛔ انتهت مهلة الوصول! (-0.60 د.أ)', '⛔ Late! (-0.60 JOD)'); applyCaptainPenalty(rideId, 'LATE_ARRIVAL'); }
       };
       tick(); arrivalTimerInt = setInterval(tick, 1000);
     }
@@ -560,10 +576,10 @@
       const timerEl = document.getElementById('cap-wait-timer'), btnNoShow = document.getElementById('btn-no-show');
       const aMs = Number(d.arrivedAtMs || Date.now()), pMs = Number(d.totalPausedMs || 0);
       const tick = () => {
-        if (d.waitPaused) { const left = Math.max(0, 300 - Math.floor((Number(d.pauseStartedMs || Date.now()) - aMs - pMs) / 1000)); timerEl.innerText = `⏸️ ${t('توقف العداد','Paused')} (${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')})`; btnNoShow.disabled = true; btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs'; return; }
+        if (d.waitPaused) { const left = Math.max(0, 300 - Math.floor((Number(d.pauseStartedMs || Date.now()) - aMs - pMs) / 1000)); timerEl.innerText = `⏸️ ${t('توقف العداد','Paused')} (${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')})`; btnNoShow.disabled = true; btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-1.5 rounded-xl text-xs'; return; }
         const left = Math.max(0, 300 - Math.floor((Date.now() - aMs - pMs) / 1000));
-        if (left > 0) { timerEl.innerText = `⏱️ ${t('انتظار:','Wait:')} ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`; btnNoShow.disabled = true; btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-2 rounded-xl text-xs'; }
-        else { timerEl.innerText = t('✅ انتهت 5 دقائق!', '✅ 5 mins passed!'); btnNoShow.disabled = false; btnNoShow.className = 'w-full bg-[#CE1126] text-white font-extrabold py-2 rounded-xl text-xs shadow'; }
+        if (left > 0) { timerEl.innerText = `⏱️ ${t('انتظار:','Wait:')} ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`; btnNoShow.disabled = true; btnNoShow.className = 'w-full bg-slate-300 text-slate-600 font-extrabold py-1.5 rounded-xl text-xs'; }
+        else { timerEl.innerText = t('✅ انتهت 5 دقائق!', '✅ 5 mins passed!'); btnNoShow.disabled = false; btnNoShow.className = 'w-full bg-[#CE1126] text-white font-extrabold py-1.5 rounded-xl text-xs shadow'; }
       };
       tick(); waitTimerInt = setInterval(tick, 1000);
     }
@@ -586,6 +602,7 @@
       document.getElementById('express-photo-status').classList.add('hidden');
       const rideRef = doc(db, 'rides', rideId); activeRideId = rideId; totalMovedKm = initialMovedKm || 0; lastGpsPos = startCoords; waitPauseStateSync = null; isFinishingRide = false;
       document.getElementById('cap-requests-section').classList.add('hidden'); document.getElementById('cap-active-ride').classList.remove('hidden');
+      setTimeout(() => capMap?.invalidateSize(), 250);
 
       if (navigator.geolocation) {
         gpsWatchId = navigator.geolocation.watchPosition((pos) => {
@@ -654,6 +671,7 @@
       activeRideId = null; activeRideData = null; totalMovedKm = 0; lastGpsPos = null; waitPauseStateSync = null; isFinishingRide = false;
       ['cap-wait-box', 'cap-arrival-box', 'cap-active-ride'].forEach(id => document.getElementById(id).classList.add('hidden'));
       document.getElementById('cap-requests-section').classList.remove('hidden');
+      setTimeout(() => capMap?.invalidateSize(), 250);
     }
 
     window.markArrived = () => {
