@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'index.html'
+      - 'track.html'
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
@@ -26,24 +27,44 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Prepare Rider App and Plugins
+      - name: Install Pillow for Icons
+        run: sudo apt-get update && sudo apt-get install -y python3-pil
+
+      - name: Prepare Rider App, Icon and Plugins
         run: |
-          mkdir -p www
+          mkdir -p www assets
           cp -f index.html www/
-          cp -f manifest.json sw.js icon.svg www/ 2>/dev/null || true
+          cp -f track.html manifest.json sw.js icon.svg www/ 2>/dev/null || true
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7 @capacitor/assets
+          python3 - << 'PYEOF'
+          from PIL import Image, ImageDraw
+          fg = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
+          d = ImageDraw.Draw(fg)
+          d.ellipse([230, 560, 410, 740], outline='white', width=40)
+          d.ellipse([610, 560, 790, 740], outline='white', width=40)
+          d.line([(320, 650), (540, 650), (650, 380), (590, 340)], fill='white', width=44)
+          d.line([(310, 520), (490, 520)], fill='white', width=50)
+          d.rectangle([620, 315, 720, 365], fill=(206, 17, 38, 255))
+          fg.save('assets/icon-foreground.png')
+          bg = Image.new('RGBA', (1024, 1024), (0, 122, 61, 255))
+          bd = ImageDraw.Draw(bg)
+          bd.rectangle([0, 0, 1024, 160], fill=(206, 17, 38, 255))
+          bd.rectangle([0, 864, 1024, 1024], fill=(17, 24, 39, 255))
+          bg.save('assets/icon-background.png')
+          full = Image.alpha_composite(bg, fg)
+          full.save('assets/icon-only.png')
+          PYEOF
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.jordan",
             "appName": "NshmiBike",
             "webDir": "www",
-            "server": {
-              "androidScheme": "https"
-            }
+            "server": { "androidScheme": "https" }
           }
           EOF
           npx cap add android
+          npx capacitor-assets generate --android
           sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />|' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
