@@ -26,24 +26,43 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Prepare Captain App and Plugins
+      - name: Install Pillow for Icons
+        run: sudo apt-get update && sudo apt-get install -y python3-pil
+
+      - name: Prepare Captain App, Icon and Plugins
         run: |
-          mkdir -p www
+          mkdir -p www assets
           cp -f captain.html www/index.html
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7 @capacitor/assets
+          python3 - << 'PYEOF'
+          from PIL import Image, ImageDraw
+          fg = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
+          d = ImageDraw.Draw(fg)
+          d.ellipse([230, 230, 794, 794], outline=(0, 177, 79, 255), width=42)
+          d.ellipse([290, 560, 440, 710], outline='white', width=34)
+          d.ellipse([580, 560, 730, 710], outline='white', width=34)
+          d.line([(365, 635), (520, 635), (630, 425), (540, 425), (415, 520)], fill='white', width=38)
+          fg.save('assets/icon-foreground.png')
+          bg = Image.new('RGBA', (1024, 1024), (17, 24, 39, 255))
+          bd = ImageDraw.Draw(bg)
+          bd.rectangle([0, 0, 1024, 140], fill=(0, 122, 61, 255))
+          bd.rectangle([0, 884, 1024, 1024], fill=(206, 17, 38, 255))
+          bg.save('assets/icon-background.png')
+          full = Image.alpha_composite(bg, fg)
+          full.save('assets/icon-only.png')
+          PYEOF
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.captain",
             "appName": "NshmiCaptain",
             "webDir": "www",
-            "server": {
-              "androidScheme": "https"
-            }
+            "server": { "androidScheme": "https" }
           }
           EOF
           npx cap add android
-          sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />|' android/app/src/main/AndroidManifest.xml
+          npx capacitor-assets generate --android
+          sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.CAMERA" />|' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
       - name: Build Captain APK
