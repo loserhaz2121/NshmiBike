@@ -26,23 +26,37 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Prepare Admin App and Capacitor
+      - name: Install Pillow for Icons
+        run: sudo apt-get update && sudo apt-get install -y python3-pil
+
+      - name: Prepare Admin App and Icon
         run: |
-          mkdir -p www
+          mkdir -p www assets
           cp -f admin.html www/index.html
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/assets
+          python3 - << 'PYEOF'
+          from PIL import Image, ImageDraw
+          fg = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
+          d = ImageDraw.Draw(fg)
+          d.polygon([(512, 210), (770, 315), (735, 610), (512, 815), (289, 610), (254, 315)], fill=(17, 24, 39, 255), outline='white', width=28)
+          d.polygon([(512, 315), (620, 512), (512, 705), (404, 512)], fill=(0, 122, 61, 255))
+          fg.save('assets/icon-foreground.png')
+          bg = Image.new('RGBA', (1024, 1024), (206, 17, 38, 255))
+          bg.save('assets/icon-background.png')
+          full = Image.alpha_composite(bg, fg)
+          full.save('assets/icon-only.png')
+          PYEOF
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.admin",
             "appName": "NshmiAdmin",
             "webDir": "www",
-            "server": {
-              "androidScheme": "https"
-            }
+            "server": { "androidScheme": "https" }
           }
           EOF
           npx cap add android
+          npx capacitor-assets generate --android
           npx cap sync android
 
       - name: Build Admin APK
