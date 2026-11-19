@@ -31,7 +31,7 @@
     <header class="bg-slate-900 text-white p-4 sticky top-0 z-20 shadow flex justify-between items-center">
       <div>
         <h1 class="font-extrabold text-base">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
-        <p class="text-[11px] text-slate-400">شباب ورجال (+18) فقط • ذروة حية • تتبع كامل</p>
+        <p class="text-[11px] text-slate-400">إدارة العمليات • إرسال الإشعارات والإنذارات</p>
       </div>
       <a href="index.html" class="jo-green text-xs font-bold px-3 py-1.5 rounded-xl">تطبيق العميل</a>
     </header>
@@ -48,14 +48,69 @@
     </div>
 
     <div class="flex gap-2 px-4 mb-4 overflow-x-auto">
-      <button onclick="showTab('captains')" id="tab-btn-captains" class="tab-btn jo-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🏍️ الكباتن</button>
-      <button onclick="showTab('riders')" id="tab-btn-riders" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🙋‍♂️ العملاء</button>
-      <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات (<span id="stat-completed">0</span>/<span id="stat-active">0</span>)</button>
-      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">⚡ الذروة والتسعيرة</button>
+      <button onclick="showTab('captains')" id="tab-btn-captains" class="tab-btn jo-green text-white px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🏍️ الكباتن</button>
+      <button onclick="showTab('riders')" id="tab-btn-riders" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🙋‍♂️ العملاء</button>
+      <button onclick="showTab('alerts')" id="tab-btn-alerts" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">📢 الإشعارات</button>
+      <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات (<span id="stat-completed">0</span>/<span id="stat-active">0</span>)</button>
+      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">⚡ التسعيرة</button>
     </div>
 
     <div id="tab-captains" class="px-4 space-y-2.5"><div id="admin-captains-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div></div>
     <div id="tab-riders" class="hidden px-4 space-y-2.5"><div id="admin-riders-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div></div>
+
+    <!-- تبويب الصندوقين المنفصلين لإرسال الإشعارات والإنذارات -->
+    <div id="tab-alerts" class="hidden px-4 space-y-4">
+      <!-- الصندوق 1: إشعارات العملاء -->
+      <div class="bg-white p-4 rounded-2xl shadow-sm border-2 border-[#007A3D]/30 space-y-2.5">
+        <h2 class="font-extrabold text-sm text-[#007A3D]">🙋‍♂️ صندوق إشعارات العملاء (عروض / تنبيه / إنذار)</h2>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="font-bold text-slate-600 block mb-1">المستهدف</label>
+            <select id="al-rider-target" class="w-full border rounded-xl p-2 font-bold bg-slate-50"><option value="ALL">📢 جميع العملاء</option></select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-600 block mb-1">نوع الإشعار</label>
+            <select id="al-rider-type" class="w-full border rounded-xl p-2 font-bold bg-slate-50">
+              <option value="OFFER">🎁 عرض / خصم</option>
+              <option value="ALERT">📢 تنبيه عام</option>
+              <option value="WARNING">⚠️ إنذار</option>
+            </select>
+          </div>
+        </div>
+        <input id="al-rider-title" type="text" placeholder="عنوان الإشعار (مثال: خصم 50% اليوم!)" class="w-full border rounded-xl p-2 text-xs font-bold">
+        <textarea id="al-rider-body" rows="2" placeholder="اكتب نص الرسالة أو الإنذار للعميل..." class="w-full border rounded-xl p-2 text-xs"></textarea>
+        <button onclick="sendAdminAlert('RIDERS')" class="w-full jo-green text-white font-extrabold py-2.5 rounded-xl text-xs shadow">إرسال للعملاء الآن 🚀</button>
+      </div>
+
+      <!-- الصندوق 2: إشعارات الكباتن -->
+      <div class="bg-white p-4 rounded-2xl shadow-sm border-2 border-[#CE1126]/30 space-y-2.5">
+        <h2 class="font-extrabold text-sm text-[#CE1126]">🏍️ صندوق إشعارات الكباتن (إنذار / مسابقات / تنبيه)</h2>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="font-bold text-slate-600 block mb-1">المستهدف</label>
+            <select id="al-cap-target" class="w-full border rounded-xl p-2 font-bold bg-slate-50"><option value="ALL">📢 جميع الكباتن</option></select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-600 block mb-1">نوع الإشعار</label>
+            <select id="al-cap-type" class="w-full border rounded-xl p-2 font-bold bg-slate-50">
+              <option value="WARNING">⚠️ إنذار رسمي</option>
+              <option value="CONTEST">🏆 مسابقة / حافز</option>
+              <option value="ALERT">📢 تنبيه عام</option>
+            </select>
+          </div>
+        </div>
+        <input id="al-cap-title" type="text" placeholder="عنوان الإشعار (مثال: تنبيه بخصوص التأخير)" class="w-full border rounded-xl p-2 text-xs font-bold">
+        <textarea id="al-cap-body" rows="2" placeholder="اكتب نص الإنذار أو التنبيه للكابتن..." class="w-full border rounded-xl p-2 text-xs"></textarea>
+        <button onclick="sendAdminAlert('CAPTAINS')" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">إرسال للكباتن الآن 🚀</button>
+      </div>
+
+      <!-- سجل الإشعارات المرسلة -->
+      <div class="bg-white p-4 rounded-2xl shadow-sm space-y-2">
+        <h3 class="font-extrabold text-xs text-slate-700">الإشعارات المرسلة مؤخراً:</h3>
+        <div id="admin-sent-alerts" class="space-y-2 text-xs"></div>
+      </div>
+    </div>
+
     <div id="tab-rides" class="hidden px-4 space-y-3"><div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div></div>
 
     <div id="tab-pricing" class="hidden px-4 space-y-4">
@@ -69,14 +124,14 @@
           <div class="col-span-2"><label class="font-bold text-slate-600 block mb-1">الحد الإجمالي</label><input id="promo-max-total" type="number" value="200" class="w-full border rounded-xl p-2 font-bold"></div>
         </div>
         <label class="flex items-center gap-2 text-xs font-bold text-[#007A3D] bg-emerald-50 p-2.5 rounded-xl">
-          <input id="promo-company-pays" type="checkbox" checked class="accent-[#007A3D] w-4 h-4"><span>الشركة تتحمل الخصم (بحد أقصى المبلغ المحدد)</span>
+          <input id="promo-company-pays" type="checkbox" checked class="accent-[#007A3D] w-4 h-4"><span>الشركة تتحمل الخصم</span>
         </label>
         <button onclick="addPromo()" class="w-full jo-green text-white font-extrabold py-2.5 rounded-xl text-xs">إنشاء كود الخصم ✓</button>
         <div id="promos-list" class="space-y-2 text-xs pt-2"></div>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
-        <h2 class="font-extrabold text-slate-800 text-sm">⚡ ضبط التسعيرة، الذروة، والطقس</h2>
+        <h2 class="font-extrabold text-slate-800 text-sm">⚡ التسعيرة، الذروة، والطقس</h2>
         <div class="grid grid-cols-3 gap-2 text-xs">
           <div><label class="font-bold text-slate-600 block mb-1">فتح سكوتر</label><input id="p-sc-base" type="number" step="0.05" value="0.25" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">لكل كم سكوتر</label><input id="p-sc-km" type="number" step="0.01" value="0.15" class="w-full border rounded-xl p-2 font-bold"></div>
@@ -84,7 +139,7 @@
           <div><label class="font-bold text-slate-600 block mb-1">فتح بايك</label><input id="p-bk-base" type="number" step="0.05" value="0.30" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">لكل كم بايك</label><input id="p-bk-km" type="number" step="0.01" value="0.18" class="w-full border rounded-xl p-2 font-bold"></div>
           <div><label class="font-bold text-slate-600 block mb-1">عمولتك (%)</label><input id="p-comm" type="number" step="1" value="10" class="w-full border rounded-xl p-2 font-bold jo-text"></div>
-          <div class="col-span-2"><label class="font-bold text-slate-600 block mb-1">معامل الذروة (1.0 عادي / 1.25 ذروة)</label><input id="p-surge" type="number" step="0.05" value="1.0" class="w-full border rounded-xl p-2 font-bold text-amber-700"></div>
+          <div class="col-span-2"><label class="font-bold text-slate-600 block mb-1">معامل الذروة (1.0 عادي)</label><input id="p-surge" type="number" step="0.05" value="1.0" class="w-full border rounded-xl p-2 font-bold text-amber-700"></div>
           <div class="flex items-end"><label class="flex items-center gap-1.5 text-[11px] font-bold text-blue-800 bg-blue-50 p-2 rounded-xl w-full"><input id="p-rain" type="checkbox" class="w-4 h-4"><span>🌧️ مطر</span></label></div>
         </div>
         <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ ونشر التعديلات ✓</button>
@@ -95,7 +150,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const app = initializeApp({
       apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU", authDomain: "nshmibike.firebaseapp.com",
@@ -114,13 +169,34 @@
     };
 
     window.showTab = (tab) => {
-      ['captains', 'riders', 'rides', 'pricing'].forEach(t => {
+      ['captains', 'riders', 'alerts', 'rides', 'pricing'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
-        document.getElementById('tab-btn-' + t).className = 'tab-btn bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
+        document.getElementById('tab-btn-' + t).className = 'tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
       });
       document.getElementById('tab-' + tab).classList.remove('hidden');
-      document.getElementById('tab-btn-' + tab).className = 'tab-btn jo-green text-white px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
+      document.getElementById('tab-btn-' + tab).className = 'tab-btn jo-green text-white px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
     };
+
+    window.quickAlert = (audience, id) => {
+      showTab('alerts');
+      if (audience === 'CAPTAINS') { document.getElementById('al-cap-target').value = id; document.getElementById('al-cap-title').focus(); }
+      else { document.getElementById('al-rider-target').value = id; document.getElementById('al-rider-title').focus(); }
+    };
+
+    window.sendAdminAlert = async (audience) => {
+      const isCap = audience === 'CAPTAINS';
+      const targetId = document.getElementById(isCap ? 'al-cap-target' : 'al-rider-target').value;
+      const type = document.getElementById(isCap ? 'al-cap-type' : 'al-rider-type').value;
+      const title = document.getElementById(isCap ? 'al-cap-title' : 'al-rider-title').value.trim();
+      const body = document.getElementById(isCap ? 'al-cap-body' : 'al-rider-body').value.trim();
+      if (!title || !body) return alert('اكتب العنوان ونص الرسالة أولاً');
+      await addDoc(collection(db, 'admin_alerts'), { audience, targetId, type, title, body, createdAtMs: Date.now(), createdAt: serverTimestamp() });
+      document.getElementById(isCap ? 'al-cap-title' : 'al-rider-title').value = '';
+      document.getElementById(isCap ? 'al-cap-body' : 'al-rider-body').value = '';
+      alert('✅ تم إرسال الإشعار فوراً!');
+    };
+
+    window.deleteAlert = async (id) => { await deleteDoc(doc(db, 'admin_alerts', id)); };
 
     async function startAdminListeners() {
       const pSnap = await getDoc(doc(db, 'settings', 'pricing'));
@@ -134,38 +210,46 @@
       }
 
       onSnapshot(collection(db, 'captains'), (snap) => {
-        const list = document.getElementById('admin-captains-list'); list.innerHTML = '';
+        const list = document.getElementById('admin-captains-list'), sel = document.getElementById('al-cap-target');
+        const prevSel = sel.value; sel.innerHTML = '<option value="ALL">📢 جميع الكباتن (عام)</option>';
+        list.innerHTML = '';
         const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
         arr.sort((a, b) => (a.isApproved !== true ? -1 : 1) || Number(a.walletBalance || 0) - Number(b.walletBalance || 0));
         if (!arr.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا يوجد كباتن بعد</div>'; return; }
         arr.forEach(u => {
+          sel.innerHTML += `<option value="${u.id}">🏍️ ${u.name} (${u.phone})</option>`;
           const bal = Number(u.walletBalance || 0), approved = u.isApproved === true, stopped = bal <= -2.0;
           const balColor = stopped ? 'text-[#CE1126] font-extrabold' : (bal < 0 ? 'text-amber-600 font-extrabold' : 'jo-text font-extrabold');
           const card = document.createElement('div');
           card.className = `bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2 ${!approved ? 'border-2 border-amber-400' : (stopped ? 'border-2 border-[#CE1126]' : '')}`;
           card.innerHTML = `
             <div class="flex-1">
-              <div class="font-extrabold text-slate-800 text-xs">${u.name} ${u.isOnline ? '<span class="text-emerald-600">🟢 متصل</span>' : ''}</div>
+              <div class="font-extrabold text-slate-800 text-xs">${u.name} ${u.isOnline ? '<span class="text-emerald-600">🟢</span>' : ''}</div>
               <div class="text-[11px] text-slate-500">${u.phone} • ${u.email || ''}</div>
-              <div class="text-[11px] text-slate-600">${u.city || ''} • ${u.bikeModel || ''} (${u.plate || ''}) ${u.lastHelmetSelfieAt ? '• 🪖 سيلفي موثق' : ''}</div>
-              <div class="text-xs mt-0.5 ${balColor}">الرصيد: ${bal.toFixed(2)} د.أ ${stopped ? '(⛔ متوقف)' : ''} ${!approved ? '<span class="text-amber-600">• بانتظار الموافقة</span>' : '<span class="jo-text">• معتمد ✓</span>'}</div>
+              <div class="text-[11px] text-slate-600">${u.city || ''} • ${u.bikeModel || ''} (${u.plate || ''})</div>
+              <div class="text-xs mt-0.5 ${balColor}">${bal.toFixed(2)} د.أ ${!approved ? '<span class="text-amber-600">• بانتظار الموافقة</span>' : '<span class="jo-text">• معتمد ✓</span>'}</div>
             </div>
             <div class="flex flex-col gap-1">
-              <button onclick="approveCaptain('${u.id}', ${!approved})" class="${approved ? 'bg-slate-200 text-slate-700' : 'bg-amber-500 text-slate-900'} px-2.5 py-1.5 rounded-xl font-extrabold text-[11px]">${approved ? 'إلغاء الاعتماد' : '✓ اعتماد الكابتن'}</button>
-              <button onclick="settleBalance('captains', '${u.id}', '${u.name}', ${bal})" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[11px]">💵 استلام / شحن</button>
+              <button onclick="approveCaptain('${u.id}', ${!approved})" class="${approved ? 'bg-slate-200 text-slate-700' : 'bg-amber-500 text-slate-900'} px-2.5 py-1 rounded-xl font-extrabold text-[10px]">${approved ? 'إلغاء الاعتماد' : '✓ اعتماد'}</button>
+              <button onclick="quickAlert('CAPTAINS', '${u.id}')" class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">📢 إشعار</button>
+              <button onclick="settleBalance('captains', '${u.id}', '${u.name}', ${bal})" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[10px]">💵 تسوية</button>
               <button onclick="resetZero('captains', '${u.id}', '${u.name}')" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">🔄 تصفير</button>
-              <button onclick="toggleBlockUser('captains', '${u.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الحظر' : 'إيقاف'}</button>
+              <button onclick="toggleBlockUser('captains', '${u.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك' : 'إيقاف'}</button>
             </div>`;
           list.appendChild(card);
         });
+        sel.value = prevSel || 'ALL';
       });
 
       onSnapshot(collection(db, 'riders'), (snap) => {
-        const list = document.getElementById('admin-riders-list'); list.innerHTML = '';
+        const list = document.getElementById('admin-riders-list'), sel = document.getElementById('al-rider-target');
+        const prevSel = sel.value; sel.innerHTML = '<option value="ALL">📢 جميع العملاء (عام)</option>';
+        list.innerHTML = '';
         const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
         arr.sort((a, b) => Number(a.walletBalance || 0) - Number(b.walletBalance || 0));
         if (!arr.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا يوجد عملاء بعد</div>'; return; }
         arr.forEach(u => {
+          sel.innerHTML += `<option value="${u.id}">🙋‍♂️ ${u.name} (${u.phone})</option>`;
           const bal = Number(u.walletBalance || 0);
           const card = document.createElement('div');
           card.className = 'bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2';
@@ -173,14 +257,27 @@
             <div class="flex-1">
               <div class="font-extrabold text-slate-800 text-xs">${u.name} ${u.avgRating ? `★ ${u.avgRating}` : ''}</div>
               <div class="text-[11px] text-slate-500">${u.phone} • ${u.email || ''}</div>
-              <div class="text-xs mt-0.5 ${bal < 0 ? 'text-[#CE1126] font-extrabold' : 'jo-text font-extrabold'}">الرصيد: ${bal.toFixed(2)} د.أ</div>
+              <div class="text-xs mt-0.5 ${bal < 0 ? 'text-[#CE1126] font-extrabold' : 'jo-text font-extrabold'}">${bal.toFixed(2)} د.أ</div>
             </div>
             <div class="flex flex-col gap-1">
-              <button onclick="settleBalance('riders', '${u.id}', '${u.name}', ${bal})" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[11px]">💵 شحن</button>
+              <button onclick="quickAlert('RIDERS', '${u.id}')" class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">📢 إشعار</button>
+              <button onclick="settleBalance('riders', '${u.id}', '${u.name}', ${bal})" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[10px]">💵 شحن</button>
               <button onclick="resetZero('riders', '${u.id}', '${u.name}')" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">🔄 تصفير</button>
-              <button onclick="toggleBlockUser('riders', '${u.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الحظر' : 'إيقاف'}</button>
+              <button onclick="toggleBlockUser('riders', '${u.id}', ${!!u.isBlocked})" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك' : 'إيقاف'}</button>
             </div>`;
           list.appendChild(card);
+        });
+        sel.value = prevSel || 'ALL';
+      });
+
+      onSnapshot(collection(db, 'admin_alerts'), (snap) => {
+        const box = document.getElementById('admin-sent-alerts'); box.innerHTML = '';
+        const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+        arr.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+        arr.slice(0, 15).forEach(a => {
+          const row = document.createElement('div'); row.className = 'bg-slate-50 p-2.5 rounded-xl border flex justify-between items-center gap-2';
+          row.innerHTML = `<div><div class="font-extrabold">${a.audience === 'CAPTAINS' ? '🏍️ كباتن' : '🙋‍♂️ عملاء'} (${a.targetId}) • ${a.title}</div><div class="text-slate-500">${a.body}</div></div><button onclick="deleteAlert('${a.id}')" class="text-[#CE1126] font-bold">حذف</button>`;
+          box.appendChild(row);
         });
       });
 
@@ -188,81 +285,49 @@
         let gross = 0, subsidyTotal = 0, penaltiesTotal = 0, completed = 0, active = 0;
         const rides = []; snap.forEach(d => rides.push({ id: d.id, ...d.data() }));
         rides.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        const listEl = document.getElementById('admin-rides-list');
-        listEl.innerHTML = rides.length ? '' : '<div class="bg-white p-6 rounded-2xl">لا توجد رحلات بعد</div>';
-
+        const listEl = document.getElementById('admin-rides-list'); listEl.innerHTML = rides.length ? '' : '<div class="bg-white p-6 rounded-2xl">لا توجد رحلات</div>';
         rides.forEach(r => {
           const orig = Number(r.originalFareJod || r.fareJod || 0), paid = Number(r.fareJod || 0), disc = Number(r.discountJod || 0);
           if (r.status === 'COMPLETED') { completed++; gross += orig; if (r.companyPaysPromo) subsidyTotal += disc; }
           if (['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP', 'SCHEDULED'].includes(r.status)) active++;
           if (r.captainPenaltyApplied) penaltiesTotal += Number(r.penaltyJod || 0.60);
-
-          let tags = '';
-          if (r.scheduledFor) tags += `<span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-lg">📅 مجدول: ${r.scheduledFor}</span> `;
-          if (r.captainPenaltyApplied) tags += `<span class="bg-red-50 text-[#CE1126] text-[10px] font-extrabold px-2 py-0.5 rounded-lg">⛔ غرامة كابتن -0.60</span> `;
-          if (Number(r.cancelFeeJod || 0) > 0 || Number(r.compensationJod || 0) > 0) tags += `<span class="bg-amber-50 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-lg">⚠️ غرامة عميل 0.50</span>`;
-
-          const card = document.createElement('div'); card.className = 'bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1 border border-slate-100';
-          card.innerHTML = `
-            <div class="flex justify-between items-center">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100">${r.city || ''} • ${r.status} • ${r.distanceKm || 0} كم</span>
-              <span class="font-extrabold text-sm jo-text">${paid.toFixed(2)} د.أ</span>
-            </div>
-            <div class="text-xs font-bold text-slate-800">العميل: ${r.riderName || '-'} • الكابتن: ${r.captainName || 'قيد التوجيه'} ${r.ridePin ? `(PIN: ${r.ridePin})` : ''}</div>
-            <div class="text-[11px] text-slate-500">${r.pickupAddress || ''} ⬅️ ${r.dropoffAddress || ''}</div>
-            ${r.expressRecipient ? `<div class="text-[10px] text-blue-700 font-bold">📦 مستلم الطرد: ${r.expressRecipient}</div>` : ''}
-            ${tags ? `<div class="pt-1">${tags}</div>` : ''}`;
+          const card = document.createElement('div'); card.className = 'bg-white p-3 rounded-2xl shadow-sm text-right space-y-1 border';
+          card.innerHTML = `<div class="flex justify-between"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100">${r.city||''} • ${r.status}</span><span class="font-extrabold text-sm jo-text">${paid.toFixed(2)} د.أ</span></div><div class="text-xs font-bold">${r.riderName||'-'} ⬅️ ${r.captainName||'قيد التوجيه'}</div><div class="text-[11px] text-slate-500">${r.pickupAddress||''} ⬅️ ${r.dropoffAddress||''}</div>`;
           listEl.appendChild(card);
         });
-
         document.getElementById('stat-gross').innerText = gross.toFixed(2) + ' د.أ';
         document.getElementById('stat-profit').innerText = (gross * (currentCommPct / 100)).toFixed(2) + ' د.أ';
         document.getElementById('stat-penalties').innerText = penaltiesTotal.toFixed(2) + ' د.أ';
         document.getElementById('stat-subsidy').innerText = subsidyTotal.toFixed(2) + ' د.أ';
-        document.getElementById('stat-completed').innerText = completed;
-        document.getElementById('stat-active').innerText = active;
+        document.getElementById('stat-completed').innerText = completed; document.getElementById('stat-active').innerText = active;
       });
 
       onSnapshot(collection(db, 'sos_alerts'), (snap) => {
         const un = []; snap.forEach(d => { if (!d.data().resolved) un.push({ id: d.id, ...d.data() }); });
         const b = document.getElementById('sos-banner'), l = document.getElementById('sos-list');
-        if (!un.length) { b.classList.add('hidden'); return; }
-        b.classList.remove('hidden'); l.innerHTML = '';
-        un.forEach(s => {
-          const row = document.createElement('div'); row.className = 'bg-red-700/70 p-2.5 rounded-xl flex justify-between items-center';
-          row.innerHTML = `<span>مستخدم: ${s.userId}</span><button onclick="resolveSOS('${s.id}')" class="bg-white text-red-700 font-extrabold px-2.5 py-1 rounded-lg">معالجة ✓</button>`;
-          l.appendChild(row);
-        });
+        if (!un.length) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); l.innerHTML = '';
+        un.forEach(s => { const r = document.createElement('div'); r.className = 'bg-red-700/70 p-2 rounded-xl flex justify-between'; r.innerHTML = `<span>${s.userId}</span><button onclick="resolveSOS('${s.id}')" class="bg-white text-red-700 font-bold px-2 rounded">معالجة</button>`; l.appendChild(r); });
       });
 
       onSnapshot(collection(db, 'promos'), (snap) => {
         const box = document.getElementById('promos-list'); box.innerHTML = '';
-        snap.forEach(d => {
-          const p = d.data(), row = document.createElement('div'); row.className = 'flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100';
-          row.innerHTML = `<div><div class="font-extrabold text-slate-800">${d.id} <span class="jo-text">(${p.discountPct}% • سقف ${Number(p.maxDiscountJod ?? 0.75).toFixed(2)} د.أ)</span></div><div class="text-[10px] text-slate-500">لكل عميل: ${p.maxPerUser || 1} • المستخدم: ${p.usedCount || 0}/${p.maxTotalUses || 999}</div></div><button onclick="deletePromo('${d.id}')" class="text-[#CE1126] font-bold">حذف</button>`;
-          box.appendChild(row);
-        });
+        snap.forEach(d => { const p = d.data(), r = document.createElement('div'); r.className = 'flex justify-between bg-slate-50 p-2.5 rounded-xl border'; r.innerHTML = `<span class="font-extrabold">${d.id} (${p.discountPct}%)</span><button onclick="deletePromo('${d.id}')" class="text-[#CE1126] font-bold">حذف</button>`; box.appendChild(r); });
       });
     }
 
     window.approveCaptain = async (id, a) => { await updateDoc(doc(db, 'captains', id), { isApproved: a }); };
     window.resetZero = async (col, id, n) => { if (confirm(`تصفير رصيد (${n})؟`)) await updateDoc(doc(db, col, id), { walletBalance: 0 }); };
-    window.settleBalance = async (col, id, n, cb) => { const v = prompt(`رصيد (${n}): ${cb.toFixed(2)}\nالمبلغ بالدينار:`, cb < 0 ? Math.abs(cb).toFixed(2) : '5.00'); if (!v) return; const a = Number(v); if (!isNaN(a) && a > 0) await updateDoc(doc(db, col, id), { walletBalance: +(cb + a).toFixed(2) }); };
+    window.settleBalance = async (col, id, n, cb) => { const v = prompt(`رصيد (${n}): ${cb.toFixed(2)}\nالمبلغ:`, cb < 0 ? Math.abs(cb).toFixed(2) : '5.00'); if (!v) return; const a = Number(v); if (!isNaN(a) && a > 0) await updateDoc(doc(db, col, id), { walletBalance: +(cb + a).toFixed(2) }); };
     window.toggleBlockUser = async (col, id, b) => { await updateDoc(doc(db, col, id), { isBlocked: !b }); };
     window.savePricing = async () => {
       currentCommPct = Number(document.getElementById('p-comm').value);
-      await setDoc(doc(db, 'settings', 'pricing'), {
-        scooterBase: Number(document.getElementById('p-sc-base').value), scooterPerKm: Number(document.getElementById('p-sc-km').value), scooterMin: Number(document.getElementById('p-sc-min').value),
-        bikeBase: Number(document.getElementById('p-bk-base').value), bikePerKm: Number(document.getElementById('p-bk-km').value), commissionPct: currentCommPct,
-        surgeMultiplier: Number(document.getElementById('p-surge').value || 1.0), rainMode: document.getElementById('p-rain').checked, updatedAt: serverTimestamp()
-      });
-      document.getElementById('stat-comm-pct').innerText = currentCommPct; alert('✅ تم حفظ التعديلات!');
+      await setDoc(doc(db, 'settings', 'pricing'), { scooterBase: Number(document.getElementById('p-sc-base').value), scooterPerKm: Number(document.getElementById('p-sc-km').value), scooterMin: Number(document.getElementById('p-sc-min').value), bikeBase: Number(document.getElementById('p-bk-base').value), bikePerKm: Number(document.getElementById('p-bk-km').value), commissionPct: currentCommPct, surgeMultiplier: Number(document.getElementById('p-surge').value || 1.0), rainMode: document.getElementById('p-rain').checked, updatedAt: serverTimestamp() });
+      document.getElementById('stat-comm-pct').innerText = currentCommPct; alert('✅ تم الحفظ!');
     };
     window.addPromo = async () => {
       const code = document.getElementById('promo-code').value.trim().toUpperCase(), pct = Number(document.getElementById('promo-pct').value);
-      const maxDiscountJod = Number(document.getElementById('promo-max-jod').value || 0.75), maxPerUser = Number(document.getElementById('promo-per-user').value || 1), maxTotalUses = Number(document.getElementById('promo-max-total').value || 100);
-      if (!code || pct <= 0 || pct > 90) return alert('أدخل كوداً ونسبة صحيحة');
-      await setDoc(doc(db, 'promos', code), { discountPct: pct, maxDiscountJod, maxPerUser, maxTotalUses, usedCount: 0, companyPays: document.getElementById('promo-company-pays').checked, active: true });
+      if (!code || pct <= 0 || pct > 90) return;
+      await setDoc(doc(db, 'promos', code), { discountPct: pct, maxDiscountJod: Number(document.getElementById('promo-max-jod').value || 0.75), maxPerUser: Number(document.getElementById('promo-per-user').value || 1), maxTotalUses: Number(document.getElementById('promo-max-total').value || 100), usedCount: 0, companyPays: document.getElementById('promo-company-pays').checked, active: true });
       document.getElementById('promo-code').value = ''; document.getElementById('promo-pct').value = ''; alert('✅ تم الإنشاء!');
     };
     window.deletePromo = async (id) => { await deleteDoc(doc(db, 'promos', id)); };
