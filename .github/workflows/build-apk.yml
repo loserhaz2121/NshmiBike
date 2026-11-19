@@ -27,34 +27,16 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Install Pillow for Icons
+      - name: Install Pillow
         run: sudo apt-get update && sudo apt-get install -y python3-pil
 
-      - name: Prepare Rider App, Icon and Plugins
+      - name: Prepare Rider App and Jordan Flag Icon
         run: |
-          mkdir -p www assets
+          mkdir -p www
           cp -f index.html www/
           cp -f track.html manifest.json sw.js icon.svg www/ 2>/dev/null || true
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7 @capacitor/assets
-          python3 - << 'PYEOF'
-          from PIL import Image, ImageDraw
-          fg = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
-          d = ImageDraw.Draw(fg)
-          d.ellipse([230, 560, 410, 740], outline='white', width=40)
-          d.ellipse([610, 560, 790, 740], outline='white', width=40)
-          d.line([(320, 650), (540, 650), (650, 380), (590, 340)], fill='white', width=44)
-          d.line([(310, 520), (490, 520)], fill='white', width=50)
-          d.rectangle([620, 315, 720, 365], fill=(206, 17, 38, 255))
-          fg.save('assets/icon-foreground.png')
-          bg = Image.new('RGBA', (1024, 1024), (0, 122, 61, 255))
-          bd = ImageDraw.Draw(bg)
-          bd.rectangle([0, 0, 1024, 160], fill=(206, 17, 38, 255))
-          bd.rectangle([0, 864, 1024, 1024], fill=(17, 24, 39, 255))
-          bg.save('assets/icon-background.png')
-          full = Image.alpha_composite(bg, fg)
-          full.save('assets/icon-only.png')
-          PYEOF
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.jordan",
@@ -64,7 +46,30 @@ jobs:
           }
           EOF
           npx cap add android
-          npx capacitor-assets generate --android
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          python3 - << 'PYEOF'
+          import math, os
+          from PIL import Image, ImageDraw
+          img = Image.new('RGBA', (1024, 1024), (255, 255, 255, 255))
+          d = ImageDraw.Draw(img)
+          d.rectangle([0, 0, 1024, 341], fill=(0, 0, 0, 255))
+          d.rectangle([0, 341, 1024, 683], fill=(255, 255, 255, 255))
+          d.rectangle([0, 683, 1024, 1024], fill=(0, 122, 61, 255))
+          d.polygon([(0, 0), (540, 512), (0, 1024)], fill=(206, 17, 38, 255))
+          pts = [(195 + (88 if i%2==0 else 38)*math.cos(math.radians(i*360/14-90)), 512 + (88 if i%2==0 else 38)*math.sin(math.radians(i*360/14-90))) for i in range(14)]
+          d.polygon(pts, fill='white')
+          d.ellipse([540, 342, 880, 682], fill=(255, 255, 255, 245), outline=(0, 122, 61, 255), width=20)
+          d.ellipse([595, 535, 675, 615], outline=(17, 24, 39, 255), width=18)
+          d.ellipse([745, 535, 825, 615], outline=(17, 24, 39, 255), width=18)
+          d.line([(635, 575), (720, 575), (765, 455), (730, 440)], fill=(0, 122, 61, 255), width=22)
+          d.line([(630, 515), (705, 515)], fill=(17, 24, 39, 255), width=22)
+          for folder, sz in [('mipmap-mdpi',48),('mipmap-hdpi',72),('mipmap-xhdpi',96),('mipmap-xxhdpi',144),('mipmap-xxxhdpi',192)]:
+              p = f'android/app/src/main/res/{folder}'
+              os.makedirs(p, exist_ok=True)
+              r = img.resize((sz, sz), Image.LANCZOS)
+              r.save(f'{p}/ic_launcher.png')
+              r.save(f'{p}/ic_launcher_round.png')
+          PYEOF
           sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />|' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
