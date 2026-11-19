@@ -26,32 +26,15 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Install Pillow for Icons
+      - name: Install Pillow
         run: sudo apt-get update && sudo apt-get install -y python3-pil
 
-      - name: Prepare Captain App, Icon and Plugins
+      - name: Prepare Captain App and Jordan Flag Icon
         run: |
-          mkdir -p www assets
+          mkdir -p www
           cp -f captain.html www/index.html
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7 @capacitor/assets
-          python3 - << 'PYEOF'
-          from PIL import Image, ImageDraw
-          fg = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
-          d = ImageDraw.Draw(fg)
-          d.ellipse([230, 230, 794, 794], outline=(0, 177, 79, 255), width=42)
-          d.ellipse([290, 560, 440, 710], outline='white', width=34)
-          d.ellipse([580, 560, 730, 710], outline='white', width=34)
-          d.line([(365, 635), (520, 635), (630, 425), (540, 425), (415, 520)], fill='white', width=38)
-          fg.save('assets/icon-foreground.png')
-          bg = Image.new('RGBA', (1024, 1024), (17, 24, 39, 255))
-          bd = ImageDraw.Draw(bg)
-          bd.rectangle([0, 0, 1024, 140], fill=(0, 122, 61, 255))
-          bd.rectangle([0, 884, 1024, 1024], fill=(206, 17, 38, 255))
-          bg.save('assets/icon-background.png')
-          full = Image.alpha_composite(bg, fg)
-          full.save('assets/icon-only.png')
-          PYEOF
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.captain",
@@ -61,7 +44,29 @@ jobs:
           }
           EOF
           npx cap add android
-          npx capacitor-assets generate --android
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          python3 - << 'PYEOF'
+          import math, os
+          from PIL import Image, ImageDraw
+          img = Image.new('RGBA', (1024, 1024), (255, 255, 255, 255))
+          d = ImageDraw.Draw(img)
+          d.rectangle([0, 0, 1024, 341], fill=(0, 0, 0, 255))
+          d.rectangle([0, 341, 1024, 683], fill=(255, 255, 255, 255))
+          d.rectangle([0, 683, 1024, 1024], fill=(0, 122, 61, 255))
+          d.polygon([(0, 0), (540, 512), (0, 1024)], fill=(206, 17, 38, 255))
+          pts = [(195 + (88 if i%2==0 else 38)*math.cos(math.radians(i*360/14-90)), 512 + (88 if i%2==0 else 38)*math.sin(math.radians(i*360/14-90))) for i in range(14)]
+          d.polygon(pts, fill='white')
+          d.ellipse([540, 342, 880, 682], fill=(17, 24, 39, 250), outline=(0, 177, 79, 255), width=20)
+          d.ellipse([595, 535, 675, 615], outline='white', width=18)
+          d.ellipse([745, 535, 825, 615], outline='white', width=18)
+          d.line([(635, 575), (710, 575), (765, 455), (720, 455), (655, 510)], fill=(0, 177, 79, 255), width=22)
+          for folder, sz in [('mipmap-mdpi',48),('mipmap-hdpi',72),('mipmap-xhdpi',96),('mipmap-xxhdpi',144),('mipmap-xxxhdpi',192)]:
+              p = f'android/app/src/main/res/{folder}'
+              os.makedirs(p, exist_ok=True)
+              r = img.resize((sz, sz), Image.LANCZOS)
+              r.save(f'{p}/ic_launcher.png')
+              r.save(f'{p}/ic_launcher_round.png')
+          PYEOF
           sed -i 's|<uses-permission android:name="android.permission.INTERNET" />|<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.CAMERA" />|' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
