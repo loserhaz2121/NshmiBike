@@ -26,27 +26,15 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Install Pillow for Icons
+      - name: Install Pillow
         run: sudo apt-get update && sudo apt-get install -y python3-pil
 
-      - name: Prepare Admin App and Icon
+      - name: Prepare Admin App and Jordan Flag Icon
         run: |
-          mkdir -p www assets
+          mkdir -p www
           cp -f admin.html www/index.html
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/assets
-          python3 - << 'PYEOF'
-          from PIL import Image, ImageDraw
-          fg = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
-          d = ImageDraw.Draw(fg)
-          d.polygon([(512, 210), (770, 315), (735, 610), (512, 815), (289, 610), (254, 315)], fill=(17, 24, 39, 255), outline='white', width=28)
-          d.polygon([(512, 315), (620, 512), (512, 705), (404, 512)], fill=(0, 122, 61, 255))
-          fg.save('assets/icon-foreground.png')
-          bg = Image.new('RGBA', (1024, 1024), (206, 17, 38, 255))
-          bg.save('assets/icon-background.png')
-          full = Image.alpha_composite(bg, fg)
-          full.save('assets/icon-only.png')
-          PYEOF
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.nshmibike.admin",
@@ -56,7 +44,27 @@ jobs:
           }
           EOF
           npx cap add android
-          npx capacitor-assets generate --android
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          python3 - << 'PYEOF'
+          import math, os
+          from PIL import Image, ImageDraw
+          img = Image.new('RGBA', (1024, 1024), (255, 255, 255, 255))
+          d = ImageDraw.Draw(img)
+          d.rectangle([0, 0, 1024, 341], fill=(0, 0, 0, 255))
+          d.rectangle([0, 341, 1024, 683], fill=(255, 255, 255, 255))
+          d.rectangle([0, 683, 1024, 1024], fill=(0, 122, 61, 255))
+          d.polygon([(0, 0), (540, 512), (0, 1024)], fill=(206, 17, 38, 255))
+          pts = [(195 + (88 if i%2==0 else 38)*math.cos(math.radians(i*360/14-90)), 512 + (88 if i%2==0 else 38)*math.sin(math.radians(i*360/14-90))) for i in range(14)]
+          d.polygon(pts, fill='white')
+          d.polygon([(710, 330), (860, 395), (840, 575), (710, 700), (580, 575), (560, 395)], fill=(17, 24, 39, 250), outline=(245, 158, 11, 255), width=18)
+          d.polygon([(710, 415), (775, 515), (710, 615), (645, 515)], fill=(0, 122, 61, 255))
+          for folder, sz in [('mipmap-mdpi',48),('mipmap-hdpi',72),('mipmap-xhdpi',96),('mipmap-xxhdpi',144),('mipmap-xxxhdpi',192)]:
+              p = f'android/app/src/main/res/{folder}'
+              os.makedirs(p, exist_ok=True)
+              r = img.resize((sz, sz), Image.LANCZOS)
+              r.save(f'{p}/ic_launcher.png')
+              r.save(f'{p}/ic_launcher_round.png')
+          PYEOF
           npx cap sync android
 
       - name: Build Admin APK
