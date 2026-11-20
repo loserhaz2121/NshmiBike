@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#111827" />
   <link rel="icon" type="image/jpeg" href="logo-captain.jpg" />
   <link rel="apple-touch-icon" href="logo-captain.jpg" />
-  <title>NshmiCaptain 🇯🇴</title>
+  <title>NshmiCaptain</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -20,6 +20,14 @@
     .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
     .gps-dot { width: 14px; height: 14px; background: #2563eb; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 6px rgba(37,99,235,0.25); }
   </style>
+  <script>
+    window.tryNextLogo = function(img) {
+      const list = (img.dataset.fallbacks || '').split(',').filter(Boolean);
+      const idx = Number(img.dataset.fIdx || 0);
+      if (idx < list.length) { img.dataset.fIdx = idx + 1; img.src = list[idx]; }
+      else { img.style.display = 'none'; }
+    };
+  </script>
 </head>
 <body class="min-h-screen flex justify-center bg-slate-900">
 
@@ -52,10 +60,10 @@
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
       <div class="flex justify-end mb-2"><button type="button" onclick="toggleLanguage()" class="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-xs font-extrabold">🌐 <span class="lang-switch-label">EN</span></button></div>
       <div class="text-center mb-4">
-        <div class="w-24 h-24 rounded-full bg-white mx-auto overflow-hidden shadow-xl mb-2 border-2 border-[#CE1126] p-0.5">
-          <img src="logo-captain.jpg" alt="NshmiCaptain" class="w-full h-full object-cover rounded-full">
+        <div class="w-28 h-28 rounded-full bg-white mx-auto overflow-hidden shadow-xl mb-2 border-2 border-[#CE1126] p-0.5">
+          <img src="logo-captain.jpg" data-fallbacks="logo-captain.JPG,logo-captain.jpeg,logo-captain.JPEG,logo-captain.png,logo-captain.PNG" onerror="tryNextLogo(this)" alt="NshmiCaptain" class="w-full h-full object-contain rounded-full">
         </div>
-        <h1 class="text-2xl font-extrabold">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</h1>
+        <h1 class="text-2xl font-extrabold">Nshmi<span class="text-[#CE1126]">Captain</span></h1>
         <p data-ar="كباتن النشامى • عمّان • إربد • الزرقاء" data-en="Captain App • Amman • Irbid • Zarqa" class="i18n text-[11px] text-slate-300 font-semibold mt-0.5">كباتن النشامى • عمّان • إربد • الزرقاء</p>
       </div>
       <form onsubmit="event.preventDefault(); loginCaptain();" class="bg-white text-slate-800 p-4 rounded-3xl shadow-xl space-y-2.5">
@@ -87,8 +95,8 @@
     <!-- 2. شاشة انتظار موافقة الأدمن -->
     <div id="screen-pending" class="hidden flex-1 flex flex-col justify-center items-center p-6 text-center bg-slate-900 text-white relative safe-bottom">
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
-      <div class="w-24 h-24 rounded-full bg-white overflow-hidden border-2 border-amber-400 shadow-lg p-0.5 mb-3">
-        <img src="logo-captain.jpg" alt="NshmiCaptain" class="w-full h-full object-cover rounded-full">
+      <div class="w-28 h-28 rounded-full bg-white overflow-hidden border-2 border-amber-400 shadow-lg p-0.5 mb-3">
+        <img src="logo-captain.jpg" data-fallbacks="logo-captain.JPG,logo-captain.jpeg,logo-captain.JPEG,logo-captain.png,logo-captain.PNG" onerror="tryNextLogo(this)" alt="NshmiCaptain" class="w-full h-full object-contain rounded-full">
       </div>
       <h2 data-ar="⏳ حسابك بانتظار موافقة الإدارة" data-en="⏳ Account Pending Admin Approval" class="i18n text-xl font-extrabold text-amber-400 mb-2">⏳ حسابك بانتظار موافقة الإدارة</h2>
       <p data-ar="لا يمكنك الدخول للعمل حتى يقوم المشرف باعتماد حسابك." data-en="You cannot go online until an admin approves your account." class="i18n text-xs text-slate-300 leading-relaxed mb-5">لا يمكنك الدخول للعمل حتى يقوم المشرف باعتماد حسابك.</p>
@@ -102,9 +110,9 @@
       <header class="px-3 py-2 bg-slate-900 text-white shadow flex justify-between items-center shrink-0 z-20">
         <div class="flex items-center gap-2 min-w-0">
           <button onclick="toggleDrawer(true)" class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-base font-bold shrink-0">☰</button>
-          <img src="logo-captain.jpg" alt="NshmiCaptain" class="w-9 h-9 rounded-full bg-white object-cover border border-[#CE1126] shrink-0">
+          <img src="logo-captain.jpg" data-fallbacks="logo-captain.JPG,logo-captain.jpeg,logo-captain.JPEG,logo-captain.png,logo-captain.PNG" onerror="tryNextLogo(this)" alt="NshmiCaptain" class="w-11 h-11 rounded-full bg-white object-contain border border-[#CE1126] shadow-sm shrink-0">
           <div class="min-w-0">
-            <div class="font-extrabold text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</div>
+            <div class="font-extrabold text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Captain</span></div>
             <div id="cap-header-info" class="text-[10px] text-emerald-300 font-semibold truncate"></div>
           </div>
         </div>
@@ -220,7 +228,7 @@
           <button onclick="openModal('settings')" class="w-full px-5 py-3 flex items-center gap-3"><span>⚙️</span><span data-ar="الإعدادات واللغة" data-en="Settings & Language" class="i18n">الإعدادات واللغة</span></button>
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط" data-en="Terms" class="i18n">الشروط</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v6.1 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v6.2</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -262,6 +270,43 @@
 
     let lang = localStorage.getItem('nshmi_lang') || 'ar', authMode = 'login', capRiderStars = 5, lastFinishedRideId = null, lastFinishedRiderId = null;
     const t = (ar, en) => lang === 'ar' ? ar : en;
+
+    // معالجة زر الرجوع في أندرويد والمتصفح لمنع الخروج المفاجئ أثناء العمل
+    let lastBackTapMs = 0;
+    function handleInternalBack() {
+      if (!document.getElementById('cap-summary-modal').classList.contains('hidden')) { closeSummary(); return true; }
+      if (!document.getElementById('app-modal').classList.contains('hidden')) { closeModal(); return true; }
+      if (!document.getElementById('side-drawer').classList.contains('hidden')) { toggleDrawer(false); return true; }
+      return false;
+    }
+    try { history.replaceState({ nshmi: 'base' }, ''); history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
+    window.addEventListener('popstate', () => {
+      if (handleInternalBack()) { try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {} return; }
+      const now = Date.now();
+      if (now - lastBackTapMs < 2000) { history.back(); }
+      else {
+        lastBackTapMs = now;
+        try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
+        const tb = document.getElementById('toast-banner');
+        document.getElementById('toast-title').innerText = t('↩️ خروج من التطبيق', '↩️ Exit App');
+        document.getElementById('toast-body').innerText = t('اضغط زر الرجوع مرة أخرى للخروج', 'Press back again to exit');
+        tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 2000);
+      }
+    });
+    try {
+      window.Capacitor?.Plugins?.App?.addListener('backButton', () => {
+        if (handleInternalBack()) return;
+        const now = Date.now();
+        if (now - lastBackTapMs < 2000) window.Capacitor.Plugins.App.exitApp();
+        else {
+          lastBackTapMs = now;
+          const tb = document.getElementById('toast-banner');
+          document.getElementById('toast-title').innerText = t('↩️ خروج من التطبيق', '↩️ Exit App');
+          document.getElementById('toast-body').innerText = t('اضغط زر الرجوع مرة أخرى للخروج', 'Press back again to exit');
+          tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 2000);
+        }
+      });
+    } catch (e) {}
 
     function renderQuickReplies() {
       const box = document.getElementById('cap-quick-replies'); if (!box) return;
@@ -550,7 +595,7 @@
         ti.innerText = t('💳 المحفظة وتسديد CliQ', '💳 Wallet & CliQ');
         const suggestedAmt = currentUser.walletBalance < 0 ? Math.abs(currentUser.walletBalance).toFixed(2) : '5.00';
         const cliqBox = cliqAlias
-          ? `<div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl space-y-2"><div class="font-extrabold text-[#007A3D]">🇯🇴 ${t('تسديد / شحن عبر كليك (CliQ):','Top-up / Settle via CliQ:')}</div><div class="bg-white p-2.5 rounded-xl border flex justify-between items-center"><div><div class="text-[10px] text-slate-500">${esc(cliqBank || t('الاسم المستعار (Alias)','CliQ Alias'))}</div><div class="font-extrabold text-sm tracking-wider" dir="ltr">${esc(cliqAlias)}</div></div><button onclick="copyText('${esc(cliqAlias)}')" class="jo-green text-white px-3 py-1.5 rounded-xl font-bold text-[11px]">📋 ${t('نسخ','Copy')}</button></div><div class="grid grid-cols-2 gap-1.5"><input id="cliq-amount" type="text" inputmode="decimal" value="${suggestedAmt}" placeholder="${t('المبلغ (د.أ)','Amount')}" class="border rounded-xl p-2 font-bold bg-white"><input id="cliq-ref" type="text" placeholder="${t('اسم المحوّل / المرجع','Sender / Ref')}" class="border rounded-xl p-2 font-bold bg-white"></div><button id="btn-send-cliq" onclick="submitCliqRequest()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl">${t('إرسال تأكيد التحويل ✓','Submit CliQ Transfer ✓')}</button></div>`
+          ? `<div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl space-y-2"><div class="font-extrabold text-[#007A3D]">💳 ${t('تسديد / شحن عبر كليك (CliQ):','Top-up / Settle via CliQ:')}</div><div class="bg-white p-2.5 rounded-xl border flex justify-between items-center"><div><div class="text-[10px] text-slate-500">${esc(cliqBank || t('الاسم المستعار (Alias)','CliQ Alias'))}</div><div class="font-extrabold text-sm tracking-wider" dir="ltr">${esc(cliqAlias)}</div></div><button onclick="copyText('${esc(cliqAlias)}')" class="jo-green text-white px-3 py-1.5 rounded-xl font-bold text-[11px]">📋 ${t('نسخ','Copy')}</button></div><div class="grid grid-cols-2 gap-1.5"><input id="cliq-amount" type="text" inputmode="decimal" value="${suggestedAmt}" placeholder="${t('المبلغ (د.أ)','Amount')}" class="border rounded-xl p-2 font-bold bg-white"><input id="cliq-ref" type="text" placeholder="${t('اسم المحوّل / المرجع','Sender / Ref')}" class="border rounded-xl p-2 font-bold bg-white"></div><button id="btn-send-cliq" onclick="submitCliqRequest()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl">${t('إرسال تأكيد التحويل ✓','Submit CliQ Transfer ✓')}</button></div>`
           : `<div class="bg-slate-50 p-3 rounded-xl text-center text-slate-500">${t('تواصل مع الإدارة لتسديد الرصيد','Contact admin to settle balance')}</div>`;
         b.innerHTML = `<div class="bg-gradient-to-br from-slate-900 to-[#007A3D] text-white p-5 rounded-2xl text-center"><div class="text-[11px] opacity-80">${t('رصيدك الحالي','Current Balance')}</div><div class="text-3xl font-extrabold mt-0.5">${currentUser.walletBalance.toFixed(2)} ${t('د.أ','JOD')}</div></div>${cliqBox}<div id="my-cliq-reqs" class="space-y-1.5"></div>`;
         if (auth.currentUser) {
@@ -613,7 +658,7 @@
       openModal('contests');
     };
     window.saveVehicle = async () => { const b = document.getElementById('edit-bike').value.trim(), p = normDigits(document.getElementById('edit-plate').value.trim()); if (!b||!p) return; currentUser.bikeModel=b; currentUser.plate=p; await updateDoc(doc(db,'captains',currentUser.id),{bikeModel:b,plate:p}); document.getElementById('cap-header-info').innerText=`${currentUser.name} • ${b} (${p})`; closeModal(); };
-    window.shareInvite = async () => { const tx = `NshmiCaptain 🇯🇴 ${currentUser.referralCode}`; if (navigator.share) { try { await navigator.share({ text: tx }); } catch (e) {} } else alert(tx); };
+    window.shareInvite = async () => { const tx = `NshmiCaptain ${currentUser.referralCode}`; if (navigator.share) { try { await navigator.share({ text: tx }); } catch (e) {} } else alert(tx); };
 
     function stopRingLoop() { if (ringLoopInt) { clearInterval(ringLoopInt); ringLoopInt = null; } }
 
