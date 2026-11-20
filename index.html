@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#007A3D" />
+  <link rel="icon" type="image/jpeg" href="logo-rider.jpg" />
+  <link rel="apple-touch-icon" href="logo-rider.jpg" />
   <link rel="manifest" href="manifest.json" />
   <title>NshmiBike 🇯🇴</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,7 +36,9 @@
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
       <div class="flex justify-end mb-2"><button type="button" onclick="toggleLanguage()" class="bg-white border px-3 py-1 rounded-full text-xs font-extrabold shadow-sm">🌐 <span class="lang-switch-label">English</span></button></div>
       <div class="text-center mb-4">
-        <div class="w-16 h-16 jo-green rounded-3xl mx-auto flex items-center justify-center text-3xl shadow-lg mb-2 border-2 border-[#CE1126]">🛵</div>
+        <div class="w-24 h-24 rounded-full bg-white mx-auto overflow-hidden shadow-xl mb-2 border-2 border-[#CE1126] p-0.5">
+          <img src="logo-rider.jpg" alt="NshmiBike" class="w-full h-full object-cover rounded-full">
+        </div>
         <h1 class="text-2xl font-extrabold text-slate-900">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
         <p data-ar="للشباب والرجال (+18) فقط • عمّان • إربد • الزرقاء" data-en="Adult Males (18+) Only • Amman • Irbid • Zarqa" class="i18n text-[11px] text-slate-600 font-semibold mt-0.5">للشباب والرجال (+18) فقط • عمّان • إربد • الزرقاء</p>
       </div>
@@ -66,15 +70,16 @@
     <!-- 2. شاشة العميل الرئيسية -->
     <div id="screen-rider" class="hidden flex-1 flex flex-col h-full relative">
       <div class="shmagh-strip shrink-0"></div>
-      <header class="p-3 bg-white shadow-sm flex justify-between items-center z-20 shrink-0">
-        <div class="flex items-center gap-2">
-          <button onclick="toggleDrawer(true)" class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-lg font-bold">☰</button>
-          <div>
+      <header class="p-2.5 bg-white shadow-sm flex justify-between items-center z-20 shrink-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <button onclick="toggleDrawer(true)" class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-lg font-bold shrink-0">☰</button>
+          <img src="logo-rider.jpg" alt="NshmiBike" class="w-9 h-9 rounded-full bg-white object-cover border border-[#CE1126] shrink-0">
+          <div class="min-w-0">
             <div class="font-extrabold text-slate-900 text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</div>
-            <div id="city-badge" class="text-[10px] jo-text font-extrabold">📍 ...</div>
+            <div id="city-badge" class="text-[10px] jo-text font-extrabold truncate">📍 ...</div>
           </div>
         </div>
-        <div class="flex gap-1.5">
+        <div class="flex gap-1.5 shrink-0">
           <button onclick="toggleLanguage()" class="bg-slate-100 text-slate-700 text-[11px] font-extrabold px-2.5 py-1 rounded-full lang-switch-label">EN</button>
           <button onclick="openModal('inbox')" class="bg-emerald-50 text-[#007A3D] text-[11px] font-bold px-2 py-1 rounded-full">📬</button>
           <button onclick="triggerSOS()" class="bg-[#CE1126] text-white text-[11px] font-bold px-2.5 py-1 rounded-full">🆘 SOS</button>
@@ -223,7 +228,7 @@
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط والأحكام" data-en="Terms & Conditions" class="i18n">الشروط والأحكام</span></button>
           <button onclick="openModal('diag')" class="w-full px-5 py-3 flex items-center gap-3"><span>🛠️</span><span data-ar="فحص الاتصال" data-en="Diagnostics" class="i18n">فحص الاتصال</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiBike • v6.0 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiBike • v6.1 🇯🇴</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -503,12 +508,8 @@
       if (ref.length < 2) return alert(t('أدخل اسم المحوّل أو رقم المرجع', 'Enter sender name or reference'));
       const btn = document.getElementById('btn-send-cliq'); if (btn) btn.disabled = true;
       try {
-        await addDoc(collection(db, 'cliq_requests'), {
-          authUid: auth.currentUser.uid, userId: currentUser.id, userName: currentUser.name, role: 'RIDER',
-          amountJod: +amt.toFixed(2), senderRef: ref, status: 'PENDING', createdAtMs: Date.now(), createdAt: serverTimestamp()
-        });
-        alert('✅ ' + t('تم إرسال طلب CliQ! سيقوم الأدمن باعتماده وإضافة الرصيد لمحفظتك.', 'CliQ request sent! Admin will credit your wallet shortly.'));
-        openModal('wallet');
+        await addDoc(collection(db, 'cliq_requests'), { authUid: auth.currentUser.uid, userId: currentUser.id, userName: currentUser.name, role: 'RIDER', amountJod: +amt.toFixed(2), senderRef: ref, status: 'PENDING', createdAtMs: Date.now(), createdAt: serverTimestamp() });
+        alert('✅ ' + t('تم إرسال طلب CliQ! سيقوم الأدمن باعتماده وإضافة الرصيد لمحفظتك.', 'CliQ request sent! Admin will credit your wallet shortly.')); openModal('wallet');
       } catch (e) { alert(e.message); if (btn) btn.disabled = false; }
     };
 
