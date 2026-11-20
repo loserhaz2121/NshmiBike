@@ -12,9 +12,9 @@
   "theme_color": "#007A3D",
   "icons": [
     {
-      "src": "logo-rider.png",
+      "src": "logo-rider.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]
