@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
+  <link rel="icon" type="image/jpeg" href="logo-captain.jpg" />
+  <link rel="apple-touch-icon" href="logo-captain.jpg" />
   <title>NshmiCaptain 🇯🇴</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -50,7 +52,9 @@
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
       <div class="flex justify-end mb-2"><button type="button" onclick="toggleLanguage()" class="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-xs font-extrabold">🌐 <span class="lang-switch-label">EN</span></button></div>
       <div class="text-center mb-4">
-        <div class="w-16 h-16 jo-green rounded-3xl mx-auto flex items-center justify-center text-3xl shadow-lg mb-2 border-2 border-[#CE1126]">🏍️</div>
+        <div class="w-24 h-24 rounded-full bg-white mx-auto overflow-hidden shadow-xl mb-2 border-2 border-[#CE1126] p-0.5">
+          <img src="logo-captain.jpg" alt="NshmiCaptain" class="w-full h-full object-cover rounded-full">
+        </div>
         <h1 class="text-2xl font-extrabold">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</h1>
         <p data-ar="كباتن النشامى • عمّان • إربد • الزرقاء" data-en="Captain App • Amman • Irbid • Zarqa" class="i18n text-[11px] text-slate-300 font-semibold mt-0.5">كباتن النشامى • عمّان • إربد • الزرقاء</p>
       </div>
@@ -83,8 +87,10 @@
     <!-- 2. شاشة انتظار موافقة الأدمن -->
     <div id="screen-pending" class="hidden flex-1 flex flex-col justify-center items-center p-6 text-center bg-slate-900 text-white relative safe-bottom">
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
-      <div class="w-20 h-20 bg-amber-500/20 border-2 border-amber-400 rounded-3xl flex items-center justify-center text-4xl mb-4">⏳</div>
-      <h2 data-ar="حسابك بانتظار موافقة الإدارة" data-en="Account Pending Admin Approval" class="i18n text-xl font-extrabold text-amber-400 mb-2">حسابك بانتظار موافقة الإدارة</h2>
+      <div class="w-24 h-24 rounded-full bg-white overflow-hidden border-2 border-amber-400 shadow-lg p-0.5 mb-3">
+        <img src="logo-captain.jpg" alt="NshmiCaptain" class="w-full h-full object-cover rounded-full">
+      </div>
+      <h2 data-ar="⏳ حسابك بانتظار موافقة الإدارة" data-en="⏳ Account Pending Admin Approval" class="i18n text-xl font-extrabold text-amber-400 mb-2">⏳ حسابك بانتظار موافقة الإدارة</h2>
       <p data-ar="لا يمكنك الدخول للعمل حتى يقوم المشرف باعتماد حسابك." data-en="You cannot go online until an admin approves your account." class="i18n text-xs text-slate-300 leading-relaxed mb-5">لا يمكنك الدخول للعمل حتى يقوم المشرف باعتماد حسابك.</p>
       <div id="pending-info" class="w-full bg-white/10 p-4 rounded-2xl text-xs space-y-1.5 mb-6 font-semibold"></div>
       <button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full bg-[#CE1126] text-white font-extrabold py-3 rounded-2xl text-sm">تسجيل الخروج</button>
@@ -96,6 +102,7 @@
       <header class="px-3 py-2 bg-slate-900 text-white shadow flex justify-between items-center shrink-0 z-20">
         <div class="flex items-center gap-2 min-w-0">
           <button onclick="toggleDrawer(true)" class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-base font-bold shrink-0">☰</button>
+          <img src="logo-captain.jpg" alt="NshmiCaptain" class="w-9 h-9 rounded-full bg-white object-cover border border-[#CE1126] shrink-0">
           <div class="min-w-0">
             <div class="font-extrabold text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Captain</span> 🇯🇴</div>
             <div id="cap-header-info" class="text-[10px] text-emerald-300 font-semibold truncate"></div>
@@ -213,7 +220,7 @@
           <button onclick="openModal('settings')" class="w-full px-5 py-3 flex items-center gap-3"><span>⚙️</span><span data-ar="الإعدادات واللغة" data-en="Settings & Language" class="i18n">الإعدادات واللغة</span></button>
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط" data-en="Terms" class="i18n">الشروط</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v6.0 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiCaptain • v6.1 🇯🇴</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
