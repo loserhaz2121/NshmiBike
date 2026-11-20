@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f172a" />
   <link rel="icon" type="image/jpeg" href="logo-admin.jpg" />
   <link rel="apple-touch-icon" href="logo-admin.jpg" />
-  <title>إدارة NshmiBike 🇯🇴</title>
+  <title>إدارة NshmiBike</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -15,15 +15,25 @@
     .jo-text { color: #007A3D; }
     .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
   </style>
+  <script>
+    window.tryNextLogo = function(img) {
+      const list = (img.dataset.fallbacks || '').split(',').filter(Boolean);
+      const idx = Number(img.dataset.fIdx || 0);
+      if (idx < list.length) { img.dataset.fIdx = idx + 1; img.src = list[idx]; }
+      else { img.style.display = 'none'; }
+    };
+  </script>
 </head>
 <body class="min-h-screen bg-slate-100 pb-12">
 
+  <div id="admin-toast" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[90%] max-w-sm bg-slate-900 text-white p-3 rounded-2xl shadow-2xl border-r-4 border-[#CE1126] text-xs font-bold text-center"></div>
+
   <div id="admin-lock" class="min-h-screen flex items-center justify-center p-6">
     <form onsubmit="event.preventDefault(); loginAdmin();" class="w-full max-w-sm bg-white p-6 rounded-3xl shadow-xl text-center space-y-3.5">
-      <div class="w-40 h-28 mx-auto rounded-2xl overflow-hidden shadow-md border-2 border-[#007A3D]/30 bg-white">
-        <img src="logo-admin.jpg" alt="NshmiBike Admin" class="w-full h-full object-cover scale-110">
+      <div class="w-48 h-28 mx-auto rounded-2xl overflow-hidden shadow-md border-2 border-[#007A3D]/30 bg-white">
+        <img src="logo-admin.jpg" data-fallbacks="logo-admin.JPG,logo-admin.jpeg,logo-admin.JPEG,logo-admin.png,logo-admin.PNG" onerror="tryNextLogo(this)" alt="NshmiBike Admin" class="w-full h-full object-cover scale-110">
       </div>
-      <h1 class="text-xl font-extrabold text-slate-800">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
+      <h1 class="text-xl font-extrabold text-slate-800">إدارة Nshmi<span class="text-[#CE1126]">Bike</span></h1>
       <p class="text-xs text-slate-500 font-semibold">سجّل الدخول بحساب المدير المعتمد</p>
       <input id="admin-email" type="email" autocomplete="username" placeholder="admin@nshmibike.com" dir="ltr" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-left text-sm font-bold">
       <input id="admin-pass" type="password" autocomplete="current-password" placeholder="كلمة المرور" dir="ltr" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-left text-sm font-bold">
@@ -36,9 +46,9 @@
     <div class="shmagh-strip"></div>
     <header class="bg-slate-900 text-white p-3.5 sticky top-0 z-20 shadow flex justify-between items-center gap-2">
       <div class="flex items-center gap-2.5 min-w-0">
-        <img src="logo-admin.jpg" alt="NshmiBike" class="w-11 h-11 rounded-xl bg-white object-cover border-2 border-[#CE1126] shrink-0">
+        <img src="logo-admin.jpg" data-fallbacks="logo-admin.JPG,logo-admin.jpeg,logo-admin.JPEG,logo-admin.png,logo-admin.PNG" onerror="tryNextLogo(this)" alt="NshmiBike" class="w-12 h-12 rounded-xl bg-white object-cover border-2 border-[#CE1126] shrink-0">
         <div class="min-w-0">
-          <h1 class="font-extrabold text-base leading-tight">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
+          <h1 class="font-extrabold text-base leading-tight">إدارة Nshmi<span class="text-[#CE1126]">Bike</span></h1>
           <p id="admin-user-email" class="text-[11px] text-slate-400 truncate" dir="ltr">إدارة العمليات</p>
         </div>
       </div>
@@ -191,9 +201,24 @@
     }, 'nshmi-admin');
     const auth = getAuth(app), db = getFirestore(app);
 
-    let currentCommPct = 10, statsRange = 'TODAY', activeUnsubs = [];
+    let currentCommPct = 10, statsRange = 'TODAY', currentTab = 'captains', activeUnsubs = [];
     let captainsData = [], ridersData = [], ridesData = [], cliqData = [];
     let captainsMap = {}, ridersMap = {};
+
+    // معالجة زر الرجوع في أندرويد والمتصفح
+    let lastBackTapMs = 0;
+    try { history.replaceState({ nshmi: 'base' }, ''); history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
+    window.addEventListener('popstate', () => {
+      if (!document.getElementById('admin-app').classList.contains('hidden') && currentTab !== 'captains') {
+        showTab('captains'); try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {} return;
+      }
+      const now = Date.now();
+      if (now - lastBackTapMs < 2000) { history.back(); }
+      else {
+        lastBackTapMs = now; try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
+        const tb = document.getElementById('admin-toast'); tb.innerText = '↩️ اضغط زر الرجوع مرة أخرى للخروج'; tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 2000);
+      }
+    });
 
     const STATUS_LABELS = {
       SEARCHING: { text: '🔍 جاري البحث', cls: 'bg-amber-100 text-amber-800' },
@@ -249,6 +274,7 @@
     };
 
     window.showTab = (tab) => {
+      currentTab = tab;
       ['captains', 'cliq', 'riders', 'alerts', 'rides', 'pricing'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
         document.getElementById('tab-btn-' + t).className = 'tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap';
