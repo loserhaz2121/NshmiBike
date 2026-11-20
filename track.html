@@ -2,7 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#007A3D" />
+  <link rel="icon" type="image/png" href="logo-rider.png" />
   <title>تتبع رحلة NshmiBike 🇯🇴</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -11,47 +13,110 @@
   <style>
     body { font-family: 'Cairo', sans-serif; }
     #map { height: 100%; width: 100%; }
+    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important; }
     .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
   </style>
 </head>
 <body class="h-screen flex flex-col bg-slate-100">
   <div class="shmagh-strip shrink-0"></div>
-  <header class="bg-slate-900 text-white p-3.5 flex justify-between items-center shrink-0">
-    <div class="font-extrabold text-sm">تتبع مباشر • Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</div>
-    <span id="live-status" class="bg-emerald-600 text-[11px] font-bold px-3 py-1 rounded-full">جاري الاتصال...</span>
+  <header class="bg-slate-900 text-white p-3 flex justify-between items-center gap-2 shrink-0 shadow">
+    <div class="flex items-center gap-2 min-w-0">
+      <img src="logo-rider.png" alt="NshmiBike" class="w-9 h-9 rounded-full bg-white object-cover border-2 border-[#CE1126] shrink-0" onerror="this.style.display='none'">
+      <div class="truncate">
+        <div class="font-extrabold text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</div>
+        <div class="text-[10px] text-emerald-300 font-bold">🟢 تتبع مباشر للرحلة</div>
+      </div>
+    </div>
+    <span id="live-status" class="bg-[#007A3D] text-[11px] font-extrabold px-3 py-1 rounded-full shrink-0">جاري الاتصال...</span>
   </header>
+
   <div class="flex-1 relative"><div id="map"></div></div>
-  <div class="bg-white p-4 rounded-t-3xl shadow-2xl space-y-1.5 shrink-0">
-    <div id="track-cap" class="font-extrabold text-sm text-slate-800">جاري تحميل بيانات الكابتن...</div>
-    <div id="track-route" class="text-xs text-slate-500 font-semibold"></div>
+
+  <div class="bg-white p-4 safe-bottom rounded-t-3xl shadow-2xl space-y-1.5 shrink-0">
+    <div id="track-cap" class="font-extrabold text-sm text-slate-800">جاري تحميل بيانات الرحلة...</div>
+    <div id="track-route" class="text-xs text-slate-600 font-semibold"></div>
+    <div id="track-meta" class="text-[11px] text-[#007A3D] font-extrabold"></div>
   </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
     const app = initializeApp({
       apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU", authDomain: "nshmibike.firebaseapp.com",
       projectId: "nshmibike", appId: "1:506031565051:web:fc915e5a2173e841c7a85e"
-    });
+    }, 'nshmi-track');
     const db = getFirestore(app);
     const rideId = new URLSearchParams(location.search).get('ride');
+
     const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.9539, 35.9106], 14);
     L.tileLayer('https://{s}.google.com/vt/lyrs=m&hl=ar&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(map);
-    const bikeIcon = L.divIcon({ html: '<div style="font-size:28px;">🛵</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] });
-    let capM, pM, dM;
-    if (!rideId) { document.getElementById('live-status').innerText = 'رابط غير صالح'; }
-    else {
+    const bikeIcon = L.divIcon({ html: '<div style="font-size:28px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🛵</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] });
+
+    const haversine = (c1, c2) => { const R = 6371, dLat = (c2[0]-c1[0])*Math.PI/180, dLon = (c2[1]-c1[1])*Math.PI/180; const a = Math.sin(dLat/2)**2 + Math.cos(c1[0]*Math.PI/180)*Math.cos(c2[0]*Math.PI/180)*Math.sin(dLon/2)**2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); };
+    function smoothMove(m, to, dur = 800) {
+      const from = m.getLatLng(), st = performance.now();
+      const step = (now) => { const p = Math.min(1, (now - st) / dur); m.setLatLng([from.lat + (to[0] - from.lat) * p, from.lng + (to[1] - from.lng) * p]); if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }
+
+    let capM = null, pM = null, dM = null, line = null, lastBoundsKey = '';
+
+    if (!rideId) {
+      document.getElementById('live-status').innerText = 'رابط غير صالح';
+      document.getElementById('track-cap').innerText = 'تأكد من صحة رابط التتبع';
+    } else {
       onSnapshot(doc(db, 'rides', rideId), (snap) => {
         if (!snap.exists()) { document.getElementById('live-status').innerText = 'الرحلة غير موجودة'; return; }
         const d = snap.data();
-        const st = { SEARCHING: 'جاري البحث', ACCEPTED: 'الكابتن في الطريق', ARRIVED: 'الكابتن وصل', ON_TRIP: 'الرحلة جارية 💨', COMPLETED: 'وصل بالسلامة ✅', CANCELLED: 'ملغاة' };
-        document.getElementById('live-status').innerText = st[d.status] || d.status;
-        document.getElementById('track-cap').innerText = d.captainName ? `الراكب: ${d.riderName} • الكابتن: ${d.captainName} (${d.bikeModel} - ${d.plate})` : `الراكب: ${d.riderName}`;
-        document.getElementById('track-route').innerText = `${d.pickupAddress} ⬅️ ${d.dropoffAddress}`;
-        if (!pM) pM = L.circleMarker([d.pickupLat, d.pickupLng], { radius: 8, color: '#007A3D', fillOpacity: 1 }).addTo(map);
-        if (!dM) dM = L.circleMarker([d.dropoffLat, d.dropoffLng], { radius: 8, color: '#CE1126', fillOpacity: 1 }).addTo(map);
-        if (d.captainLat && d.captainLng) {
-          if (capM) capM.setLatLng([d.captainLat, d.captainLng]); else capM = L.marker([d.captainLat, d.captainLng], { icon: bikeIcon }).addTo(map);
-          map.panTo([d.captainLat, d.captainLng], { animate: true });
+        const st = {
+          SEARCHING: '🔍 جاري البحث عن كابتن',
+          SCHEDULED: '📅 حجز مجدول',
+          SCHEDULED_ACCEPTED: '📅 تم تأكيد الكابتن للموعد',
+          ACCEPTED: '🏍️ الكابتن في الطريق',
+          ARRIVED: '📍 الكابتن وصل لموقع الانطلاق',
+          ON_TRIP: '💨 الرحلة جارية',
+          COMPLETED: '✅ وصل بالسلامة',
+          CANCELLED: '❌ رحلة ملغاة',
+          CANCELLED_NO_SHOW: '⏱️ ملغاة لعدم الحضور'
+        };
+        const finished = ['COMPLETED', 'CANCELLED', 'CANCELLED_NO_SHOW'].includes(d.status);
+        const badge = document.getElementById('live-status');
+        badge.innerText = st[d.status] || d.status;
+        badge.className = finished ? 'bg-slate-700 text-[11px] font-extrabold px-3 py-1 rounded-full shrink-0' : 'bg-[#007A3D] text-[11px] font-extrabold px-3 py-1 rounded-full shrink-0';
+
+        document.getElementById('track-cap').innerText = d.captainName
+          ? `الراكب: ${d.riderName || '-'} • الكابتن: ${d.captainName} (${d.bikeModel || ''} - ${d.plate || ''})`
+          : `الراكب: ${d.riderName || '-'}`;
+        document.getElementById('track-route').innerText = `${d.pickupAddress || ''} ⬅️ ${d.dropoffAddress || ''}`;
+
+        if (finished) {
+          if (capM) { map.removeLayer(capM); capM = null; }
+          document.getElementById('track-meta').innerText = d.status === 'COMPLETED' ? '🎉 انتهت الرحلة بسلام وتوقف البث المباشر' : 'توقف البث المباشر لهذه الرحلة';
+          return;
+        }
+
+        if (d.pickupLat && d.dropoffLat) {
+          const bKey = `${d.pickupLat},${d.pickupLng},${d.dropoffLat},${d.dropoffLng}`;
+          if (bKey !== lastBoundsKey) {
+            lastBoundsKey = bKey;
+            if (pM) map.removeLayer(pM); if (dM) map.removeLayer(dM); if (line) map.removeLayer(line);
+            pM = L.circleMarker([d.pickupLat, d.pickupLng], { radius: 8, color: '#007A3D', fillColor: '#007A3D', fillOpacity: 1 }).addTo(map);
+            dM = L.circleMarker([d.dropoffLat, d.dropoffLng], { radius: 8, color: '#CE1126', fillColor: '#CE1126', fillOpacity: 1 }).addTo(map);
+            line = L.polyline([[d.pickupLat, d.pickupLng], [d.dropoffLat, d.dropoffLng]], { color: '#007A3D', weight: 3, dashArray: '6, 6', opacity: 0.7 }).addTo(map);
+            map.fitBounds([[d.pickupLat, d.pickupLng], [d.dropoffLat, d.dropoffLng]], { padding: [55, 55], maxZoom: 16 });
+          }
+        }
+
+        if (d.captainLat && d.captainLng && ['ACCEPTED', 'ARRIVED', 'ON_TRIP'].includes(d.status)) {
+          const capLL = [d.captainLat, d.captainLng];
+          if (capM) smoothMove(capM, capLL); else capM = L.marker(capLL, { icon: bikeIcon }).addTo(map);
+          map.panTo(capLL, { animate: true });
+          const target = d.status === 'ON_TRIP' ? [d.dropoffLat, d.dropoffLng] : [d.pickupLat, d.pickupLng];
+          const km = (haversine(capLL, target) * 1.25).toFixed(1);
+          document.getElementById('track-meta').innerText = d.status === 'ON_TRIP' ? `📍 المسافة المتبقية للوجهة: ~${km} كم` : `🏍️ يبعد الكابتن عن نقطة الانطلاق: ~${km} كم`;
+        } else {
+          document.getElementById('track-meta').innerText = d.scheduledFor ? `📅 الموعد: ${d.scheduledFor}` : 'بانتظار تحرك الكابتن...';
         }
       });
     }
