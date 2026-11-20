@@ -2,17 +2,19 @@
   "name": "NshmiBike - نشمي بايك الأردن",
   "short_name": "NshmiBike",
   "description": "تطبيق توصيل الركاب والطرود عبر الدراجات النارية في الأردن",
+  "lang": "ar",
+  "dir": "rtl",
   "start_url": "/NshmiBike/",
   "scope": "/NshmiBike/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#00B14F",
-  "theme_color": "#00B14F",
+  "background_color": "#007A3D",
+  "theme_color": "#007A3D",
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "logo-rider.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
