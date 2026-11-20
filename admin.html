@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" type="image/jpeg" href="logo-admin.jpg" />
+  <link rel="apple-touch-icon" href="logo-admin.jpg" />
   <title>إدارة NshmiBike 🇯🇴</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +20,9 @@
 
   <div id="admin-lock" class="min-h-screen flex items-center justify-center p-6">
     <form onsubmit="event.preventDefault(); loginAdmin();" class="w-full max-w-sm bg-white p-6 rounded-3xl shadow-xl text-center space-y-3.5">
-      <div class="w-16 h-16 jo-green rounded-2xl mx-auto flex items-center justify-center text-3xl shadow border-2 border-[#CE1126]">🛡️</div>
+      <div class="w-40 h-28 mx-auto rounded-2xl overflow-hidden shadow-md border-2 border-[#007A3D]/30 bg-white">
+        <img src="logo-admin.jpg" alt="NshmiBike Admin" class="w-full h-full object-cover scale-110">
+      </div>
       <h1 class="text-xl font-extrabold text-slate-800">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
       <p class="text-xs text-slate-500 font-semibold">سجّل الدخول بحساب المدير المعتمد</p>
       <input id="admin-email" type="email" autocomplete="username" placeholder="admin@nshmibike.com" dir="ltr" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-left text-sm font-bold">
@@ -29,10 +34,13 @@
 
   <div id="admin-app" class="hidden max-w-2xl mx-auto pb-14">
     <div class="shmagh-strip"></div>
-    <header class="bg-slate-900 text-white p-4 sticky top-0 z-20 shadow flex justify-between items-center gap-2">
-      <div class="min-w-0">
-        <h1 class="font-extrabold text-base">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
-        <p id="admin-user-email" class="text-[11px] text-slate-400 truncate" dir="ltr">إدارة العمليات</p>
+    <header class="bg-slate-900 text-white p-3.5 sticky top-0 z-20 shadow flex justify-between items-center gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <img src="logo-admin.jpg" alt="NshmiBike" class="w-11 h-11 rounded-xl bg-white object-cover border-2 border-[#CE1126] shrink-0">
+        <div class="min-w-0">
+          <h1 class="font-extrabold text-base leading-tight">إدارة Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
+          <p id="admin-user-email" class="text-[11px] text-slate-400 truncate" dir="ltr">إدارة العمليات</p>
+        </div>
       </div>
       <div class="flex items-center gap-1.5 shrink-0">
         <a href="index.html" class="jo-green text-xs font-bold px-3 py-1.5 rounded-xl">تطبيق العميل</a>
@@ -40,7 +48,6 @@
       </div>
     </header>
 
-    <!-- فلتر الفترة الزمنية للإحصائيات + تصدير Excel -->
     <div class="px-4 pt-3 flex items-center justify-between gap-2 flex-wrap">
       <div class="flex bg-white p-1 rounded-xl shadow-sm text-[11px] font-extrabold gap-1">
         <button onclick="setStatsRange('TODAY')" id="rng-TODAY" class="rng-btn jo-green text-white px-2.5 py-1 rounded-lg">اليوم</button>
@@ -74,27 +81,21 @@
       <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">⚡ التسعيرة وCliQ</button>
     </div>
 
-    <!-- تبويب الكباتن -->
     <div id="tab-captains" class="px-4 space-y-2.5">
       <input id="search-captains" type="text" oninput="renderCaptainsList()" placeholder="🔍 بحث بالاسم، الهاتف، اللوحة، أو المدينة..." class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold shadow-sm">
       <div id="admin-captains-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
 
-    <!-- تبويب طلبات CliQ -->
     <div id="tab-cliq" class="hidden px-4 space-y-2.5">
-      <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-[11px] font-bold text-[#007A3D]">
-        💡 راجع حوالات CliQ الواردة لحسابك البنكي، ثم اضغط <b>✓ اعتماد</b> ليُضاف المبلغ فوراً لمحفظة الكابتن أو العميل.
-      </div>
+      <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-[11px] font-bold text-[#007A3D]">💡 راجع حوالات CliQ الواردة لحسابك البنكي، ثم اضغط <b>✓ اعتماد</b> ليُضاف المبلغ فوراً لمحفظة الكابتن أو العميل.</div>
       <div id="admin-cliq-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">لا توجد طلبات CliQ حالياً</div>
     </div>
 
-    <!-- تبويب العملاء -->
     <div id="tab-riders" class="hidden px-4 space-y-2.5">
       <input id="search-riders" type="text" oninput="renderRidersList()" placeholder="🔍 بحث بالاسم، الهاتف، أو الإيميل..." class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold shadow-sm">
       <div id="admin-riders-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
 
-    <!-- تبويب الإشعارات -->
     <div id="tab-alerts" class="hidden px-4 space-y-4">
       <div class="bg-white p-4 rounded-2xl shadow-sm border-2 border-[#007A3D]/30 space-y-2.5">
         <h2 class="font-extrabold text-sm text-[#007A3D]">🙋‍♂️ صندوق إشعارات العملاء (عروض / تنبيه / إنذار)</h2>
@@ -124,7 +125,6 @@
       </div>
     </div>
 
-    <!-- تبويب الرحلات -->
     <div id="tab-rides" class="hidden px-4 space-y-3">
       <select id="filter-rides-status" onchange="renderRidesList()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold shadow-sm">
         <option value="ALL">📋 جميع الرحلات</option>
@@ -135,7 +135,6 @@
       <div id="admin-rides-list" class="space-y-2.5 text-xs text-slate-500 text-center py-6">جاري التحميل...</div>
     </div>
 
-    <!-- تبويب التسعيرة و CliQ -->
     <div id="tab-pricing" class="hidden px-4 space-y-4">
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3 border-2 border-[#007A3D]/25">
         <h2 class="font-extrabold text-[#007A3D] text-sm">💳 حساب كليك (CliQ) للشركة</h2>
@@ -185,7 +184,6 @@
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, deleteDoc, runTransaction, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // جلسة معزولة تماماً للأدمن لمنع التعارض مع تبويبات الكابتن والعميل
     const app = initializeApp({
       apiKey: "AIzaSyAXa39YZfFdLQ48CYgjHNSHI1mlIRuA1UU", authDomain: "nshmibike.firebaseapp.com",
       databaseURL: "https://nshmibike-default-rtdb.europe-west1.firebasedatabase.app", projectId: "nshmibike",
@@ -225,29 +223,16 @@
 
     onAuthStateChanged(auth, async (user) => {
       const errEl = document.getElementById('pin-err');
-      if (!user) {
-        stopAllListeners();
-        document.getElementById('admin-app').classList.add('hidden');
-        document.getElementById('admin-lock').classList.remove('hidden');
-        return;
-      }
-      if (!(await verifyIsAdmin(user))) {
-        await signOut(auth);
-        errEl.innerText = '⛔ هذا الحساب لا يملك صلاحية الإدارة (أضفه في مجموعة admins)';
-        errEl.classList.remove('hidden');
-        return;
-      }
-      errEl.classList.add('hidden');
-      document.getElementById('admin-user-email').innerText = user.email || 'مدير النظام';
-      document.getElementById('admin-lock').classList.add('hidden');
-      document.getElementById('admin-app').classList.remove('hidden');
+      if (!user) { stopAllListeners(); document.getElementById('admin-app').classList.add('hidden'); document.getElementById('admin-lock').classList.remove('hidden'); return; }
+      if (!(await verifyIsAdmin(user))) { await signOut(auth); errEl.innerText = '⛔ هذا الحساب لا يملك صلاحية الإدارة (أضفه في مجموعة admins)'; errEl.classList.remove('hidden'); return; }
+      errEl.classList.add('hidden'); document.getElementById('admin-user-email').innerText = user.email || 'مدير النظام';
+      document.getElementById('admin-lock').classList.add('hidden'); document.getElementById('admin-app').classList.remove('hidden');
       startAdminListeners();
     });
 
     window.loginAdmin = async () => {
       const email = document.getElementById('admin-email').value.trim().toLowerCase(), pass = document.getElementById('admin-pass').value;
-      const errEl = document.getElementById('pin-err'), btn = document.getElementById('btn-admin-login');
-      errEl.classList.add('hidden');
+      const errEl = document.getElementById('pin-err'), btn = document.getElementById('btn-admin-login'); errEl.classList.add('hidden');
       if (!email.includes('@') || pass.length < 6) { errEl.innerText = 'أدخل البريد الإلكتروني وكلمة المرور بشكل صحيح'; errEl.classList.remove('hidden'); return; }
       btn.disabled = true; btn.innerText = 'جاري التحقق...';
       try { await signInWithEmailAndPassword(auth, email, pass); }
@@ -259,9 +244,7 @@
 
     window.setStatsRange = (r) => {
       statsRange = r;
-      ['TODAY', 'WEEK', 'ALL'].forEach(k => {
-        document.getElementById('rng-' + k).className = k === r ? 'rng-btn jo-green text-white px-2.5 py-1 rounded-lg' : 'rng-btn text-slate-600 px-2.5 py-1 rounded-lg';
-      });
+      ['TODAY', 'WEEK', 'ALL'].forEach(k => { document.getElementById('rng-' + k).className = k === r ? 'rng-btn jo-green text-white px-2.5 py-1 rounded-lg' : 'rng-btn text-slate-600 px-2.5 py-1 rounded-lg'; });
       renderRidesList();
     };
 
@@ -293,7 +276,6 @@
       alert('✅ تم إرسال الإشعار فوراً!');
     };
 
-    // تصدير ملفات Excel (CSV بترميز UTF-8 BOM لدعم العربية)
     window.exportCSV = (kind) => {
       const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
       let rows = [];
@@ -308,39 +290,21 @@
         captainsData.forEach(u => rows.push([u.name, u.phone, u.email, u.city, u.bikeModel, u.plate, u.isApproved ? 'نعم' : 'لا', u.isBlocked ? 'نعم' : 'لا', Number(u.walletBalance || 0).toFixed(2)]));
       }
       const csv = '\uFEFF' + rows.map(r => r.map(q).join(',')).join('\n');
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-      a.download = `NshmiBike_${kind}_${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `NshmiBike_${kind}_${new Date().toISOString().slice(0,10)}.csv`; a.click();
     };
 
     window.renderCaptainsList = () => {
-      const list = document.getElementById('admin-captains-list');
-      const q = (document.getElementById('search-captains').value || '').trim().toLowerCase();
+      const list = document.getElementById('admin-captains-list'), q = (document.getElementById('search-captains').value || '').trim().toLowerCase();
       const filtered = captainsData.filter(u => !q || `${u.name||''} ${u.phone||''} ${u.plate||''} ${u.city||''} ${u.email||''}`.toLowerCase().includes(q));
-      list.innerHTML = '';
-      if (!filtered.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا توجد نتائج</div>'; return; }
+      list.innerHTML = ''; if (!filtered.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا توجد نتائج</div>'; return; }
       filtered.forEach(u => {
         const bal = Number(u.walletBalance || 0), approved = u.isApproved === true, stopped = bal <= -2.0;
         const isTrulyOnline = u.isOnline && (Date.now() - Number(u.lastSeenMs || 0) < 120000);
         const balColor = stopped ? 'text-[#CE1126] font-extrabold' : (bal < 0 ? 'text-amber-600 font-extrabold' : 'jo-text font-extrabold');
         const card = document.createElement('div');
         card.className = `bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2 ${!approved ? 'border-2 border-amber-400' : (stopped ? 'border-2 border-[#CE1126]' : '')}`;
-        card.innerHTML = `
-          <div class="flex-1 min-w-0">
-            <div class="font-extrabold text-slate-800 text-xs truncate">${esc(u.name)} ${isTrulyOnline ? '<span class="text-emerald-600">🟢 متصل</span>' : (u.isOnline ? '<span class="text-slate-400">⚪ غير نشط</span>' : '')}</div>
-            <div class="text-[11px] text-slate-500 truncate">${esc(u.phone)} • ${esc(u.email)}</div>
-            <div class="text-[11px] text-slate-600 truncate">${esc(u.city)} • ${esc(u.bikeModel)} (${esc(u.plate)})</div>
-            <div class="text-xs mt-0.5 ${balColor}">${bal.toFixed(2)} د.أ ${!approved ? '<span class="text-amber-600">• بانتظار الموافقة</span>' : '<span class="jo-text">• معتمد ✓</span>'} ${u.isBlocked ? '<span class="text-[#CE1126]">• موقوف</span>' : ''}</div>
-            ${u.lastHelmetSelfieUrl ? `<a href="${esc(u.lastHelmetSelfieUrl)}" target="_blank" class="text-[10px] text-blue-600 underline font-bold">🪖 عرض صورة الخوذة</a>` : ''}
-          </div>
-          <div class="flex flex-col gap-1 shrink-0">
-            <button data-act="approve" data-id="${esc(u.id)}" class="${approved ? 'bg-slate-200 text-slate-700' : 'bg-amber-500 text-slate-900'} px-2.5 py-1 rounded-xl font-extrabold text-[10px]">${approved ? 'إلغاء الاعتماد' : '✓ اعتماد'}</button>
-            <button data-act="alert-cap" data-id="${esc(u.id)}" class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">📢 إشعار</button>
-            <button data-act="settle-cap" data-id="${esc(u.id)}" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[10px]">💵 تسوية</button>
-            <button data-act="zero-cap" data-id="${esc(u.id)}" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">🔄 تصفير</button>
-            <button data-act="block-cap" data-id="${esc(u.id)}" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الإيقاف' : 'إيقاف'}</button>
-          </div>`;
+        card.innerHTML = `<div class="flex-1 min-w-0"><div class="font-extrabold text-slate-800 text-xs truncate">${esc(u.name)} ${isTrulyOnline ? '<span class="text-emerald-600">🟢 متصل</span>' : (u.isOnline ? '<span class="text-slate-400">⚪ غير نشط</span>' : '')}</div><div class="text-[11px] text-slate-500 truncate">${esc(u.phone)} • ${esc(u.email)}</div><div class="text-[11px] text-slate-600 truncate">${esc(u.city)} • ${esc(u.bikeModel)} (${esc(u.plate)})</div><div class="text-xs mt-0.5 ${balColor}">${bal.toFixed(2)} د.أ ${!approved ? '<span class="text-amber-600">• بانتظار الموافقة</span>' : '<span class="jo-text">• معتمد ✓</span>'} ${u.isBlocked ? '<span class="text-[#CE1126]">• موقوف</span>' : ''}</div>${u.lastHelmetSelfieUrl ? `<a href="${esc(u.lastHelmetSelfieUrl)}" target="_blank" class="text-[10px] text-blue-600 underline font-bold">🪖 عرض صورة الخوذة</a>` : ''}</div><div class="flex flex-col gap-1 shrink-0"><button data-act="approve" data-id="${esc(u.id)}" class="${approved ? 'bg-slate-200 text-slate-700' : 'bg-amber-500 text-slate-900'} px-2.5 py-1 rounded-xl font-extrabold text-[10px]">${approved ? 'إلغاء الاعتماد' : '✓ اعتماد'}</button><button data-act="alert-cap" data-id="${esc(u.id)}" class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">📢 إشعار</button><button data-act="settle-cap" data-id="${esc(u.id)}" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[10px]">💵 تسوية</button><button data-act="zero-cap" data-id="${esc(u.id)}" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">🔄 تصفير</button><button data-act="block-cap" data-id="${esc(u.id)}" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الإيقاف' : 'إيقاف'}</button></div>`;
         list.appendChild(card);
       });
     };
@@ -352,53 +316,29 @@
       if (!cliqData.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا توجد طلبات CliQ بعد</div>'; return; }
       list.innerHTML = '';
       cliqData.slice(0, 40).forEach(q => {
-        const isPend = q.status === 'PENDING';
-        const stCls = isPend ? 'bg-amber-100 text-amber-800' : (q.status === 'APPROVED' ? 'bg-emerald-100 text-[#007A3D]' : 'bg-red-100 text-[#CE1126]');
+        const isPend = q.status === 'PENDING', stCls = isPend ? 'bg-amber-100 text-amber-800' : (q.status === 'APPROVED' ? 'bg-emerald-100 text-[#007A3D]' : 'bg-red-100 text-[#CE1126]');
         const stTxt = isPend ? '⏳ بانتظار المراجعة' : (q.status === 'APPROVED' ? '✅ تم الاعتماد' : '❌ مرفوض');
-        const card = document.createElement('div');
-        card.className = `bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1.5 border ${isPend ? 'border-amber-400 border-2' : ''}`;
-        card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${stCls}">${q.role === 'CAPTAIN' ? '🏍️ كابتن' : '🙋‍♂️ عميل'} • ${stTxt}</span>
-            <span class="font-extrabold text-sm jo-text">+${Number(q.amountJod || 0).toFixed(2)} د.أ</span>
-          </div>
-          <div class="font-extrabold text-slate-800 text-xs">${esc(q.userName)} (<a href="tel:${esc(q.userId)}" class="underline" dir="ltr">${esc(q.userId)}</a>)</div>
-          <div class="text-[11px] text-slate-600">اسم المحوّل / المرجع: <b>${esc(q.senderRef || '-')}</b></div>
-          ${isPend ? `<div class="flex gap-2 pt-1"><button data-act="approve-cliq" data-id="${esc(q.id)}" class="flex-1 jo-green text-white font-extrabold py-2 rounded-xl text-xs">✓ اعتماد وإضافة للرصيد</button><button data-act="reject-cliq" data-id="${esc(q.id)}" class="w-20 bg-red-50 text-[#CE1126] font-extrabold py-2 rounded-xl text-xs">✕ رفض</button></div>` : ''}`;
+        const card = document.createElement('div'); card.className = `bg-white p-3.5 rounded-2xl shadow-sm text-right space-y-1.5 border ${isPend ? 'border-amber-400 border-2' : ''}`;
+        card.innerHTML = `<div class="flex justify-between items-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${stCls}">${q.role === 'CAPTAIN' ? '🏍️ كابتن' : '🙋‍♂️ عميل'} • ${stTxt}</span><span class="font-extrabold text-sm jo-text">+${Number(q.amountJod || 0).toFixed(2)} د.أ</span></div><div class="font-extrabold text-slate-800 text-xs">${esc(q.userName)} (<a href="tel:${esc(q.userId)}" class="underline" dir="ltr">${esc(q.userId)}</a>)</div><div class="text-[11px] text-slate-600">اسم المحوّل / المرجع: <b>${esc(q.senderRef || '-')}</b></div>${isPend ? `<div class="flex gap-2 pt-1"><button data-act="approve-cliq" data-id="${esc(q.id)}" class="flex-1 jo-green text-white font-extrabold py-2 rounded-xl text-xs">✓ اعتماد وإضافة للرصيد</button><button data-act="reject-cliq" data-id="${esc(q.id)}" class="w-20 bg-red-50 text-[#CE1126] font-extrabold py-2 rounded-xl text-xs">✕ رفض</button></div>` : ''}`;
         list.appendChild(card);
       });
     }
 
     window.renderRidersList = () => {
-      const list = document.getElementById('admin-riders-list');
-      const q = (document.getElementById('search-riders').value || '').trim().toLowerCase();
+      const list = document.getElementById('admin-riders-list'), q = (document.getElementById('search-riders').value || '').trim().toLowerCase();
       const filtered = ridersData.filter(u => !q || `${u.name||''} ${u.phone||''} ${u.email||''}`.toLowerCase().includes(q));
-      list.innerHTML = '';
-      if (!filtered.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا توجد نتائج</div>'; return; }
+      list.innerHTML = ''; if (!filtered.length) { list.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا توجد نتائج</div>'; return; }
       filtered.forEach(u => {
-        const bal = Number(u.walletBalance || 0);
-        const card = document.createElement('div');
+        const bal = Number(u.walletBalance || 0), card = document.createElement('div');
         card.className = 'bg-white p-3.5 rounded-2xl shadow-sm flex justify-between items-center text-right gap-2';
-        card.innerHTML = `
-          <div class="flex-1 min-w-0">
-            <div class="font-extrabold text-slate-800 text-xs truncate">${esc(u.name)} ${u.avgRating ? `★ ${Number(u.avgRating).toFixed(1)}` : ''} ${u.isBlocked ? '<span class="text-[#CE1126]">• موقوف</span>' : ''}</div>
-            <div class="text-[11px] text-slate-500 truncate">${esc(u.phone)} • ${esc(u.email)}</div>
-            <div class="text-xs mt-0.5 ${bal < 0 ? 'text-[#CE1126] font-extrabold' : 'jo-text font-extrabold'}">${bal.toFixed(2)} د.أ</div>
-          </div>
-          <div class="flex flex-col gap-1 shrink-0">
-            <button data-act="alert-rider" data-id="${esc(u.id)}" class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">📢 إشعار</button>
-            <button data-act="settle-rider" data-id="${esc(u.id)}" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[10px]">💵 شحن/تعديل</button>
-            <button data-act="zero-rider" data-id="${esc(u.id)}" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">🔄 تصفير</button>
-            <button data-act="block-rider" data-id="${esc(u.id)}" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الإيقاف' : 'إيقاف'}</button>
-          </div>`;
+        card.innerHTML = `<div class="flex-1 min-w-0"><div class="font-extrabold text-slate-800 text-xs truncate">${esc(u.name)} ${u.avgRating ? `★ ${Number(u.avgRating).toFixed(1)}` : ''} ${u.isBlocked ? '<span class="text-[#CE1126]">• موقوف</span>' : ''}</div><div class="text-[11px] text-slate-500 truncate">${esc(u.phone)} • ${esc(u.email)}</div><div class="text-xs mt-0.5 ${bal < 0 ? 'text-[#CE1126] font-extrabold' : 'jo-text font-extrabold'}">${bal.toFixed(2)} د.أ</div></div><div class="flex flex-col gap-1 shrink-0"><button data-act="alert-rider" data-id="${esc(u.id)}" class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">📢 إشعار</button><button data-act="settle-rider" data-id="${esc(u.id)}" class="jo-green text-white px-2.5 py-1 rounded-xl font-bold text-[10px]">💵 شحن/تعديل</button><button data-act="zero-rider" data-id="${esc(u.id)}" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl font-bold text-[10px]">🔄 تصفير</button><button data-act="block-rider" data-id="${esc(u.id)}" class="${u.isBlocked ? 'bg-slate-800 text-white' : 'bg-red-50 text-[#CE1126]'} px-2.5 py-1 rounded-xl font-bold text-[10px]">${u.isBlocked ? 'فك الإيقاف' : 'إيقاف'}</button></div>`;
         list.appendChild(card);
       });
     };
 
     window.renderRidesList = () => {
       let gross = 0, profitTotal = 0, subsidyTotal = 0, penaltiesTotal = 0, completed = 0, active = 0;
-      const filter = document.getElementById('filter-rides-status').value;
-      const activeStatuses = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP', 'SCHEDULED', 'SCHEDULED_ACCEPTED'];
+      const filter = document.getElementById('filter-rides-status').value, activeStatuses = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'ON_TRIP', 'SCHEDULED', 'SCHEDULED_ACCEPTED'];
       const startToday = new Date(); startToday.setHours(0, 0, 0, 0);
       const minMs = statsRange === 'TODAY' ? startToday.getTime() : (statsRange === 'WEEK' ? Date.now() - 7 * 86400000 : 0);
 
@@ -406,57 +346,29 @@
         const tsMs = r.completedAt?.seconds ? r.completedAt.seconds * 1000 : (r.createdAt?.seconds ? r.createdAt.seconds * 1000 : 0);
         const inRange = statsRange === 'ALL' || tsMs >= minMs;
         const orig = Number(r.originalFareJod || r.fareJod || 0), disc = Number(r.discountJod || 0);
-        if (r.status === 'COMPLETED') {
-          completed++;
-          if (inRange) {
-            gross += orig;
-            profitTotal += r.commissionJod != null ? Number(r.commissionJod) : (orig * (currentCommPct / 100));
-            if (r.companyPaysPromo) subsidyTotal += disc;
-          }
-        }
+        if (r.status === 'COMPLETED') { completed++; if (inRange) { gross += orig; profitTotal += r.commissionJod != null ? Number(r.commissionJod) : (orig * (currentCommPct / 100)); if (r.companyPaysPromo) subsidyTotal += disc; } }
         if (activeStatuses.includes(r.status)) active++;
         if (r.captainPenaltyApplied && inRange) penaltiesTotal += Number(r.penaltyJod || 0.60);
       });
 
-      document.getElementById('stat-gross').innerText = gross.toFixed(2) + ' د.أ';
-      document.getElementById('stat-profit').innerText = profitTotal.toFixed(2) + ' د.أ';
-      document.getElementById('stat-penalties').innerText = penaltiesTotal.toFixed(2) + ' د.أ';
-      document.getElementById('stat-subsidy').innerText = subsidyTotal.toFixed(2) + ' د.أ';
-      document.getElementById('stat-completed').innerText = completed;
-      document.getElementById('stat-active').innerText = active;
+      document.getElementById('stat-gross').innerText = gross.toFixed(2) + ' د.أ'; document.getElementById('stat-profit').innerText = profitTotal.toFixed(2) + ' د.أ';
+      document.getElementById('stat-penalties').innerText = penaltiesTotal.toFixed(2) + ' د.أ'; document.getElementById('stat-subsidy').innerText = subsidyTotal.toFixed(2) + ' د.أ';
+      document.getElementById('stat-completed').innerText = completed; document.getElementById('stat-active').innerText = active;
 
-      const filtered = ridesData.filter(r => {
-        if (filter === 'ACTIVE') return activeStatuses.includes(r.status);
-        if (filter === 'COMPLETED') return r.status === 'COMPLETED';
-        if (filter === 'CANCELLED') return ['CANCELLED', 'CANCELLED_NO_SHOW'].includes(r.status);
-        return true;
-      });
-
+      const filtered = ridesData.filter(r => filter === 'ACTIVE' ? activeStatuses.includes(r.status) : (filter === 'COMPLETED' ? r.status === 'COMPLETED' : (filter === 'CANCELLED' ? ['CANCELLED', 'CANCELLED_NO_SHOW'].includes(r.status) : true)));
       const listEl = document.getElementById('admin-rides-list');
       if (!filtered.length) { listEl.innerHTML = '<div class="bg-white p-6 rounded-2xl">لا توجد رحلات ضمن هذا الفلتر</div>'; return; }
       listEl.innerHTML = '';
       filtered.slice(0, 60).forEach(r => {
-        const paid = Number(r.fareJod || 0), st = STATUS_LABELS[r.status] || { text: esc(r.status), cls: 'bg-slate-100 text-slate-700' };
-        const isAct = activeStatuses.includes(r.status);
-        const card = document.createElement('div');
-        card.className = 'bg-white p-3 rounded-2xl shadow-sm text-right space-y-1 border';
-        card.innerHTML = `
-          <div class="flex justify-between items-center gap-2">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${st.cls}">${esc(r.city)} • ${st.text}</span>
-            <span class="font-extrabold text-sm jo-text">${paid.toFixed(2)} د.أ</span>
-          </div>
-          <div class="text-xs font-bold">${esc(r.riderName || '-')} ⬅️ ${esc(r.captainName || 'قيد التوجيه')} ${r.tier ? `<span class="text-[10px] text-slate-400">(${esc(r.tier)})</span>` : ''}</div>
-          <div class="text-[11px] text-slate-500">${esc(r.pickupAddress)} ⬅️ ${esc(r.dropoffAddress)}</div>
-          ${r.scheduledFor ? `<div class="text-[10px] text-purple-700 font-bold">📅 موعد الحجز: ${esc(r.scheduledFor)}</div>` : ''}
-          ${r.expressPhotoUrl ? `<a href="${esc(r.expressPhotoUrl)}" target="_blank" class="text-[10px] text-blue-600 underline font-bold">📦 صورة تسليم الطرد</a>` : ''}
-          ${isAct ? `<div class="pt-1 flex justify-end"><button data-act="cancel-ride" data-id="${esc(r.id)}" class="bg-red-50 text-[#CE1126] px-2.5 py-1 rounded-lg text-[10px] font-extrabold">🛑 إلغاء الرحلة إدارياً</button></div>` : ''}`;
+        const paid = Number(r.fareJod || 0), st = STATUS_LABELS[r.status] || { text: esc(r.status), cls: 'bg-slate-100 text-slate-700' }, isAct = activeStatuses.includes(r.status);
+        const card = document.createElement('div'); card.className = 'bg-white p-3 rounded-2xl shadow-sm text-right space-y-1 border';
+        card.innerHTML = `<div class="flex justify-between items-center gap-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${st.cls}">${esc(r.city)} • ${st.text}</span><span class="font-extrabold text-sm jo-text">${paid.toFixed(2)} د.أ</span></div><div class="text-xs font-bold">${esc(r.riderName || '-')} ⬅️ ${esc(r.captainName || 'قيد التوجيه')} ${r.tier ? `<span class="text-[10px] text-slate-400">(${esc(r.tier)})</span>` : ''}</div><div class="text-[11px] text-slate-500">${esc(r.pickupAddress)} ⬅️ ${esc(r.dropoffAddress)}</div>${r.scheduledFor ? `<div class="text-[10px] text-purple-700 font-bold">📅 موعد الحجز: ${esc(r.scheduledFor)}</div>` : ''}${r.expressPhotoUrl ? `<a href="${esc(r.expressPhotoUrl)}" target="_blank" class="text-[10px] text-blue-600 underline font-bold">📦 صورة تسليم الطرد</a>` : ''}${isAct ? `<div class="pt-1 flex justify-end"><button data-act="cancel-ride" data-id="${esc(r.id)}" class="bg-red-50 text-[#CE1126] px-2.5 py-1 rounded-lg text-[10px] font-extrabold">🛑 إلغاء الرحلة إدارياً</button></div>` : ''}`;
         listEl.appendChild(card);
       });
     };
 
     document.body.addEventListener('click', async (e) => {
-      const btn = e.target.closest('button[data-act]');
-      if (!btn) return;
+      const btn = e.target.closest('button[data-act]'); if (!btn) return;
       const act = btn.dataset.act, id = btn.dataset.id;
       if (act === 'approve') { const u = captainsMap[id]; if (u) await updateDoc(doc(db, 'captains', id), { isApproved: !(u.isApproved === true) }); }
       else if (act === 'alert-cap') quickAlert('CAPTAINS', id);
@@ -468,8 +380,7 @@
           const ok = await runTransaction(db, async (tx) => {
             const reqRef = doc(db, 'cliq_requests', id), rs = await tx.get(reqRef);
             if (!rs.exists() || rs.data().status !== 'PENDING') return false;
-            const d = rs.data(), col = d.role === 'CAPTAIN' ? 'captains' : 'riders';
-            const uRef = doc(db, col, d.userId), us = await tx.get(uRef);
+            const d = rs.data(), col = d.role === 'CAPTAIN' ? 'captains' : 'riders', uRef = doc(db, col, d.userId), us = await tx.get(uRef);
             if (!us.exists()) return false;
             tx.update(uRef, { walletBalance: +(Number(us.data().walletBalance || 0) + Number(d.amountJod || 0)).toFixed(2) });
             tx.update(reqRef, { status: 'APPROVED', processedAt: serverTimestamp() });
@@ -477,16 +388,11 @@
           });
           if (ok) alert('✅ تم اعتماد الحوالة وإضافة الرصيد فوراً!');
         } catch (err) { alert('خطأ: ' + err.message); btn.disabled = false; }
-      } else if (act === 'reject-cliq') {
-        if (confirm('رفض طلب حوالة CliQ؟')) await updateDoc(doc(db, 'cliq_requests', id), { status: 'REJECTED', processedAt: serverTimestamp() });
-      } else if (act === 'settle-cap' || act === 'settle-rider') {
-        const col = act === 'settle-cap' ? 'captains' : 'riders', u = act === 'settle-cap' ? captainsMap[id] : ridersMap[id];
-        if (!u) return;
-        const cb = Number(u.walletBalance || 0);
-        const v = prompt(`رصيد (${u.name}): ${cb.toFixed(2)} د.أ\nأدخل المبلغ المضاف (أو بالسالب للخصم):`, cb < 0 ? Math.abs(cb).toFixed(2) : '5.00');
-        if (v === null || v.trim() === '') return;
-        const a = Number(v);
-        if (!isNaN(a) && a !== 0) await updateDoc(doc(db, col, id), { walletBalance: +(cb + a).toFixed(2) });
+      } else if (act === 'reject-cliq') { if (confirm('رفض طلب حوالة CliQ؟')) await updateDoc(doc(db, 'cliq_requests', id), { status: 'REJECTED', processedAt: serverTimestamp() }); }
+      else if (act === 'settle-cap' || act === 'settle-rider') {
+        const col = act === 'settle-cap' ? 'captains' : 'riders', u = act === 'settle-cap' ? captainsMap[id] : ridersMap[id]; if (!u) return;
+        const cb = Number(u.walletBalance || 0), v = prompt(`رصيد (${u.name}): ${cb.toFixed(2)} د.أ\nأدخل المبلغ المضاف (أو بالسالب للخصم):`, cb < 0 ? Math.abs(cb).toFixed(2) : '5.00');
+        if (v === null || v.trim() === '') return; const a = Number(v); if (!isNaN(a) && a !== 0) await updateDoc(doc(db, col, id), { walletBalance: +(cb + a).toFixed(2) });
       } else if (act === 'zero-cap' || act === 'zero-rider') {
         const col = act === 'zero-cap' ? 'captains' : 'riders', u = act === 'zero-cap' ? captainsMap[id] : ridersMap[id];
         if (u && confirm(`تأكيد تصفير رصيد (${u.name}) إلى 0.00 د.أ؟`)) await updateDoc(doc(db, col, id), { walletBalance: 0 });
@@ -508,20 +414,17 @@
         document.getElementById('p-sc-min').value = p.scooterMin ?? 0.60; document.getElementById('p-bk-base').value = p.bikeBase ?? 0.30;
         document.getElementById('p-bk-km').value = p.bikePerKm ?? 0.18; document.getElementById('p-bk-min').value = p.bikeMin ?? 0.75;
         document.getElementById('p-cliq-alias').value = p.cliqAlias || ''; document.getElementById('p-cliq-bank').value = p.cliqBank || '';
-        currentCommPct = Number(p.commissionPct ?? 10);
-        document.getElementById('p-comm').value = currentCommPct; document.getElementById('stat-comm-pct').innerText = currentCommPct;
+        currentCommPct = Number(p.commissionPct ?? 10); document.getElementById('p-comm').value = currentCommPct; document.getElementById('stat-comm-pct').innerText = currentCommPct;
         document.getElementById('p-surge').value = p.surgeMultiplier ?? 1.0; document.getElementById('p-rain').checked = !!p.rainMode;
       }
 
       activeUnsubs.push(onSnapshot(collection(db, 'captains'), (snap) => {
-        const sel = document.getElementById('al-cap-target'), prevSel = sel.value;
-        sel.innerHTML = '<option value="ALL">📢 جميع الكباتن (عام)</option>';
+        const sel = document.getElementById('al-cap-target'), prevSel = sel.value; sel.innerHTML = '<option value="ALL">📢 جميع الكباتن (عام)</option>';
         captainsData = []; captainsMap = {};
         snap.forEach(d => { const u = { id: d.id, ...d.data() }; captainsData.push(u); captainsMap[d.id] = u; });
         captainsData.sort((a, b) => (a.isApproved !== true ? -1 : 1) || Number(a.walletBalance || 0) - Number(b.walletBalance || 0));
         captainsData.forEach(u => { const o = document.createElement('option'); o.value = u.id; o.textContent = `🏍️ ${u.name||''} (${u.phone||''})`; sel.appendChild(o); });
-        sel.value = prevSel || 'ALL'; document.getElementById('cnt-captains').innerText = captainsData.length;
-        renderCaptainsList();
+        sel.value = prevSel || 'ALL'; document.getElementById('cnt-captains').innerText = captainsData.length; renderCaptainsList();
       }));
 
       activeUnsubs.push(onSnapshot(collection(db, 'cliq_requests'), (snap) => {
@@ -531,20 +434,17 @@
       }));
 
       activeUnsubs.push(onSnapshot(collection(db, 'riders'), (snap) => {
-        const sel = document.getElementById('al-rider-target'), prevSel = sel.value;
-        sel.innerHTML = '<option value="ALL">📢 جميع العملاء (عام)</option>';
+        const sel = document.getElementById('al-rider-target'), prevSel = sel.value; sel.innerHTML = '<option value="ALL">📢 جميع العملاء (عام)</option>';
         ridersData = []; ridersMap = {};
         snap.forEach(d => { const u = { id: d.id, ...d.data() }; ridersData.push(u); ridersMap[d.id] = u; });
         ridersData.sort((a, b) => Number(a.walletBalance || 0) - Number(b.walletBalance || 0));
         ridersData.forEach(u => { const o = document.createElement('option'); o.value = u.id; o.textContent = `🙋‍♂️ ${u.name||''} (${u.phone||''})`; sel.appendChild(o); });
-        sel.value = prevSel || 'ALL'; document.getElementById('cnt-riders').innerText = ridersData.length;
-        renderRidersList();
+        sel.value = prevSel || 'ALL'; document.getElementById('cnt-riders').innerText = ridersData.length; renderRidersList();
       }));
 
       activeUnsubs.push(onSnapshot(collection(db, 'admin_alerts'), (snap) => {
         const box = document.getElementById('admin-sent-alerts'); box.innerHTML = '';
-        const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-        arr.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+        const arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() })); arr.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
         arr.slice(0, 15).forEach(a => {
           const row = document.createElement('div'); row.className = 'bg-slate-50 p-2.5 rounded-xl border flex justify-between items-center gap-2';
           row.innerHTML = `<div class="min-w-0"><div class="font-extrabold truncate">${a.audience === 'CAPTAINS' ? '🏍️ كباتن' : '🙋‍♂️ عملاء'} (${esc(a.targetId)}) • ${esc(a.title)}</div><div class="text-slate-500 break-words">${esc(a.body)}</div></div><button data-act="delete-alert" data-id="${esc(a.id)}" class="text-[#CE1126] font-bold shrink-0">حذف</button>`;
@@ -554,18 +454,15 @@
 
       activeUnsubs.push(onSnapshot(collection(db, 'rides'), (snap) => {
         ridesData = []; snap.forEach(d => ridesData.push({ id: d.id, ...d.data() }));
-        ridesData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        renderRidesList();
+        ridesData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)); renderRidesList();
       }));
 
       activeUnsubs.push(onSnapshot(collection(db, 'sos_alerts'), (snap) => {
         const un = []; snap.forEach(d => { if (!d.data().resolved) un.push({ id: d.id, ...d.data() }); });
         const b = document.getElementById('sos-banner'), l = document.getElementById('sos-list');
-        if (!un.length) { b.classList.add('hidden'); return; }
-        b.classList.remove('hidden'); l.innerHTML = '';
+        if (!un.length) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); l.innerHTML = '';
         un.forEach(s => {
-          const phone = s.phone || s.userId || '';
-          const mapLink = (s.lat && s.lng) ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(s.lat)},${encodeURIComponent(s.lng)}" target="_blank" class="bg-amber-400 text-slate-900 font-extrabold px-2 py-1 rounded">📍 الموقع</a>` : '';
+          const phone = s.phone || s.userId || '', mapLink = (s.lat && s.lng) ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(s.lat)},${encodeURIComponent(s.lng)}" target="_blank" class="bg-amber-400 text-slate-900 font-extrabold px-2 py-1 rounded">📍 الموقع</a>` : '';
           const r = document.createElement('div'); r.className = 'bg-red-700/80 p-2.5 rounded-xl flex justify-between items-center gap-2 flex-wrap';
           r.innerHTML = `<div><div class="font-extrabold">${esc(s.userName || 'مستخدم')} • <a href="tel:${esc(phone)}" class="underline" dir="ltr">${esc(phone)}</a></div>${s.rideId ? `<div class="text-[10px] opacity-90">رحلة: ${esc(s.rideId)}</div>` : ''}</div><div class="flex gap-1.5 items-center">${mapLink}<button data-act="resolve-sos" data-id="${esc(s.id)}" class="bg-white text-red-700 font-extrabold px-2.5 py-1 rounded">✓ تم التعامل</button></div>`;
           l.appendChild(r);
@@ -588,22 +485,15 @@
         scooterBase: Number(document.getElementById('p-sc-base').value), scooterPerKm: Number(document.getElementById('p-sc-km').value), scooterMin: Number(document.getElementById('p-sc-min').value),
         bikeBase: Number(document.getElementById('p-bk-base').value), bikePerKm: Number(document.getElementById('p-bk-km').value), bikeMin: Number(document.getElementById('p-bk-min').value),
         commissionPct: currentCommPct, surgeMultiplier: Number(document.getElementById('p-surge').value || 1.0), rainMode: document.getElementById('p-rain').checked,
-        cliqAlias: document.getElementById('p-cliq-alias').value.trim().toUpperCase(),
-        cliqBank: document.getElementById('p-cliq-bank').value.trim(),
-        updatedAt: serverTimestamp()
+        cliqAlias: document.getElementById('p-cliq-alias').value.trim().toUpperCase(), cliqBank: document.getElementById('p-cliq-bank').value.trim(), updatedAt: serverTimestamp()
       });
-      document.getElementById('stat-comm-pct').innerText = currentCommPct;
-      renderRidesList(); alert('✅ تم الحفظ والنشر بنجاح!');
+      document.getElementById('stat-comm-pct').innerText = currentCommPct; renderRidesList(); alert('✅ تم الحفظ والنشر بنجاح!');
     };
 
     window.addPromo = async () => {
       const code = document.getElementById('promo-code').value.trim().toUpperCase(), pct = Number(document.getElementById('promo-pct').value);
       if (!code || pct <= 0 || pct > 90) return alert('أدخل كود خصم ونسبة صحيحة (1 إلى 90%)');
-      await setDoc(doc(db, 'promos', code), {
-        discountPct: pct, maxDiscountJod: Number(document.getElementById('promo-max-jod').value || 0.75),
-        maxPerUser: Number(document.getElementById('promo-per-user').value || 1), maxTotalUses: Number(document.getElementById('promo-max-total').value || 100),
-        usedCount: 0, companyPays: document.getElementById('promo-company-pays').checked, active: true
-      });
+      await setDoc(doc(db, 'promos', code), { discountPct: pct, maxDiscountJod: Number(document.getElementById('promo-max-jod').value || 0.75), maxPerUser: Number(document.getElementById('promo-per-user').value || 1), maxTotalUses: Number(document.getElementById('promo-max-total').value || 100), usedCount: 0, companyPays: document.getElementById('promo-company-pays').checked, active: true });
       document.getElementById('promo-code').value = ''; document.getElementById('promo-pct').value = ''; alert('✅ تم إنشاء كود الخصم!');
     };
   </script>
