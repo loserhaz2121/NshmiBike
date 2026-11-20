@@ -7,7 +7,7 @@
   <link rel="icon" type="image/jpeg" href="logo-rider.jpg" />
   <link rel="apple-touch-icon" href="logo-rider.jpg" />
   <link rel="manifest" href="manifest.json" />
-  <title>NshmiBike 🇯🇴</title>
+  <title>NshmiBike</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -21,6 +21,14 @@
     .shmagh-strip { height: 6px; background: repeating-linear-gradient(45deg, #CE1126, #CE1126 8px, #fff 8px, #fff 16px); }
     .gps-dot { width: 16px; height: 16px; background: #2563eb; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 8px rgba(37,99,235,0.25); }
   </style>
+  <script>
+    window.tryNextLogo = function(img) {
+      const list = (img.dataset.fallbacks || '').split(',').filter(Boolean);
+      const idx = Number(img.dataset.fIdx || 0);
+      if (idx < list.length) { img.dataset.fIdx = idx + 1; img.src = list[idx]; }
+      else { img.style.display = 'none'; }
+    };
+  </script>
 </head>
 <body class="min-h-screen flex justify-center bg-slate-900">
 
@@ -36,10 +44,10 @@
       <div class="shmagh-strip absolute top-0 left-0 right-0"></div>
       <div class="flex justify-end mb-2"><button type="button" onclick="toggleLanguage()" class="bg-white border px-3 py-1 rounded-full text-xs font-extrabold shadow-sm">🌐 <span class="lang-switch-label">English</span></button></div>
       <div class="text-center mb-4">
-        <div class="w-24 h-24 rounded-full bg-white mx-auto overflow-hidden shadow-xl mb-2 border-2 border-[#CE1126] p-0.5">
-          <img src="logo-rider.jpg" alt="NshmiBike" class="w-full h-full object-cover rounded-full">
+        <div class="w-28 h-28 rounded-full bg-white mx-auto overflow-hidden shadow-xl mb-2 border-2 border-[#CE1126] p-0.5">
+          <img src="logo-rider.jpg" data-fallbacks="logo-rider.JPG,logo-rider.jpeg,logo-rider.JPEG,logo-rider.png,logo-rider.PNG" onerror="tryNextLogo(this)" alt="NshmiBike" class="w-full h-full object-contain rounded-full">
         </div>
-        <h1 class="text-2xl font-extrabold text-slate-900">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</h1>
+        <h1 class="text-2xl font-extrabold text-slate-900">Nshmi<span class="text-[#CE1126]">Bike</span></h1>
         <p data-ar="للشباب والرجال (+18) فقط • عمّان • إربد • الزرقاء" data-en="Adult Males (18+) Only • Amman • Irbid • Zarqa" class="i18n text-[11px] text-slate-600 font-semibold mt-0.5">للشباب والرجال (+18) فقط • عمّان • إربد • الزرقاء</p>
       </div>
 
@@ -73,9 +81,9 @@
       <header class="p-2.5 bg-white shadow-sm flex justify-between items-center z-20 shrink-0">
         <div class="flex items-center gap-2 min-w-0">
           <button onclick="toggleDrawer(true)" class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-lg font-bold shrink-0">☰</button>
-          <img src="logo-rider.jpg" alt="NshmiBike" class="w-9 h-9 rounded-full bg-white object-cover border border-[#CE1126] shrink-0">
+          <img src="logo-rider.jpg" data-fallbacks="logo-rider.JPG,logo-rider.jpeg,logo-rider.JPEG,logo-rider.png,logo-rider.PNG" onerror="tryNextLogo(this)" alt="NshmiBike" class="w-11 h-11 rounded-full bg-white object-contain border border-[#CE1126] shadow-sm shrink-0">
           <div class="min-w-0">
-            <div class="font-extrabold text-slate-900 text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Bike</span> 🇯🇴</div>
+            <div class="font-extrabold text-slate-900 text-sm leading-tight">Nshmi<span class="text-[#CE1126]">Bike</span></div>
             <div id="city-badge" class="text-[10px] jo-text font-extrabold truncate">📍 ...</div>
           </div>
         </div>
@@ -105,7 +113,7 @@
       <div id="rider-panel-pin" class="hidden bg-white rounded-t-3xl shadow-2xl px-4 pt-4 safe-bottom z-20 space-y-2.5 shrink-0">
         <div data-ar="ضع الدبوس على نقطة انطلاقك ثم اضغط تثبيت" data-en="Place pin on pickup point then confirm" class="i18n text-xs font-extrabold text-slate-800 text-center">ضع الدبوس على نقطة انطلاقك ثم اضغط تثبيت</div>
         <div class="flex gap-2">
-          <button onclick="cancelPinEdit()" data-ar="إلغاء" data-en="Cancel" class="i18n w-24 bg-slate-100 text-slate-700 font-bold py-3 rounded-2xl text-xs">إلغاء</button>
+          <button onclick="cancelPinEdit()" data-ar="↩ رجوع" data-en="↩ Back" class="i18n w-24 bg-slate-100 text-slate-700 font-bold py-3 rounded-2xl text-xs">↩ رجوع</button>
           <button onclick="confirmPinPickup()" data-ar="✓ تثبيت نقطة الانطلاق" data-en="✓ Confirm Pickup" class="i18n flex-1 jo-green text-white font-extrabold py-3 rounded-2xl text-sm">✓ تثبيت نقطة الانطلاق</button>
         </div>
       </div>
@@ -126,13 +134,13 @@
       </div>
 
       <div id="rider-panel-book" class="hidden bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.14)] px-4 pt-3 safe-bottom z-20 shrink-0">
-        <div class="flex items-center justify-between gap-1 mb-1">
+        <div class="flex items-center justify-between gap-1 mb-1.5">
           <div class="text-xs font-extrabold text-slate-800 truncate flex-1"><span data-ar="📍 إلى:" data-en="📍 To:" class="i18n">📍 إلى:</span> <span id="chosen-dest-label" class="jo-text"></span></div>
           <div class="flex items-center gap-1 shrink-0">
             <button onclick="saveCurrentPlace('home')" title="حفظ كبيت" class="bg-slate-100 px-1.5 py-1 rounded-lg text-[10px] font-bold">⭐🏠</button>
             <button onclick="saveCurrentPlace('work')" title="حفظ كعمل" class="bg-slate-100 px-1.5 py-1 rounded-lg text-[10px] font-bold">⭐💼</button>
             <button onclick="saveCurrentPlace('uni')" title="حفظ كجامعة" class="bg-slate-100 px-1.5 py-1 rounded-lg text-[10px] font-bold">⭐🎓</button>
-            <button onclick="backToDestStep()" class="text-[11px] bg-slate-100 px-2 py-1 rounded-full font-bold text-slate-600">✏️</button>
+            <button onclick="backToDestStep()" data-ar="↩ رجوع" data-en="↩ Back" class="i18n text-[11px] bg-slate-200 px-2.5 py-1 rounded-full font-extrabold text-slate-800">↩ رجوع</button>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-1.5 mb-1.5">
@@ -162,7 +170,7 @@
           <span><input id="ride-male-only" type="checkbox" checked class="accent-[#CE1126] ml-1"><span data-ar=" أؤكد أن الراكب شاب/رجل (+18) — ممنوع للنساء والأطفال" data-en=" Adult male passenger (18+) only" class="i18n"> أؤكد أن الراكب شاب/رجل (+18) — ممنوع للنساء والأطفال</span></span>
           <span data-ar="🪖 خوذة" data-en="🪖 Helmet" class="i18n">🪖 خوذة</span>
         </label>
-        <button onclick="requestRide()" id="btn-request-ride" data-ar="اطلب NshmiBike الآن 🇯🇴" data-en="Request NshmiBike Now 🇯🇴" class="i18n w-full jo-green text-white font-extrabold py-3 rounded-2xl shadow-lg text-sm">اطلب NshmiBike الآن 🇯🇴</button>
+        <button onclick="requestRide()" id="btn-request-ride" data-ar="اطلب NshmiBike الآن" data-en="Request NshmiBike Now" class="i18n w-full jo-green text-white font-extrabold py-3 rounded-2xl shadow-lg text-sm">اطلب NshmiBike الآن</button>
       </div>
 
       <div id="rider-panel-active" class="hidden bg-white rounded-t-3xl shadow-2xl px-4 pt-3 safe-bottom z-20 space-y-2 shrink-0">
@@ -228,7 +236,7 @@
           <button onclick="openModal('terms')" class="w-full px-5 py-3 flex items-center gap-3"><span>❓</span><span data-ar="الشروط والأحكام" data-en="Terms & Conditions" class="i18n">الشروط والأحكام</span></button>
           <button onclick="openModal('diag')" class="w-full px-5 py-3 flex items-center gap-3"><span>🛠️</span><span data-ar="فحص الاتصال" data-en="Diagnostics" class="i18n">فحص الاتصال</span></button>
         </nav>
-        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiBike • v6.1 🇯🇴</div></div>
+        <div class="p-4 border-t"><button onclick="logout()" data-ar="تسجيل الخروج" data-en="Logout" class="i18n w-full text-right text-[#CE1126] font-extrabold text-sm py-1">تسجيل الخروج</button><div class="text-[11px] text-slate-400 mt-1">NshmiBike • v6.2</div></div>
       </aside>
 
       <div id="app-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
@@ -287,6 +295,45 @@
     const CITIES = { amman: { nameAr: 'عمّان', nameEn: 'Amman', center: [31.9539, 35.9106] }, irbid: { nameAr: 'إربد', nameEn: 'Irbid', center: [32.5568, 35.8469] }, zarqa: { nameAr: 'الزرقاء', nameEn: 'Zarqa', center: [32.0608, 36.0942] } };
     let lang = localStorage.getItem('nshmi_lang') || 'ar', authMode = 'login', chosenStars = 5;
     const t = (ar, en) => lang === 'ar' ? ar : en;
+
+    // معالجة زر الرجوع في أندرويد والمتصفح لمنع الخروج المفاجئ
+    let lastBackTapMs = 0;
+    function handleInternalBack() {
+      if (!document.getElementById('app-modal').classList.contains('hidden')) { closeModal(); return true; }
+      if (!document.getElementById('side-drawer').classList.contains('hidden')) { toggleDrawer(false); return true; }
+      if (!document.getElementById('rider-panel-pin').classList.contains('hidden')) { cancelPinEdit(); return true; }
+      if (!document.getElementById('rider-panel-book').classList.contains('hidden')) { backToDestStep(); return true; }
+      if (!document.getElementById('search-results').classList.contains('hidden')) { document.getElementById('search-results').classList.add('hidden'); return true; }
+      return false;
+    }
+    try { history.replaceState({ nshmi: 'base' }, ''); history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
+    window.addEventListener('popstate', () => {
+      if (handleInternalBack()) { try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {} return; }
+      const now = Date.now();
+      if (now - lastBackTapMs < 2000) { history.back(); }
+      else {
+        lastBackTapMs = now;
+        try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
+        const tb = document.getElementById('toast-banner');
+        document.getElementById('toast-title').innerText = t('↩️ خروج من التطبيق', '↩️ Exit App');
+        document.getElementById('toast-body').innerText = t('اضغط زر الرجوع مرة أخرى للخروج', 'Press back again to exit');
+        tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 2000);
+      }
+    });
+    try {
+      window.Capacitor?.Plugins?.App?.addListener('backButton', () => {
+        if (handleInternalBack()) return;
+        const now = Date.now();
+        if (now - lastBackTapMs < 2000) window.Capacitor.Plugins.App.exitApp();
+        else {
+          lastBackTapMs = now;
+          const tb = document.getElementById('toast-banner');
+          document.getElementById('toast-title').innerText = t('↩️ خروج من التطبيق', '↩️ Exit App');
+          document.getElementById('toast-body').innerText = t('اضغط زر الرجوع مرة أخرى للخروج', 'Press back again to exit');
+          tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 2000);
+        }
+      });
+    } catch (e) {}
 
     function renderQuickReplies() {
       const box = document.getElementById('rider-quick-replies'); if (!box) return;
@@ -520,7 +567,7 @@
       if (type === 'wallet') {
         ti.innerText = t('💳 محفظتي وشحن CliQ', '💳 Wallet & CliQ');
         const cliqBox = pricing.cliqAlias
-          ? `<div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl space-y-2"><div class="font-extrabold text-[#007A3D]">🇯🇴 ${t('شحن المحفظة عبر كليك (CliQ):','Top-up Wallet via CliQ:')}</div><div class="bg-white p-2.5 rounded-xl border flex justify-between items-center"><div><div class="text-[10px] text-slate-500">${esc(pricing.cliqBank || t('الاسم المستعار (Alias)','CliQ Alias'))}</div><div class="font-extrabold text-sm tracking-wider" dir="ltr">${esc(pricing.cliqAlias)}</div></div><button onclick="copyText('${esc(pricing.cliqAlias)}')" class="jo-green text-white px-3 py-1.5 rounded-xl font-bold text-[11px]">📋 ${t('نسخ','Copy')}</button></div><div class="grid grid-cols-2 gap-1.5"><input id="cliq-amount" type="text" inputmode="decimal" value="5.00" placeholder="${t('المبلغ (د.أ)','Amount')}" class="border rounded-xl p-2 font-bold bg-white"><input id="cliq-ref" type="text" placeholder="${t('اسم المحوّل / المرجع','Sender / Ref')}" class="border rounded-xl p-2 font-bold bg-white"></div><button id="btn-send-cliq" onclick="submitCliqRequest()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl">${t('إرسال تأكيد التحويل ✓','Submit CliQ Transfer ✓')}</button></div>`
+          ? `<div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl space-y-2"><div class="font-extrabold text-[#007A3D]">💳 ${t('شحن المحفظة عبر كليك (CliQ):','Top-up Wallet via CliQ:')}</div><div class="bg-white p-2.5 rounded-xl border flex justify-between items-center"><div><div class="text-[10px] text-slate-500">${esc(pricing.cliqBank || t('الاسم المستعار (Alias)','CliQ Alias'))}</div><div class="font-extrabold text-sm tracking-wider" dir="ltr">${esc(pricing.cliqAlias)}</div></div><button onclick="copyText('${esc(pricing.cliqAlias)}')" class="jo-green text-white px-3 py-1.5 rounded-xl font-bold text-[11px]">📋 ${t('نسخ','Copy')}</button></div><div class="grid grid-cols-2 gap-1.5"><input id="cliq-amount" type="text" inputmode="decimal" value="5.00" placeholder="${t('المبلغ (د.أ)','Amount')}" class="border rounded-xl p-2 font-bold bg-white"><input id="cliq-ref" type="text" placeholder="${t('اسم المحوّل / المرجع','Sender / Ref')}" class="border rounded-xl p-2 font-bold bg-white"></div><button id="btn-send-cliq" onclick="submitCliqRequest()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl">${t('إرسال تأكيد التحويل ✓','Submit CliQ Transfer ✓')}</button></div>`
           : `<div class="bg-slate-50 p-3 rounded-2xl text-center font-semibold">${t('تُضاف الفكة هنا تلقائياً عند الدفع كاش.', 'Cash change is added here automatically.')}</div>`;
         b.innerHTML = `<div class="bg-gradient-to-br from-[#007A3D] to-slate-900 text-white p-5 rounded-2xl text-center"><div class="text-[11px] opacity-80">${t('رصيدك الحالي','Current Balance')}</div><div class="text-3xl font-extrabold mt-0.5">${currentUser.walletBalance.toFixed(2)} ${t('د.أ','JOD')}</div></div>${cliqBox}<div id="my-cliq-reqs" class="space-y-1.5"></div>`;
         if (auth.currentUser) {
@@ -557,7 +604,7 @@
       else if (type === 'diag') { ti.innerText = t('🛠️ الفحص', '🛠️ Diagnostics'); b.innerHTML = `<div class="bg-slate-50 p-3 rounded-xl font-bold"><div>GPS: ${navigator.geolocation?'✓':'✕'}</div><div>Auth: ${auth.currentUser?'✓':'✕'}</div></div>`; }
     };
 
-    window.shareInvite = async () => { const tx = `NshmiBike 🇯🇴 ${currentUser.referralCode}`; if (navigator.share) { try { await navigator.share({ text: tx }); } catch (e) {} } else alert(tx); };
+    window.shareInvite = async () => { const tx = `NshmiBike ${currentUser.referralCode}`; if (navigator.share) { try { await navigator.share({ text: tx }); } catch (e) {} } else alert(tx); };
     window.claimReferral = async () => {
       if (currentUser.claimedReferral) return;
       const btn = document.getElementById('btn-claim-ref'); if (btn) btn.disabled = true;
@@ -856,7 +903,7 @@
           if (data.status === 'SCHEDULED_ACCEPTED' && prev !== null) notifyRider(t('📅 تم تأكيد الكابتن لموعدك!', '📅 Captain Confirmed Slot!'), `${data.captainName} (${data.scheduledFor})`, 'status');
           if (data.status === 'ACCEPTED') { badge.innerText = t('الكابتن في طريقه إليك!', 'Captain on the way!'); if (prev !== null) notifyRider(t('🛵 الكابتن في طريقه إليك!', '🛵 Captain On The Way!'), `${data.captainName}`, 'status'); }
           else if (data.status === 'ARRIVED') { badge.innerText = t('الكابتن وصل لموقعك 📍', 'Captain Arrived 📍'); if (prev !== null) notifyRider(t('📍 الكابتن وصل!', '📍 Arrived!'), `PIN: ${data.ridePin}`, 'status'); }
-          else if (data.status === 'ON_TRIP') { badge.innerText = t('الرحلة جارية 💨', 'Trip In Progress 💨'); document.getElementById('rider-pin-box').classList.add('hidden'); if (prev !== null) notifyRider(t('💨 انطلقت الرحلة', '💨 Trip Started'), 'NshmiBike 🇯🇴', 'status'); }
+          else if (data.status === 'ON_TRIP') { badge.innerText = t('الرحلة جارية 💨', 'Trip In Progress 💨'); document.getElementById('rider-pin-box').classList.add('hidden'); if (prev !== null) notifyRider(t('💨 انطلقت الرحلة', '💨 Trip Started'), 'NshmiBike', 'status'); }
           else if (data.status === 'COMPLETED') {
             appliedPromo = null; document.getElementById('promo-input').value = '';
             const fid = activeRideId, capId = data.captainId; resetRideWatchers(); activeRideId = null; lastCompletedRideId = fid; lastCompletedCapId = capId;
