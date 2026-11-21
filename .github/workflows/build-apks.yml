@@ -1,0 +1,110 @@
+name: Build NshmiBike APKs
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-apks.yml'
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install ImageMagick for App Icons
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+
+      - name: Build Rider & Captain APKs
+        run: |
+          set -e
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+
+          build_apk() {
+            local APP_NAME="$1"
+            local APP_ID="$2"
+            local START_URL="$3"
+            local ICON_BASE="$4"
+            local OUT_APK="$5"
+            local WORKDIR="/tmp/cap_${APP_NAME}"
+
+            rm -rf "$WORKDIR"
+            mkdir -p "$WORKDIR/www"
+            cd "$WORKDIR"
+
+            echo "<html><body>Loading...</body></html>" > www/index.html
+            npm init -y > /dev/null
+            npm install --no-audit --no-fund \
+              @capacitor/core@7 \
+              @capacitor/cli@7 \
+              @capacitor/android@7 \
+              @capacitor/app@7 \
+              @capacitor/local-notifications@7
+
+            cat <<EOF > capacitor.config.json
+          {
+            "appId": "${APP_ID}",
+            "appName": "${APP_NAME}",
+            "webDir": "www",
+            "server": {
+              "url": "${START_URL}",
+              "cleartext": false,
+              "allowNavigation": [
+                "loserhaz2121.github.io",
+                "*.firebaseapp.com",
+                "*.googleapis.com"
+              ]
+            },
+            "android": {
+              "allowMixedContent": true
+            }
+          }
+          EOF
+
+            npx cap add android
+
+            MANIFEST="android/app/src/main/AndroidManifest.xml"
+            PERMS='<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.WAKE_LOCK" />'
+            sed -i "s|<application|${PERMS}\n    <application|" "$MANIFEST"
+
+            ICON_PATH=$(find "$GITHUB_WORKSPACE" -maxdepth 1 -iname "${ICON_BASE}.*" | head -n 1 || true)
+            if [ -n "$ICON_PATH" ]; then
+              rm -rf android/app/src/main/res/mipmap-anydpi-v26
+              for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+                DENS="${pair%%:*}"
+                SIZE="${pair##*:}"
+                DIR="android/app/src/main/res/mipmap-${DENS}"
+                mkdir -p "$DIR"
+                convert "$ICON_PATH" -resize "${SIZE}x${SIZE}^" -gravity center -extent "${SIZE}x${SIZE}" "$DIR/ic_launcher.png"
+                cp "$DIR/ic_launcher.png" "$DIR/ic_launcher_round.png"
+              done
+            fi
+
+            npx cap sync android
+            cd android
+            chmod +x gradlew
+            ./gradlew assembleDebug
+            cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/dist/${OUT_APK}"
+          }
+
+          build_apk "NshmiBike" "com.nshmibike.rider" "https://loserhaz2121.github.io/NshmiBike/index.html" "logo-rider" "NshmiBike.apk"
+          build_apk "NshmiCaptain" "com.nshmibike.captain" "https://loserhaz2121.github.io/NshmiBike/captain.html" "logo-captain" "NshmiCaptain.apk"
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: NshmiBike-APKs
+          path: dist/*.apk
+          retention-days: 30
