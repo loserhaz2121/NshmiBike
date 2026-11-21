@@ -26,6 +26,7 @@
 </head>
 <body class="min-h-screen bg-slate-100 pb-12">
 
+  <div id="net-banner" class="hidden fixed top-0 left-0 right-0 z-[80] text-white text-xs font-extrabold text-center py-2 px-3 shadow-lg"></div>
   <div id="admin-toast" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[90%] max-w-sm bg-slate-900 text-white p-3 rounded-2xl shadow-2xl border-r-4 border-[#CE1126] text-xs font-bold text-center"></div>
 
   <div id="admin-lock" class="min-h-screen flex items-center justify-center p-6">
@@ -88,7 +89,7 @@
       <button onclick="showTab('riders')" id="tab-btn-riders" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🙋‍♂️ العملاء (<span id="cnt-riders">0</span>)</button>
       <button onclick="showTab('alerts')" id="tab-btn-alerts" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">📢 الإشعارات</button>
       <button onclick="showTab('rides')" id="tab-btn-rides" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">🛵 الرحلات (<span id="stat-completed">0</span>/<span id="stat-active">0</span>)</button>
-      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">⚡ التسعيرة وCliQ</button>
+      <button onclick="showTab('pricing')" id="tab-btn-pricing" class="tab-btn bg-white text-slate-700 px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap">⚡ الإعدادات وCliQ</button>
     </div>
 
     <div id="tab-captains" class="px-4 space-y-2.5">
@@ -146,12 +147,15 @@
     </div>
 
     <div id="tab-pricing" class="hidden px-4 space-y-4">
+      <!-- إعدادات الدعم الفني وحساب CliQ -->
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3 border-2 border-[#007A3D]/25">
-        <h2 class="font-extrabold text-[#007A3D] text-sm">💳 حساب كليك (CliQ) للشركة</h2>
-        <p class="text-[11px] text-slate-500">يظهر هذا الاسم المستعار تلقائياً للعملاء والكباتن عند شحن المحفظة أو تسديد الذمة.</p>
+        <h2 class="font-extrabold text-[#007A3D] text-sm">🎧 الدعم الفني وحساب كليك (CliQ)</h2>
+        <p class="text-[11px] text-slate-500">تظهر هذه الأرقام تلقائياً في تطبيق العميل والكابتن للتواصل وإرسال أوراق الاعتماد وحوالات CliQ.</p>
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <div><label class="font-bold text-slate-600 block mb-1">الاسم المستعار (Alias)</label><input id="p-cliq-alias" type="text" placeholder="NSHMIBIKE" dir="ltr" class="w-full border rounded-xl p-2 font-extrabold uppercase text-left"></div>
-          <div><label class="font-bold text-slate-600 block mb-1">البنك / المحفظة</label><input id="p-cliq-bank" type="text" placeholder="بنك الاتحاد / زين كاش" class="w-full border rounded-xl p-2 font-bold"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">💬 واتساب الدعم / الاعتماد</label><input id="p-support-wa" type="tel" placeholder="079xxxxxxx" dir="ltr" class="w-full border rounded-xl p-2 font-extrabold text-left"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">📞 هاتف الإدارة للاتصال</label><input id="p-support-phone" type="tel" placeholder="079xxxxxxx" dir="ltr" class="w-full border rounded-xl p-2 font-extrabold text-left"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">💳 CliQ Alias</label><input id="p-cliq-alias" type="text" placeholder="NSHMIBIKE" dir="ltr" class="w-full border rounded-xl p-2 font-extrabold uppercase text-left"></div>
+          <div><label class="font-bold text-slate-600 block mb-1">🏦 البنك / المحفظة</label><input id="p-cliq-bank" type="text" placeholder="بنك الاتحاد / زين كاش" class="w-full border rounded-xl p-2 font-bold"></div>
         </div>
       </div>
 
@@ -168,7 +172,7 @@
           <div><label class="font-bold text-slate-600 block mb-1">معامل الذروة</label><input id="p-surge" type="number" step="0.05" value="1.0" class="w-full border rounded-xl p-2 font-bold text-amber-700"></div>
           <div class="flex items-end"><label class="flex items-center gap-1.5 text-[11px] font-bold text-blue-800 bg-blue-50 p-2 rounded-xl w-full cursor-pointer"><input id="p-rain" type="checkbox" class="w-4 h-4"><span>🌧️ مطر</span></label></div>
         </div>
-        <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ التسعيرة وحساب CliQ ✓</button>
+        <button onclick="savePricing()" class="w-full bg-slate-900 text-white font-extrabold py-2.5 rounded-xl text-xs">حفظ التسعيرة والدعم وCliQ ✓</button>
       </div>
 
       <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3 border border-emerald-100">
@@ -203,9 +207,37 @@
 
     let currentCommPct = 10, statsRange = 'TODAY', currentTab = 'captains', activeUnsubs = [];
     let captainsData = [], ridersData = [], ridesData = [], cliqData = [];
-    let captainsMap = {}, ridersMap = {};
+    let captainsMap = {}, ridersMap = {}, audioCtx = null, firstCliqLoad = true, firstSosLoad = true;
+    const knownCliqIds = new Set(), knownSosIds = new Set();
 
-    // معالجة زر الرجوع في أندرويد والمتصفح
+    // شريط تنبيه انقطاع وعودة الإنترنت
+    const netBar = document.getElementById('net-banner');
+    const updateNetUI = (online) => {
+      if (!online) { netBar.className = 'fixed top-0 left-0 right-0 z-[80] bg-red-600 text-white text-xs font-extrabold text-center py-2 px-3 shadow-lg'; netBar.innerText = '⚠️ لا يوجد اتصال بالإنترنت — بانتظار عودة الشبكة...'; }
+      else { netBar.className = 'fixed top-0 left-0 right-0 z-[80] bg-[#007A3D] text-white text-xs font-extrabold text-center py-2 px-3 shadow-lg'; netBar.innerText = '✅ عاد الاتصال بالإنترنت'; setTimeout(() => netBar.classList.add('hidden'), 2500); }
+    };
+    window.addEventListener('offline', () => updateNetUI(false));
+    window.addEventListener('online', () => updateNetUI(true));
+    if (!navigator.onLine) updateNetUI(false);
+
+    // جرس التنبيه الصوتي لطلبات CliQ و SOS
+    document.body.addEventListener('click', () => { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { if (!audioCtx) audioCtx = new AC(); if (audioCtx.state === 'suspended') audioCtx.resume(); } }, { once: true });
+    function playAdminTone(kind) {
+      try {
+        if (!audioCtx) return;
+        (kind === 'sos' ? [880, 660, 880, 660, 880] : [587, 880, 1046]).forEach((f, i) => {
+          const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+          o.type = kind === 'sos' ? 'sawtooth' : 'sine'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.14);
+          g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.14 + 0.22);
+          o.connect(g); g.connect(audioCtx.destination);
+          o.start(audioCtx.currentTime + i * 0.14); o.stop(audioCtx.currentTime + i * 0.14 + 0.24);
+        });
+      } catch (e) {}
+    }
+    function showToast(msg) { const tb = document.getElementById('admin-toast'); tb.innerText = msg; tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 4000); }
+
+    // زر الرجوع
     let lastBackTapMs = 0;
     try { history.replaceState({ nshmi: 'base' }, ''); history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
     window.addEventListener('popstate', () => {
@@ -213,11 +245,8 @@
         showTab('captains'); try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {} return;
       }
       const now = Date.now();
-      if (now - lastBackTapMs < 2000) { history.back(); }
-      else {
-        lastBackTapMs = now; try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {}
-        const tb = document.getElementById('admin-toast'); tb.innerText = '↩️ اضغط زر الرجوع مرة أخرى للخروج'; tb.classList.remove('hidden'); setTimeout(() => tb.classList.add('hidden'), 2000);
-      }
+      if (now - lastBackTapMs < 2000) history.back();
+      else { lastBackTapMs = now; try { history.pushState({ nshmi: 'guard' }, ''); } catch (e) {} showToast('↩️ اضغط زر الرجوع مرة أخرى للخروج'); }
     });
 
     const STATUS_LABELS = {
@@ -233,6 +262,7 @@
     };
 
     const esc = (v) => String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    const normDigits = (s) => String(s ?? '').replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]).replace(/[۰-۹]/g, d => '0123456789'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]);
     const stopAllListeners = () => { activeUnsubs.forEach(u => { try { u(); } catch (e) {} }); activeUnsubs = []; };
 
     async function verifyIsAdmin(user) {
@@ -432,7 +462,7 @@
     });
 
     async function startAdminListeners() {
-      stopAllListeners();
+      stopAllListeners(); firstCliqLoad = true; firstSosLoad = true;
       const pSnap = await getDoc(doc(db, 'settings', 'pricing'));
       if (pSnap.exists()) {
         const p = pSnap.data();
@@ -440,6 +470,7 @@
         document.getElementById('p-sc-min').value = p.scooterMin ?? 0.60; document.getElementById('p-bk-base').value = p.bikeBase ?? 0.30;
         document.getElementById('p-bk-km').value = p.bikePerKm ?? 0.18; document.getElementById('p-bk-min').value = p.bikeMin ?? 0.75;
         document.getElementById('p-cliq-alias').value = p.cliqAlias || ''; document.getElementById('p-cliq-bank').value = p.cliqBank || '';
+        document.getElementById('p-support-wa').value = p.supportWhatsapp || ''; document.getElementById('p-support-phone').value = p.supportPhone || '';
         currentCommPct = Number(p.commissionPct ?? 10); document.getElementById('p-comm').value = currentCommPct; document.getElementById('stat-comm-pct').innerText = currentCommPct;
         document.getElementById('p-surge').value = p.surgeMultiplier ?? 1.0; document.getElementById('p-rain').checked = !!p.rainMode;
       }
@@ -454,7 +485,13 @@
       }));
 
       activeUnsubs.push(onSnapshot(collection(db, 'cliq_requests'), (snap) => {
-        cliqData = []; snap.forEach(d => cliqData.push({ id: d.id, ...d.data() }));
+        cliqData = []; let hasNew = false;
+        snap.forEach(d => {
+          const obj = { id: d.id, ...d.data() }; cliqData.push(obj);
+          if (!knownCliqIds.has(d.id)) { knownCliqIds.add(d.id); if (!firstCliqLoad && obj.status === 'PENDING') hasNew = true; }
+        });
+        firstCliqLoad = false;
+        if (hasNew) { playAdminTone('cliq'); showToast('💳 وصل طلب حوالة CliQ جديد!'); }
         cliqData.sort((a, b) => (a.status === 'PENDING' ? -1 : 1) - (b.status === 'PENDING' ? -1 : 1) || (b.createdAtMs || 0) - (a.createdAtMs || 0));
         renderCliqList();
       }));
@@ -484,7 +521,15 @@
       }));
 
       activeUnsubs.push(onSnapshot(collection(db, 'sos_alerts'), (snap) => {
-        const un = []; snap.forEach(d => { if (!d.data().resolved) un.push({ id: d.id, ...d.data() }); });
+        const un = []; let hasNew = false;
+        snap.forEach(d => {
+          if (!d.data().resolved) {
+            un.push({ id: d.id, ...d.data() });
+            if (!knownSosIds.has(d.id)) { knownSosIds.add(d.id); if (!firstSosLoad) hasNew = true; }
+          }
+        });
+        firstSosLoad = false;
+        if (hasNew) { playAdminTone('sos'); showToast('🚨 تنبيه طوارئ SOS عاجل!'); }
         const b = document.getElementById('sos-banner'), l = document.getElementById('sos-list');
         if (!un.length) { b.classList.add('hidden'); return; } b.classList.remove('hidden'); l.innerHTML = '';
         un.forEach(s => {
@@ -511,7 +556,10 @@
         scooterBase: Number(document.getElementById('p-sc-base').value), scooterPerKm: Number(document.getElementById('p-sc-km').value), scooterMin: Number(document.getElementById('p-sc-min').value),
         bikeBase: Number(document.getElementById('p-bk-base').value), bikePerKm: Number(document.getElementById('p-bk-km').value), bikeMin: Number(document.getElementById('p-bk-min').value),
         commissionPct: currentCommPct, surgeMultiplier: Number(document.getElementById('p-surge').value || 1.0), rainMode: document.getElementById('p-rain').checked,
-        cliqAlias: document.getElementById('p-cliq-alias').value.trim().toUpperCase(), cliqBank: document.getElementById('p-cliq-bank').value.trim(), updatedAt: serverTimestamp()
+        cliqAlias: document.getElementById('p-cliq-alias').value.trim().toUpperCase(), cliqBank: document.getElementById('p-cliq-bank').value.trim(),
+        supportWhatsapp: normDigits(document.getElementById('p-support-wa').value).trim(),
+        supportPhone: normDigits(document.getElementById('p-support-phone').value).trim(),
+        updatedAt: serverTimestamp()
       });
       document.getElementById('stat-comm-pct').innerText = currentCommPct; renderRidesList(); alert('✅ تم الحفظ والنشر بنجاح!');
     };
