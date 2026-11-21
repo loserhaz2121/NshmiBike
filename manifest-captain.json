@@ -1,0 +1,21 @@
+{
+  "name": "NshmiCaptain - كباتن نشمي بايك",
+  "short_name": "NshmiCaptain",
+  "description": "تطبيق الكباتن لتوصيل الركاب والطرود عبر الدراجات النارية في الأردن",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/NshmiBike/captain.html",
+  "scope": "/NshmiBike/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "logo-captain.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
