@@ -6,12 +6,29 @@ on:
     paths:
       - '.github/workflows/build-apks.yml'
 
+permissions:
+  contents: write
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Auto-sync lowercase logo filenames for Web & APKs
+        run: |
+          CHANGED=0
+          if [ -f "Logo rider.jpg" ] && [ ! -f "logo-rider.jpg" ]; then cp "Logo rider.jpg" "logo-rider.jpg"; CHANGED=1; fi
+          if [ -f "Logo captain.jpg" ] && [ ! -f "logo-captain.jpg" ]; then cp "Logo captain.jpg" "logo-captain.jpg"; CHANGED=1; fi
+          if [ -f "Logo admin.jpg" ] && [ ! -f "logo-admin.jpg" ]; then cp "Logo admin.jpg" "logo-admin.jpg"; CHANGED=1; fi
+          if [ "$CHANGED" -eq 1 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add logo-rider.jpg logo-captain.jpg logo-admin.jpg
+            git commit -m "Sync lowercase logo filenames [skip ci]" || true
+            git push || true
+          fi
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
@@ -27,7 +44,7 @@ jobs:
       - name: Install ImageMagick for App Icons
         run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
-      - name: Build Rider & Captain APKs
+      - name: Build Rider, Captain & Admin APKs
         run: |
           set -e
           mkdir -p "$GITHUB_WORKSPACE/dist"
@@ -36,8 +53,9 @@ jobs:
             local APP_NAME="$1"
             local APP_ID="$2"
             local START_URL="$3"
-            local ICON_BASE="$4"
-            local OUT_APK="$5"
+            local ICON_FILE_1="$4"
+            local ICON_FILE_2="$5"
+            local OUT_APK="$6"
             local WORKDIR="/tmp/cap_${APP_NAME}"
 
             rm -rf "$WORKDIR"
@@ -51,6 +69,7 @@ jobs:
               @capacitor/cli@7 \
               @capacitor/android@7 \
               @capacitor/app@7 \
+              @capacitor/geolocation@7 \
               @capacitor/local-notifications@7
 
             cat <<EOF > capacitor.config.json
@@ -79,7 +98,60 @@ jobs:
             PERMS='<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.WAKE_LOCK" />'
             sed -i "s|<application|${PERMS}\n    <application|" "$MANIFEST"
 
-            ICON_PATH=$(find "$GITHUB_WORKSPACE" -maxdepth 1 -iname "${ICON_BASE}.*" | head -n 1 || true)
+            PKG_PATH="${APP_ID//.//}"
+            MAIN_JAVA="android/app/src/main/java/${PKG_PATH}/MainActivity.java"
+            cat <<EOF > "$MAIN_JAVA"
+          package ${APP_ID};
+
+          import android.Manifest;
+          import android.content.pm.PackageManager;
+          import android.os.Build;
+          import android.os.Bundle;
+          import androidx.core.app.ActivityCompat;
+          import androidx.core.content.ContextCompat;
+          import com.getcapacitor.BridgeActivity;
+          import java.util.ArrayList;
+          import java.util.List;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  requestAppPermissions();
+              }
+
+              private void requestAppPermissions() {
+                  List<String> needed = new ArrayList<>();
+                  String[] perms = new String[] {
+                      Manifest.permission.ACCESS_FINE_LOCATION,
+                      Manifest.permission.ACCESS_COARSE_LOCATION,
+                      Manifest.permission.CAMERA
+                  };
+                  for (String p : perms) {
+                      if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                          needed.add(p);
+                      }
+                  }
+                  if (Build.VERSION.SDK_INT >= 33) {
+                      if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                          needed.add(Manifest.permission.POST_NOTIFICATIONS);
+                      }
+                  }
+                  if (!needed.isEmpty()) {
+                      ActivityCompat.requestPermissions(this, needed.toArray(new String[0]), 1001);
+                  }
+              }
+          }
+          EOF
+
+            ICON_PATH=""
+            if [ -f "$GITHUB_WORKSPACE/$ICON_FILE_1" ]; then
+              ICON_PATH="$GITHUB_WORKSPACE/$ICON_FILE_1"
+            elif [ -f "$GITHUB_WORKSPACE/$ICON_FILE_2" ]; then
+              ICON_PATH="$GITHUB_WORKSPACE/$ICON_FILE_2"
+            fi
+
+            echo "Using icon for ${APP_NAME}: ${ICON_PATH}"
             if [ -n "$ICON_PATH" ]; then
               rm -rf android/app/src/main/res/mipmap-anydpi-v26
               for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
@@ -89,6 +161,7 @@ jobs:
                 mkdir -p "$DIR"
                 convert "$ICON_PATH" -resize "${SIZE}x${SIZE}^" -gravity center -extent "${SIZE}x${SIZE}" "$DIR/ic_launcher.png"
                 cp "$DIR/ic_launcher.png" "$DIR/ic_launcher_round.png"
+                cp "$DIR/ic_launcher.png" "$DIR/ic_launcher_foreground.png"
               done
             fi
 
@@ -99,8 +172,9 @@ jobs:
             cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/dist/${OUT_APK}"
           }
 
-          build_apk "NshmiBike" "com.nshmibike.rider" "https://loserhaz2121.github.io/NshmiBike/index.html" "logo-rider" "NshmiBike.apk"
-          build_apk "NshmiCaptain" "com.nshmibike.captain" "https://loserhaz2121.github.io/NshmiBike/captain.html" "logo-captain" "NshmiCaptain.apk"
+          build_apk "NshmiBike" "com.nshmibike.rider" "https://loserhaz2121.github.io/NshmiBike/index.html" "logo-rider.jpg" "Logo rider.jpg" "NshmiBike.apk"
+          build_apk "NshmiCaptain" "com.nshmibike.captain" "https://loserhaz2121.github.io/NshmiBike/captain.html" "logo-captain.jpg" "Logo captain.jpg" "NshmiCaptain.apk"
+          build_apk "NshmiAdmin" "com.nshmibike.admin" "https://loserhaz2121.github.io/NshmiBike/admin.html" "logo-admin.jpg" "Logo admin.jpg" "NshmiAdmin.apk"
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
